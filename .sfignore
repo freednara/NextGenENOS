@@ -1,5 +1,5 @@
-# Salesforce DX .forceignore
-# This file specifies which files and directories should be ignored during deployments
+# Salesforce CLI .sfignore
+# This file specifies which files and directories should be ignored during CLI operations
 # Comprehensive ignore file for StoreConnect e-commerce application
 
 # ========================================
@@ -215,47 +215,12 @@ local-dev/
 dev-settings/
 
 # ========================================
-# SALESFORCE METADATA EXCLUSIONS
-# ========================================
-
-# Exclude specific metadata types that shouldn't be deployed
-# Uncomment and modify as needed for your project
-
-# force-app/main/default/applications/
-# force-app/main/default/approvalProcesses/
-# force-app/main/default/assignmentRules/
-# force-app/main/default/autoResponseRules/
-# force-app/main/default/compactLayouts/
-# force-app/main/default/customPermissions/
-# force-app/main/default/emailServices/
-# force-app/main/default/escalationRules/
-# force-app/main/default/flowDefinitions/
-# force-app/main/default/globalValueSets/
-# force-app/main/default/installedPackages/
-# force-app/main/default/layouts/
-# force-app/main/default/leadConvertSettings/
-# force-app/main/default/letterhead/
-# force-app/main/default/matchingRules/
-# force-app/main/default/milestoneTypes/
-# force-app/main/default/objectTranslations/
-# force-app/main/default/paths/
-# force-app/main/default/permissionSets/
-# force-app/main/default/quickActions/
-# force-app/main/default/recordTypes/
-# force-app/main/default/reportTypes/
-# force-app/main/default/searchLayouts/
-# force-app/main/default/sharingRules/
-# force-app/main/default/synonymDictionaries/
-# force-app/main/default/validationRules/
-# force-app/main/default/workflows/
-
-# ========================================
 # COMMENTS AND NOTES
 # ========================================
 
-# This .forceignore file is designed for Salesforce DX deployments
+# This .sfignore file is designed for Salesforce CLI operations
 # It excludes common development artifacts, sensitive data, and unnecessary files
-# while preserving essential Salesforce metadata for deployment
+# while preserving essential Salesforce metadata for CLI operations
 
 # To include a specific file that's being ignored, use:
 # !force-app/main/default/path/to/file
@@ -263,5 +228,5 @@ dev-settings/
 # To include a specific directory that's being ignored, use:
 # !force-app/main/default/path/to/directory/
 
-# Remember: .forceignore affects deployment, .gitignore affects version control
-# Both should be configured appropriately for your project needs
+# This file works with the newer Salesforce CLI (sf) commands
+# It's similar to .forceignore but specifically for sf CLI operations

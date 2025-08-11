@@ -1,48 +1,240 @@
-# This file is used for Git repositories to specify intentionally untracked files that Git should ignore. 
-# If you are not using git, you can delete this file. For more information see: https://git-scm.com/docs/gitignore
-# For useful gitignore templates see: https://github.com/github/gitignore
+# Salesforce DX Project .gitignore
+# Comprehensive ignore file for StoreConnect e-commerce application
 
-# Salesforce cache
-.sf/
+# ========================================
+# SALESFORCE SPECIFIC IGNORES
+# ========================================
+
+# Salesforce CLI and DX files
 .sfdx/
-.localdevserver/
-deploy-options.json
+.sf/
+localdevserver/
+*.log
+*.log.*
 
-# LWC VSCode autocomplete
-**/lwc/jsconfig.json
+# Scratch org files
+.scratchorgs/
+scratch-org-def.json
 
-# LWC Jest coverage reports
+# Package directories
+packages/
+unpackaged/
+
+# ========================================
+# DEVELOPMENT ENVIRONMENT
+# ========================================
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Node.js dependencies (if using any build tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ========================================
+# BUILD AND DEPLOYMENT
+# ========================================
+
+# Build artifacts
+dist/
+build/
+out/
+target/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# ========================================
+# TESTING AND COVERAGE
+# ========================================
+
+# Test results
+test-results/
 coverage/
+*.lcov
+.nyc_output/
 
-# Logs
-logs
+# Jest coverage
+coverage/
+*.lcov
+
+# ========================================
+# ENVIRONMENT AND CONFIGURATION
+# ========================================
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Configuration files with sensitive data
+config.json
+secrets.json
+credentials.json
+
+# ========================================
+# LOGS AND DEBUGGING
+# ========================================
+
+# Log files
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
 
-# Dependency directories
-node_modules/
+# Debug files
+.debug/
 
-# ApexPMD cache
-.pmdCache
+# ========================================
+# CACHE AND TEMPORARY FILES
+# ========================================
 
-# Eslint cache
+# Cache directories
+.cache/
+.parcel-cache/
 .eslintcache
 
-# MacOS system files
+# Temporary directories
+.tmp/
+.temp/
+
+# ========================================
+# OPERATING SYSTEM FILES
+# ========================================
+
+# macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
 
-# Windows system files
+# Windows
 Thumbs.db
+Thumbs.db:encryptable
 ehthumbs.db
-[Dd]esktop.ini
+ehthumbs_vista.db
+*.tmp
+*.temp
+Desktop.ini
 $RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
 
-# Local environment variables
-.env
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
 
-# Python Salesforce Functions
-**/__pycache__/
-**/.venv/
-**/venv/
+# ========================================
+# SALESFORCE METADATA SPECIFIC
+# ========================================
+
+# Custom metadata that shouldn't be versioned
+force-app/main/default/customMetadata/
+force-app/main/default/staticresources/secure/
+
+# Named credentials (may contain sensitive data)
+force-app/main/default/namedCredentials/
+
+# Connected apps (may contain secrets)
+force-app/main/default/connectedApps/
+
+# Auth providers
+force-app/main/default/authproviders/
+
+# ========================================
+# DOCUMENTATION AND ASSETS
+# ========================================
+
+# Generated documentation
+docs/generated/
+docs/build/
+
+# Asset files that are too large
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Image files (if not needed in repo)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+
+# ========================================
+# SECURITY AND COMPLIANCE
+# ========================================
+
+# Files that may contain sensitive information
+*secret*
+*password*
+*credential*
+*key*
+*token*
+*private*
+
+# ========================================
+# PROJECT SPECIFIC IGNORES
+# ========================================
+
+# StoreConnect specific ignores
+storeconnect-config/
+deployment-config/
+local-settings/
+
+# ========================================
+# COMMENTS AND NOTES
+# ========================================
+
+# This .gitignore file is designed for Salesforce DX projects
+# It excludes common development artifacts, sensitive data, and unnecessary files
+# while preserving essential Salesforce metadata and configuration
+
+# If you need to force include a file that's being ignored, use:
+# git add -f filename
+
+# For Salesforce DX specific ignores, also check .forceignore file
