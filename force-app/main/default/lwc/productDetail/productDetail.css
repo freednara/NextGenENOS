@@ -1,0 +1,354 @@
+/**
+ * @description CSS styles for the Product Detail component.
+ * 
+ * This file provides responsive styling for the product detail layout,
+ * product images, and interactive elements. The design follows
+ * Salesforce Lightning Design System (SLDS) principles and ensures
+ * optimal user experience across all device sizes.
+ * 
+ * @author StoreConnect Development Team
+ * @version 1.0.0
+ * @since 2024-12-01
+ */
+
+/* Product Header Styling */
+.product-header h1 {
+    color: #16325c;
+    margin: 0;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* Product Price Styling */
+.product-price {
+    text-align: right;
+    padding: 0.5rem 0;
+}
+
+.price-display {
+    color: #04844b;
+    font-weight: 700;
+}
+
+.price-unavailable {
+    color: #706e6b;
+    font-style: italic;
+}
+
+/* Product Image Container */
+.product-image-container {
+    position: relative;
+    width: 100%;
+    min-height: 300px;
+    background: #f3f2f2;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-image:hover {
+    transform: scale(1.02);
+}
+
+.placeholder-image {
+    color: #706e6b;
+    background: #f8f9fa;
+    border-radius: 0.25rem;
+    padding: 2rem;
+}
+
+.placeholder-image p {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+/* Product Information Section */
+.product-description,
+.product-details,
+.add-to-cart-section {
+    margin-bottom: 2rem;
+}
+
+.product-description h2,
+.product-details h2,
+.add-to-cart-section h2 {
+    color: #16325c;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    border-bottom: 2px solid #dddbda;
+    padding-bottom: 0.5rem;
+}
+
+.product-description p {
+    color: #3e3e3c;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Product Details Grid */
+.product-details .slds-grid {
+    margin: 0;
+}
+
+.product-details .slds-col {
+    padding: 0.5rem 0;
+}
+
+.product-details .slds-text-title_caps {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025rem;
+}
+
+.product-details .slds-text-body_regular {
+    font-weight: 500;
+    color: #16325c;
+}
+
+/* Top Seller Badge */
+.product-details .slds-icon {
+    color: #ffb75d;
+}
+
+/* Quantity Input Styling */
+.quantity-input {
+    max-width: 150px;
+}
+
+.quantity-input lightning-input {
+    width: 100%;
+}
+
+/* Add to Cart Button */
+.add-to-cart-button lightning-button {
+    min-width: 150px;
+}
+
+/* Stock Warning */
+.add-to-cart-section .slds-icon {
+    color: #ffb75d;
+}
+
+.add-to-cart-section .slds-text-color_warning {
+    color: #d4504c;
+    font-weight: 500;
+}
+
+/* Back to Products Link */
+.slds-card__footer {
+    border-top: 1px solid #dddbda;
+    background: #f8f9fa;
+}
+
+.slds-card__footer lightning-button {
+    font-weight: 500;
+}
+
+/* Loading State Styling */
+.slds-spinner_container {
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.slds-spinner_container p {
+    margin-top: 1rem;
+    color: #706e6b;
+    font-size: 0.875rem;
+}
+
+/* Error State Styling */
+.slds-notify_alert {
+    margin: 1rem 0;
+    border-radius: 0.25rem;
+}
+
+.slds-notify_alert .slds-icon {
+    margin-right: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .product-image-container {
+        min-height: 250px;
+    }
+    
+    .product-header h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-image-container {
+        min-height: 200px;
+        margin-bottom: 1rem;
+    }
+    
+    .product-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .product-price {
+        text-align: left;
+        margin-top: 1rem;
+    }
+    
+    .slds-medium-size_7-of-12 {
+        padding-left: 0 !important;
+    }
+    
+    .product-description,
+    .product-details,
+    .add-to-cart-section {
+        margin-bottom: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-image-container {
+        min-height: 150px;
+    }
+    
+    .product-header h1 {
+        font-size: 1.125rem;
+    }
+    
+    .product-description h2,
+    .product-details h2,
+    .add-to-cart-section h2 {
+        font-size: 1rem;
+    }
+    
+    .quantity-input {
+        max-width: 100%;
+    }
+    
+    .add-to-cart-button lightning-button {
+        min-width: 100%;
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .product-header h1 {
+        color: #000000;
+    }
+    
+    .product-description p {
+        color: #000000;
+    }
+    
+    .product-details .slds-text-body_regular {
+        color: #000000;
+    }
+    
+    .product-image-container {
+        border: 2px solid #000000;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .product-image {
+        transition: none;
+    }
+    
+    .product-image:hover {
+        transform: none;
+    }
+}
+
+/* Focus States for Accessibility */
+.product-image-container:focus-within {
+    outline: 2px solid #0070d2;
+    outline-offset: 2px;
+}
+
+.quantity-input:focus-within {
+    outline: 2px solid #0070d2;
+    outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+    .add-to-cart-section,
+    .slds-card__footer {
+        display: none;
+    }
+    
+    .product-image-container {
+        max-width: 300px;
+        margin: 0 auto 1rem auto;
+    }
+    
+    .product-header h1 {
+        font-size: 1.5rem;
+        color: #000000;
+    }
+    
+    .product-price {
+        text-align: left;
+        margin-top: 0;
+    }
+}
+
+/* Custom Utility Classes */
+.slds-var-p-bottom_large {
+    padding-bottom: 2rem;
+}
+
+.slds-var-p-top_large {
+    padding-top: 2rem;
+}
+
+.slds-var-m-bottom_medium {
+    margin-bottom: 1rem;
+}
+
+.slds-var-m-top_medium {
+    margin-top: 1rem;
+}
+
+.slds-var-m-top_small {
+    margin-top: 0.5rem;
+}
+
+.slds-var-m-bottom_small {
+    margin-bottom: 0.5rem;
+}
+
+.slds-var-p-around_large {
+    padding: 2rem;
+}
+
+.slds-var-p-top_small {
+    padding-top: 0.5rem;
+}
+
+.slds-var-p-bottom_small {
+    padding-bottom: 0.5rem;
+}
+
+.slds-var-p-left_x-small {
+    padding-left: 0.25rem;
+}
+
+.slds-var-p-top_x-small {
+    padding-top: 0.25rem;
+}
+
+.slds-var-m-right_xx-small {
+    margin-right: 0.125rem;
+}

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Permission set for StoreConnect community users to access e-commerce functionality</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>StoreConnect Community User</label>
+    <objectPermissions>
+        <!-- Product2 - Read Only Access -->
+        <objectPermission>
+            <allowCreate>false</allowCreate>
+            <allowDelete>false</allowDelete>
+            <allowEdit>false</allowEdit>
+            <allowRead>true</allowRead>
+            <modifyAllRecords>false</modifyAllRecords>
+            <object>Product2</object>
+            <viewAllRecords>false</viewAllRecords>
+        </objectPermission>
+        
+        <!-- Cart__c - Read and Create Access -->
+        <objectPermission>
+            <allowCreate>true</allowCreate>
+            <allowDelete>true</allowDelete>
+            <allowEdit>true</allowEdit>
+            <allowRead>true</allowRead>
+            <modifyAllRecords>false</modifyAllRecords>
+            <object>Cart__c</object>
+            <viewAllRecords>false</viewAllRecords>
+        </objectPermission>
+        
+        <!-- Cart_Item__c - Read and Create Access -->
+        <objectPermission>
+            <allowCreate>true</allowCreate>
+            <allowDelete>true</allowDelete>
+            <allowEdit>true</allowEdit>
+            <allowRead>true</allowRead>
+            <modifyAllRecords>false</modifyAllRecords>
+            <object>Cart_Item__c</object>
+            <viewAllRecords>false</viewAllRecords>
+        </objectPermission>
+        
+        <!-- Shipping_Address__c - Read and Create Access -->
+        <objectPermission>
+            <allowCreate>true</allowCreate>
+            <allowDelete>true</allowDelete>
+            <allowEdit>true</allowEdit>
+            <allowRead>true</allowRead>
+            <modifyAllRecords>false</modifyAllRecords>
+            <object>Shipping_Address__c</object>
+            <viewAllRecords>false</viewAllRecords>
+        </objectPermission>
+        
+        <!-- View_Tracking__c - Read and Create Access -->
+        <objectPermission>
+            <allowCreate>true</allowCreate>
+            <allowDelete>false</allowDelete>
+            <allowEdit>false</allowEdit>
+            <allowRead>true</allowRead>
+            <modifyAllRecords>false</modifyAllRecords>
+            <object>View_Tracking__c</object>
+            <viewAllRecords>false</viewAllRecords>
+        </objectPermission>
+        
+        <!-- Notification_Request__c - Read and Create Access -->
+        <objectPermission>
+            <allowCreate>true</allowCreate>
+            <allowDelete>false</allowDelete>
+            <allowEdit>false</allowEdit>
+            <allowRead>true</allowRead>
+            <modifyAllRecords>false</modifyAllRecords>
+            <object>Notification_Request__c</object>
+            <viewAllRecords>false</viewAllRecords>
+        </objectPermission>
+        
+        <!-- Order - Read Only Access -->
+        <objectPermission>
+            <allowCreate>false</allowCreate>
+            <allowDelete>false</allowDelete>
+            <allowEdit>false</allowEdit>
+            <allowRead>true</allowRead>
+            <modifyAllRecords>false</modifyAllRecords>
+            <object>Order</object>
+            <viewAllRecords>false</viewAllRecords>
+        </objectPermission>
+        
+        <!-- OrderItem - Read Only Access -->
+        <objectPermission>
+            <allowCreate>false</allowCreate>
+            <allowDelete>false</allowDelete>
+            <allowEdit>false</allowEdit>
+            <allowRead>true</allowRead>
+            <modifyAllRecords>false</modifyAllRecords>
+            <object>OrderItem</object>
+            <viewAllRecords>false</viewAllRecords>
+        </objectPermission>
+        
+        <!-- Account - Read Only Access (for their own account) -->
+        <objectPermission>
+            <allowCreate>false</allowCreate>
+            <allowDelete>false</allowDelete>
+            <allowEdit>false</allowEdit>
+            <allowRead>true</allowRead>
+            <modifyAllRecords>false</modifyAllRecords>
+            <object>Account</object>
+            <viewAllRecords>false</viewAllRecords>
+        </objectPermission>
+        
+        <!-- Contact - Read Only Access (for their own contact record) -->
+        <objectPermission>
+            <allowCreate>false</allowCreate>
+            <allowDelete>false</allowDelete>
+            <allowEdit>false</allowEdit>
+            <allowRead>true</allowRead>
+            <modifyAllRecords>false</modifyAllRecords>
+            <object>Contact</object>
+            <viewAllRecords>false</viewAllRecords>
+        </objectPermission>
+    </objectPermissions>
+    
+    <!-- Field Permissions for Custom Fields -->
+    <fieldPermissions>
+        <!-- Product2 Custom Fields -->
+        <fieldPermission>
+            <editable>false</editable>
+            <field>Product2.Image_URL__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>false</editable>
+            <field>Product2.Stock_Quantity__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>false</editable>
+            <field>Product2.Is_Top_Seller__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        
+        <!-- Account Custom Fields -->
+        <fieldPermission>
+            <editable>false</editable>
+            <field>Account.Assigned_Price_Book_ID__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        
+        <!-- Cart__c Fields -->
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Cart__c.Contact__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Cart__c.Status__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>false</editable>
+            <field>Cart__c.Subtotal__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>false</editable>
+            <field>Cart__c.Total_Items__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        
+        <!-- Cart_Item__c Fields -->
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Cart_Item__c.Cart__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Cart_Item__c.Product__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Cart_Item__c.Quantity__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>false</editable>
+            <field>Cart_Item__c.Unit_Price__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>false</editable>
+            <field>Cart_Item__c.Line_Total__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        
+        <!-- Shipping_Address__c Fields -->
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Shipping_Address__c.Account__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Shipping_Address__c.Address_Label__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Shipping_Address__c.Street__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Shipping_Address__c.City__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Shipping_Address__c.State__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Shipping_Address__c.Postal_Code__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Shipping_Address__c.Country__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Shipping_Address__c.Is_Default__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        
+        <!-- View_Tracking__c Fields -->
+        <fieldPermission>
+            <editable>true</editable>
+            <field>View_Tracking__c.User_Contact__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>true</editable>
+            <field>View_Tracking__c.Product__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>true</editable>
+            <field>View_Tracking__c.Last_Viewed_Date__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        
+        <!-- Notification_Request__c Fields -->
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Notification_Request__c.User_Contact__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Notification_Request__c.Product__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+        <fieldPermission>
+            <editable>true</editable>
+            <field>Notification_Request__c.Status__c</field>
+            <readable>true</readable>
+        </fieldPermission>
+    </fieldPermissions>
+    
+    <!-- Tab Permissions -->
+    <tabPermissions>
+        <tabPermission>
+            <tab>Cart__c</tab>
+            <visibility>Visible</visibility>
+        </tabPermission>
+        <tabPermission>
+            <tab>Cart_Item__c</tab>
+            <visibility>Visible</visibility>
+        </tabPermission>
+        <tabPermission>
+            <tab>Shipping_Address__c</tab>
+            <visibility>Visible</visibility>
+        </tabPermission>
+        <tabPermission>
+            <tab>Product2</tab>
+            <visibility>Visible</visibility>
+        </tabPermission>
+        <tabPermission>
+            <tab>Orders</tab>
+            <visibility>Visible</visibility>
+        </tabPermission>
+    </tabPermissions>
+    
+    <!-- User Permissions -->
+    <userPermissions>
+        <!-- Allow users to view their own data -->
+        <userPermission>
+            <enabled>true</enabled>
+            <name>ViewMyTeamsDashboards</name>
+        </userPermission>
+        <userPermission>
+            <enabled>true</enabled>
+            <name>ViewMyDashboards</name>
+        </userPermission>
+        <userPermission>
+            <enabled>true</enabled>
+            <name>ViewMyReports</name>
+        </userPermission>
+    </userPermissions>
+</PermissionSet>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>CartUpdate</masterLabel>
+    <isExposed>true</isExposed>
+    <description>This channel is used to signal that the cart has been updated.</description>
+    <lightningMessageFields>
+        <fieldName>source</fieldName>
+        <description>Identifies the source component of the message.</description>
+    </lightningMessageFields>
+</LightningMessageChannel>

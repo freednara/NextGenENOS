@@ -1,0 +1,201 @@
+<template>
+    <!-- Loading State -->
+    <template if:false={product.data}>
+        <template if:false={product.error}>
+            <div class="slds-var-p-around_medium slds-text-align_center">
+                <lightning-spinner alternative-text="Loading product details..." size="medium"></lightning-spinner>
+                <p class="slds-var-p-top_medium">Loading product information...</p>
+            </div>
+        </template>
+    </template>
+
+    <!-- Error State -->
+    <template if:true={product.error}>
+        <lightning-card>
+            <div class="slds-var-p-around_medium slds-text-align_center">
+                <lightning-icon 
+                    icon-name="utility:error" 
+                    size="large" 
+                    alternative-text="Error"
+                    class="slds-var-m-bottom_medium">
+                </lightning-icon>
+                <h2 class="slds-text-heading_medium slds-var-m-bottom_small">Unable to Load Product</h2>
+                <p class="slds-text-body_regular slds-var-m-bottom_medium">
+                    {product.error.body.message}
+                </p>
+                <lightning-button 
+                    variant="neutral" 
+                    label="Go Back to Products" 
+                    onclick={handleGoBack}
+                    class="slds-var-m-top_small">
+                </lightning-button>
+            </div>
+        </lightning-card>
+    </template>
+
+    <!-- Product Detail Content -->
+    <template if:true={product.data}>
+        <lightning-card icon-name="standard:products">
+            <!-- Product Header -->
+            <div slot="title" class="product-header">
+                <h1 class="slds-text-heading_large slds-truncate" title={product.data.Name}>
+                    {product.data.Name}
+                </h1>
+            </div>
+            
+            <!-- Product Price in Actions Slot -->
+            <div slot="actions" class="product-price">
+                <template if:true={product.data.PricebookEntries}>
+                    <template if:true={product.data.PricebookEntries.records}>
+                        <template if:true={product.data.PricebookEntries.records.length}>
+                            <div class="price-display">
+                                <lightning-formatted-number
+                                    value={product.data.PricebookEntries.records[0].UnitPrice}
+                                    format-style="currency"
+                                    currency-code="USD"
+                                    class="slds-text-heading_large slds-text-color_success">
+                                </lightning-formatted-number>
+                            </div>
+                        </template>
+                    </template>
+                </template>
+                <template if:false={product.data.PricebookEntries}>
+                    <div class="price-unavailable">
+                        <span class="slds-text-color_weak">Price unavailable</span>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Product Content -->
+            <div class="slds-grid slds-wrap slds-var-p-around_medium">
+                <!-- Product Image Section -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_5-of-12 slds-var-p-bottom_medium">
+                    <div class="product-image-container">
+                        <template if:true={product.data.Image_URL__c}>
+                            <img 
+                                src={product.data.Image_URL__c} 
+                                alt={product.data.Name}
+                                class="product-image"
+                                onerror={handleImageError}
+                            />
+                        </template>
+                        <template if:false={product.data.Image_URL__c}>
+                            <div class="slds-var-p-around_large slds-text-align_center placeholder-image">
+                                <lightning-icon 
+                                    icon-name="standard:products" 
+                                    size="x-large" 
+                                    alternative-text="No Image Available">
+                                </lightning-icon>
+                                <p class="slds-var-p-top_small slds-text-color_weak">No image available</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Product Information Section -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_7-of-12 slds-var-p-left_medium">
+                    <!-- Product Description -->
+                    <div class="product-description slds-var-p-bottom_large">
+                        <h2 class="slds-text-heading_small slds-var-m-bottom_small">Product Description</h2>
+                        <template if:true={product.data.Description}>
+                            <p class="slds-text-body_regular slds-var-p-top_small">
+                                {product.data.Description}
+                            </p>
+                        </template>
+                        <template if:false={product.data.Description}>
+                            <p class="slds-text-color_weak slds-var-p-top_small">
+                                No description available for this product.
+                            </p>
+                        </template>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="product-details slds-var-p-bottom_large">
+                        <h2 class="slds-text-heading_small slds-var-m-bottom_small">Product Details</h2>
+                        <div class="slds-grid slds-wrap">
+                            <template if:true={product.data.Stock_Quantity__c}>
+                                <div class="slds-col slds-size_1-of-2 slds-var-p-bottom_small">
+                                    <span class="slds-text-title_caps slds-text-color_weak">Stock Quantity:</span>
+                                    <span class="slds-var-p-left_x-small slds-text-body_regular">
+                                        {product.data.Stock_Quantity__c}
+                                    </span>
+                                </div>
+                            </template>
+                            <template if:true={product.data.Is_Top_Seller__c}>
+                                <div class="slds-col slds-size_1-of-2 slds-var-p-bottom_small">
+                                    <span class="slds-text-title_caps slds-text-color_weak">Status:</span>
+                                    <span class="slds-var-p-left_x-small slds-text-body_regular">
+                                        <lightning-icon 
+                                            icon-name="utility:star" 
+                                            size="x-small" 
+                                            alternative-text="Top Seller"
+                                            class="slds-var-m-right_xx-small">
+                                        </lightning-icon>
+                                        Top Seller
+                                    </span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Add to Cart Section -->
+                    <div class="add-to-cart-section">
+                        <h2 class="slds-text-heading_small slds-var-m-bottom_small">Add to Cart</h2>
+                        
+                        <!-- Quantity Input -->
+                        <div class="quantity-input slds-var-m-bottom_medium">
+                            <lightning-input 
+                                type="number" 
+                                label="Quantity" 
+                                value={quantity}
+                                min="1" 
+                                step="1" 
+                                class="slds-size_1-of-4"
+                                onchange={handleQuantityChange}
+                                message-when-range-underflow="Quantity must be at least 1"
+                                message-when-range-overflow="Quantity cannot exceed available stock">
+                            </lightning-input>
+                        </div>
+
+                        <!-- Add to Cart Button -->
+                        <div class="add-to-cart-button">
+                            <lightning-button
+                                label="Add to Cart"
+                                variant="brand"
+                                icon-name="utility:cart"
+                                onclick={handleAddToCart}
+                                disabled={isAddingToCart}
+                                class="slds-var-m-top_medium">
+                            </lightning-button>
+                        </div>
+
+                        <!-- Stock Warning -->
+                        <template if:true={showStockWarning}>
+                            <div class="slds-var-p-top_small">
+                                <lightning-icon 
+                                    icon-name="utility:warning" 
+                                    size="x-small" 
+                                    alternative-text="Warning"
+                                    class="slds-var-m-right_xx-small">
+                                </lightning-icon>
+                                <span class="slds-text-color_warning slds-text-body_small">
+                                    Only {product.data.Stock_Quantity__c} items available
+                                </span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back to Products Link -->
+            <div slot="footer" class="slds-var-p-around_medium">
+                <lightning-button 
+                    variant="neutral" 
+                    label="← Back to Products" 
+                    onclick={handleGoBack}
+                    icon-name="utility:back">
+                </lightning-button>
+            </div>
+        </lightning-card>
+    </template>
+</template>

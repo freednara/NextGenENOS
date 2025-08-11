@@ -1,0 +1,140 @@
+<template>
+    <lightning-card title="Order History" icon-name="standard:orders">
+        <div slot="actions">
+            <lightning-button
+                label="Refresh"
+                variant="neutral"
+                icon-name="utility:refresh"
+                onclick={handleRefresh}
+                disabled={isLoading}>
+            </lightning-button>
+        </div>
+        
+        <div class="slds-var-p-around_medium">
+            
+            <!-- Loading State -->
+            <template if:true={isLoading}>
+                <div class="slds-var-p-around_large slds-text-align_center">
+                    <lightning-spinner alternative-text="Loading orders..." size="medium"></lightning-spinner>
+                    <p class="slds-var-p-top_medium slds-text-body_regular">Loading your order history...</p>
+                </div>
+            </template>
+
+            <!-- Error State -->
+            <template if:true={hasError}>
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                    <span class="slds-assistive-text">error</span>
+                    <lightning-icon icon-name="utility:error" alternative-text="Error" size="x-small" class="slds-var-m-right_x-small"></lightning-icon>
+                    <h2>{errorMessage}</h2>
+                    <div class="slds-notify__close">
+                        <lightning-button
+                            variant="bare"
+                            icon-name="utility:close"
+                            alternative-text="Close"
+                            onclick={handleRefresh}>
+                        </lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Orders Display -->
+            <template if:false={isLoading}>
+                <template if:true={hasOrders}>
+                    
+                    <!-- Order Summary Statistics -->
+                    <div class="slds-grid slds-wrap slds-var-m-bottom_large">
+                        <div class="slds-col slds-size_1-of-3 slds-var-p-around_small">
+                            <div class="slds-box slds-theme_shade slds-text-align_center">
+                                <h3 class="slds-text-heading_small slds-var-m-bottom_x-small">Total Orders</h3>
+                                <p class="slds-text-heading_large slds-text-color_success">{totalOrders}</p>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3 slds-var-p-around_small">
+                            <div class="slds-box slds-theme_shade slds-text-align_center">
+                                <h3 class="slds-text-heading_small slds-var-m-bottom_x-small">Total Value</h3>
+                                <p class="slds-text-heading_large slds-text-color_success">
+                                    <lightning-formatted-number
+                                        value={totalOrderValue}
+                                        format-style="currency"
+                                        currency-code="USD">
+                                    </lightning-formatted-number>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3 slds-var-p-around_small">
+                            <div class="slds-box slds-theme_shade slds-text-align_center">
+                                <h3 class="slds-text-heading_small slds-var-m-bottom_x-small">Average Order</h3>
+                                <p class="slds-text-heading_large slds-text-color_success">
+                                    <lightning-formatted-number
+                                        value={averageOrderValue}
+                                        format-style="currency"
+                                        currency-code="USD">
+                                    </lightning-formatted-number>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Orders Data Table -->
+                    <div class="slds-var-m-bottom_medium">
+                        <h3 class="slds-text-heading_medium slds-var-m-bottom_medium">Your Orders</h3>
+                        <lightning-datatable
+                            key-field="Id"
+                            data={orders}
+                            columns={columns}
+                            onrowselection={handleRowSelection}
+                            onsort={handleSort}
+                            hide-checkbox-column
+                            show-row-number-column
+                            sorted-by={defaultSortBy}
+                            sorted-direction={defaultSortDirection}>
+                        </lightning-datatable>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="slds-text-align_center slds-var-m-top_large">
+                        <lightning-button
+                            label="Continue Shopping"
+                            variant="brand"
+                            icon-name="utility:add"
+                            onclick={handleContinueShopping}
+                            class="slds-var-m-right_medium">
+                        </lightning-button>
+                        
+                        <lightning-button
+                            label="View All Orders"
+                            variant="neutral"
+                            icon-name="utility:list"
+                            onclick={handleRefresh}>
+                        </lightning-button>
+                    </div>
+
+                </template>
+
+                <!-- No Orders State -->
+                <template if:false={hasOrders}>
+                    <div class="slds-var-p-around_large slds-text-align_center">
+                        <lightning-icon 
+                            icon-name="standard:orders" 
+                            size="large" 
+                            alternative-text="No Orders"
+                            class="slds-var-m-bottom_medium">
+                        </lightning-icon>
+                        <h3 class="slds-text-heading_medium slds-var-m-bottom_small">No Orders Yet</h3>
+                        <p class="slds-text-body_regular slds-var-m-bottom_medium">
+                            You haven't placed any orders yet. Start shopping to see your order history here!
+                        </p>
+                        <lightning-button
+                            label="Start Shopping"
+                            variant="brand"
+                            icon-name="utility:add"
+                            onclick={handleContinueShopping}>
+                        </lightning-button>
+                    </div>
+                </template>
+
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

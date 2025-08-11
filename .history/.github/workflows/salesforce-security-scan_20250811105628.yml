@@ -1,0 +1,163 @@
+name: Salesforce Security & Code Quality Scan
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    name: Salesforce Code Analyzer Security Scan
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install Salesforce CLI
+      run: |
+        npm install -g @salesforce/cli
+        sfdx --version
+        
+    - name: Install Salesforce Code Analyzer
+      run: |
+        sfdx plugins:install @salesforce/sfdx-scanner
+        sfdx scanner:version
+        
+    - name: Run Security Scan
+      run: |
+        echo "🔍 Running Salesforce Code Analyzer Security Scan..."
+        sfdx scanner:run --target force-app/main/default/classes --format json --outfile security-scan-results.json
+        
+    - name: Run PMD Analysis
+      run: |
+        echo "🔍 Running PMD Code Analysis..."
+        sfdx scanner:run --target force-app/main/default/classes --engine pmd --format json --outfile pmd-results.json
+        
+    - name: Run ESLint Analysis
+      run: |
+        echo "🔍 Running ESLint Analysis for LWC..."
+        sfdx scanner:run --target force-app/main/default/lwc --engine eslint --format json --outfile eslint-results.json
+        
+    - name: Upload Security Scan Results
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-scan-results
+        path: |
+          security-scan-results.json
+          pmd-results.json
+          eslint-results.json
+        
+    - name: Check for Critical Security Issues
+      run: |
+        echo "🚨 Checking for critical security issues..."
+        if [ -f security-scan-results.json ]; then
+          CRITICAL_ISSUES=$(jq -r '.violations[] | select(.severity == 1) | .ruleName' security-scan-results.json | wc -l)
+          if [ "$CRITICAL_ISSUES" -gt 0 ]; then
+            echo "❌ CRITICAL: Found $CRITICAL_ISSUES security violations"
+            echo "Build blocked due to security issues"
+            exit 1
+          else
+            echo "✅ No critical security issues found"
+          fi
+        fi
+        
+    - name: Generate Security Report
+      run: |
+        echo "📊 Generating Security Report..."
+        if [ -f security-scan-results.json ]; then
+          TOTAL_VIOLATIONS=$(jq '.violations | length' security-scan-results.json)
+          HIGH_VIOLATIONS=$(jq -r '.violations[] | select(.severity == 2) | .ruleName' security-scan-results.json | wc -l)
+          MEDIUM_VIOLATIONS=$(jq -r '.violations[] | select(.severity == 3) | .ruleName' security-scan-results.json | wc -l)
+          LOW_VIOLATIONS=$(jq -r '.violations[] | select(.severity == 4) | .ruleName' security-scan-results.json | wc -l)
+          
+          echo "## 🔒 Security Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Violations:** $TOTAL_VIOLATIONS" >> $GITHUB_STEP_SUMMARY
+          echo "- **High Priority:** $HIGH_VIOLATIONS" >> $GITHUB_STEP_SUMMARY
+          echo "- **Medium Priority:** $MEDIUM_VIOLATIONS" >> $GITHUB_STEP_SUMMARY
+          echo "- **Low Priority:** $LOW_VIOLATIONS" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "$TOTAL_VIOLATIONS" -gt 0 ]; then
+            echo "### 🚨 Security Violations Found:" >> $GITHUB_STEP_SUMMARY
+            jq -r '.violations[] | "- **\(.severity):** \(.ruleName) - \(.message)"' security-scan-results.json >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ✅ No Security Violations Found" >> $GITHUB_STEP_SUMMARY
+          fi
+        fi
+
+  code-quality:
+    runs-on: ubuntu-latest
+    name: Code Quality & Style Check
+    needs: security-scan
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run Prettier check
+      run: npm run prettier:verify
+      
+    - name: Run ESLint check
+      run: npm run lint
+      
+    - name: Run unit tests
+      run: npm run test:unit
+      
+    - name: Generate coverage report
+      run: npm run test:unit:coverage
+      
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+
+  deployment-gate:
+    runs-on: ubuntu-latest
+    name: Deployment Gate Check
+    needs: [security-scan, code-quality]
+    
+    steps:
+    - name: Check Security Scan Results
+      run: |
+        echo "🔒 Checking security scan results..."
+        if [ -f security-scan-results.json ]; then
+          CRITICAL_ISSUES=$(jq -r '.violations[] | select(.severity == 1) | .ruleName' security-scan-results.json | wc -l)
+          if [ "$CRITICAL_ISSUES" -gt 0 ]; then
+            echo "❌ DEPLOYMENT BLOCKED: Critical security issues found"
+            exit 1
+          fi
+        fi
+        
+    - name: Check Code Quality Results
+      run: |
+        echo "📊 Checking code quality results..."
+        # Add any additional quality gates here
+        
+    - name: Deployment Approved
+      run: |
+        echo "✅ All security and quality checks passed"
+        echo "🚀 Deployment approved for production"
