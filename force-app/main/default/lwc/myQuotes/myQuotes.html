@@ -1,0 +1,162 @@
+<template>
+    <lightning-card title="My Quotes" icon-name="standard:quotes">
+        <div slot="actions">
+            <lightning-button 
+                label="Refresh" 
+                variant="neutral" 
+                icon-name="utility:refresh"
+                onclick={refreshQuotes}
+                disabled={isLoading}>
+            </lightning-button>
+            <lightning-button 
+                label="Create New Quote" 
+                variant="brand" 
+                icon-name="utility:add"
+                onclick={handleCreateNewQuote}
+                class="slds-var-m-left_small">
+            </lightning-button>
+        </div>
+
+        <div class="slds-var-p-around_medium">
+            
+            <!-- Loading State -->
+            <template if:true={isLoading}>
+                <div class="slds-var-p-around_medium slds-text-align_center">
+                    <lightning-spinner alternative-text="Loading quotes..." size="medium"></lightning-spinner>
+                    <p class="slds-var-p-top_medium">Loading your quotes...</p>
+                </div>
+            </template>
+
+            <!-- Error State -->
+            <template if:true={hasError}>
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                    <span class="slds-assistive-text">error</span>
+                    <lightning-icon icon-name="utility:error" alternative-text="Error" size="small"></lightning-icon>
+                    <h2>Unable to Load Quotes</h2>
+                    <p>{errorMessage}</p>
+                    <div class="slds-var-p-top_small">
+                        <lightning-button 
+                            variant="neutral" 
+                            label="Try Again" 
+                            onclick={refreshQuotes}
+                            class="slds-var-m-right_small">
+                        </lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Quotes Content -->
+            <template if:false={hasError}>
+                <template if:true={hasQuotes}>
+                    <!-- Quotes Summary -->
+                    <div class="slds-var-p-bottom_medium">
+                        <div class="slds-grid slds-wrap">
+                            <div class="slds-col slds-size_1-of-3 slds-var-p-bottom_small">
+                                <div class="slds-box slds-theme_shade slds-text-align_center">
+                                    <h3 class="slds-text-heading_small slds-var-m-bottom_x-small">Total Quotes</h3>
+                                    <p class="slds-text-heading_large slds-text-color_success">{totalQuotes}</p>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-3 slds-var-p-bottom_small">
+                                <div class="slds-box slds-theme_shade slds-text-align_center">
+                                    <h3 class="slds-text-heading_small slds-var-m-bottom_x-small">Total Value</h3>
+                                    <p class="slds-text-heading_large slds-text-color_success">
+                                        <lightning-formatted-number
+                                            value={totalValue}
+                                            format-style="currency"
+                                            currency-code="USD">
+                                        </lightning-formatted-number>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-3 slds-var-p-bottom_small">
+                                <div class="slds-box slds-theme_shade slds-text-align_center">
+                                    <h3 class="slds-text-heading_small slds-var-m-bottom_x-small">Status Breakdown</h3>
+                                    <template for:each={quotesByStatus} for:key="status">
+                                        <div class="slds-var-p-bottom_xx-small">
+                                            <span class="slds-text-body_small">{key}: {value}</span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quotes Table -->
+                    <div class="quotes-table-container">
+                        <lightning-datatable
+                            key-field="Id"
+                            data={quotes}
+                            columns={columns}
+                            hide-checkbox-column
+                            show-row-number-column="false"
+                            sorted-by="CreatedDate"
+                            sorted-direction="desc"
+                            onrowselection={handleRowSelection}
+                            onrowaction={handleRowAction}>
+                        </lightning-datatable>
+                    </div>
+
+                    <!-- Quotes Instructions -->
+                    <div class="slds-var-p-top_medium">
+                        <div class="slds-box slds-theme_shade slds-var-p-around_small">
+                            <h3 class="slds-text-heading_small slds-var-m-bottom_small">Quote Management Tips:</h3>
+                            <ul class="slds-list_dotted">
+                                <li>Quotes are automatically created when you convert your shopping cart</li>
+                                <li>All quotes expire after 30 days from creation</li>
+                                <li>Use the refresh button to get the latest quote status updates</li>
+                                <li>Contact your sales representative for quote modifications</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </template>
+
+                <!-- Empty Quotes State -->
+                <template if:false={hasQuotes}>
+                    <div class="slds-var-p-around_large slds-text-align_center empty-quotes">
+                        <lightning-icon 
+                            icon-name="standard:quotes" 
+                            size="x-large" 
+                            alternative-text="No Quotes"
+                            class="slds-var-m-bottom_medium">
+                        </lightning-icon>
+                        
+                        <h2 class="slds-text-heading_medium slds-var-m-bottom_small">No quotes found</h2>
+                        
+                        <p class="slds-text-body_regular slds-var-m-bottom_large slds-text-color_weak">
+                            You haven't created any quotes yet. Start by adding items to your cart and requesting a quote.
+                        </p>
+                        
+                        <div class="slds-var-m-bottom_medium">
+                            <lightning-button 
+                                label="Start Shopping" 
+                                variant="brand" 
+                                icon-name="utility:add"
+                                class="slds-var-m-right_small">
+                            </lightning-button>
+                            
+                            <lightning-button 
+                                label="Create Quote" 
+                                variant="neutral" 
+                                icon-name="utility:quotes"
+                                onclick={handleCreateNewQuote}>
+                            </lightning-button>
+                        </div>
+                        
+                        <div class="slds-box slds-theme_shade slds-var-p-around_small">
+                            <h3 class="slds-text-heading_small slds-var-m-bottom_small">How to Get a Quote:</h3>
+                            <ol class="slds-list_ordered">
+                                <li>Browse our product catalog and add items to your cart</li>
+                                <li>Review your cart and click "Request a Quote"</li>
+                                <li>Your cart will be converted to a formal quote</li>
+                                <li>Our sales team will review and contact you</li>
+                            </ol>
+                        </div>
+                    </div>
+                </template>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

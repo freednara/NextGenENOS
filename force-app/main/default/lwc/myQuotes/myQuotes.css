@@ -1,0 +1,154 @@
+/**
+ * @description CSS styles for the My Quotes component.
+ * 
+ * This file provides styling for the quotes display interface,
+ * including the data table, summary cards, and responsive design.
+ * 
+ * @author StoreConnect Development Team
+ * @version 1.0.0
+ * @since 2024-12-01
+ */
+
+/* Quotes Table Container */
+.quotes-table-container {
+    margin: 1rem 0;
+}
+
+/* Summary Cards */
+.slds-box.slds-theme_shade {
+    background: #f8f9fa;
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    height: 100%;
+}
+
+.slds-box.slds-theme_shade h3 {
+    color: #16325c;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.slds-box.slds-theme_shade p {
+    color: #04844b;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Empty State Styling */
+.empty-quotes {
+    padding: 2rem;
+}
+
+.empty-quotes lightning-icon {
+    color: #706e6b;
+}
+
+.empty-quotes h2 {
+    color: #16325c;
+    margin-bottom: 1rem;
+}
+
+.empty-quotes p {
+    color: #706e6b;
+    margin-bottom: 2rem;
+}
+
+/* Instructions Box */
+.empty-quotes .slds-box {
+    background: #f8f9fa;
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    margin-top: 1rem;
+}
+
+.empty-quotes .slds-box h3 {
+    color: #16325c;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.empty-quotes .slds-list_ordered li {
+    color: #706e6b;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .slds-grid.slds-wrap .slds-col {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-quotes {
+        padding: 1rem;
+    }
+    
+    .empty-quotes .slds-var-m-bottom_medium {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Loading and Error States */
+.slds-spinner_container {
+    margin: 2rem 0;
+}
+
+.slds-notify_alert {
+    border-radius: 0.25rem;
+    margin: 1rem 0;
+}
+
+/* Action Buttons */
+.slds-var-m-left_small {
+    margin-left: 0.5rem;
+}
+
+.slds-var-m-bottom_medium {
+    margin-bottom: 1rem;
+}
+
+.slds-var-m-bottom_small {
+    margin-bottom: 0.5rem;
+}
+
+.slds-var-m-bottom_x-small {
+    margin-bottom: 0.25rem;
+}
+
+.slds-var-p-around_medium {
+    padding: 1rem;
+}
+
+.slds-var-p-around_small {
+    padding: 0.75rem;
+}
+
+.slds-var-p-around_large {
+    padding: 2rem;
+}
+
+.slds-var-p-bottom_medium {
+    padding-bottom: 1rem;
+}
+
+.slds-var-p-top_medium {
+    padding-top: 1rem;
+}
+
+.slds-var-p-top_small {
+    padding-top: 0.5rem;
+}
+
+.slds-var-p-top_large {
+    padding-top: 2rem;
+}
+
+.slds-text-align_center {
+    text-align: center;
+}
+
+.slds-text-align_right {
+    text-align: right;
+}

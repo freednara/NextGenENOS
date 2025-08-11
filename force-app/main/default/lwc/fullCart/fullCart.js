@@ -7,6 +7,7 @@ import CART_UPDATE_CHANNEL from '@salesforce/messageChannel/CartUpdate__c';
 import getCartItems from '@salesforce/apex/CartController.getCartItems';
 import updateItemQuantity from '@salesforce/apex/CartController.updateItemQuantity';
 import deleteCartItem from '@salesforce/apex/CartController.deleteCartItem';
+import createQuoteFromCart from '@salesforce/apex/QuoteService.createQuoteFromCart';
 
 /**
  * @description Full Cart component for comprehensive cart management.
@@ -287,6 +288,35 @@ export default class FullCart extends NavigationMixin(LightningElement) {
     handleContinueShopping() {
         // TODO: Implement navigation to product catalog
         this.showInfoToast('Navigation', 'Continue shopping functionality will be implemented.');
+    }
+
+    /**
+     * @description Handles the request quote button click.
+     * Converts the current cart to a formal quote and cleans up the cart.
+     */
+    handleRequestQuote() {
+        if (this.isCartEmpty) {
+            this.showErrorToast('Empty Cart', 'Cannot create quote from empty cart.');
+            return;
+        }
+
+        this.isLoading = true;
+        
+        // Get the cart ID from the first cart item
+        const cartId = this.cartItems[0].Cart__c;
+        
+        createQuoteFromCart({ cartId: cartId })
+            .then(quoteId => {
+                this.showSuccessToast('Quote Created', 'Your quote has been created successfully! Quote ID: ' + quoteId);
+                this.refreshCart(); // Refresh cart, which will now be empty
+            })
+            .catch(error => {
+                this.showErrorToast('Quote Creation Failed', error.body ? error.body.message : 'Unable to create quote from cart.');
+                console.error('Error creating quote:', error);
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
     }
 
     /**
