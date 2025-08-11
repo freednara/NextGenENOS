@@ -12,10 +12,14 @@ public with sharing class ProductController {
 
     /**
      * @description Fetches a list of active products for display in the store.
+     * **UPDATED** to support contract pricing via custom Price Books.
      * This method is cacheable to improve performance and reduce server calls.
      * 
      * Security: Uses SecurityUtils.checkFieldReadAccess() to validate FLS permissions
      * before executing any queries. This ensures compliance with AppExchange standards.
+     * 
+     * Contract Pricing: Automatically detects the user's assigned price book from their Account
+     * and displays negotiated contract prices instead of standard list prices.
      * 
      * @return A list of Product2 records with their associated PricebookEntry data.
      * @throws AuraHandledException if the user lacks permission to read required fields.
@@ -48,15 +52,32 @@ public with sharing class ProductController {
                 'Pricebook2Id'
             });
 
-            // 3. If security checks pass, execute the query.
-            // We query the standard price book for now. Contract pricing will be added later.
-            // The query is optimized with proper WHERE clauses and LIMIT to respect governor limits.
+            // ** START: NEW LOGIC FOR CONTRACT PRICING **
+            Id pricebookIdToUse;
+            Id userAccountId = [SELECT AccountId FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1].AccountId;
+
+            if (userAccountId != null) {
+                // Check the user's Account for an assigned price book ID.
+                Account userAccount = [SELECT Assigned_Price_Book_ID__c FROM Account WHERE Id = :userAccountId LIMIT 1];
+                if (String.isNotBlank(userAccount.Assigned_Price_Book_ID__c)) {
+                    pricebookIdToUse = userAccount.Assigned_Price_Book_ID__c;
+                }
+            }
+
+            // If no custom price book is assigned, default to the standard one.
+            if (pricebookIdToUse == null) {
+                pricebookIdToUse = Test.getStandardPricebookId();
+            }
+            // ** END: NEW LOGIC FOR CONTRACT PRICING **
+
+            // 3. ** MODIFIED QUERY ** - Now uses dynamic pricebookIdToUse variable.
+            // The subquery dynamically selects the correct price book for contract pricing.
             List<Product2> products = [
                 SELECT
                     Id, Name, Description, Image_URL__c, IsActive,
                     (SELECT UnitPrice, IsActive, Pricebook2Id 
                      FROM PricebookEntries 
-                     WHERE Pricebook2.IsStandard = true 
+                     WHERE Pricebook2Id = :pricebookIdToUse 
                      AND IsActive = true 
                      LIMIT 1)
                 FROM Product2
@@ -88,9 +109,12 @@ public with sharing class ProductController {
 
     /**
      * @description Fetches a single product by ID for detailed product views.
+     * **UPDATED** to support contract pricing via custom Price Books.
      * This method is used when users click on a product to see more details.
      * 
      * Security: Implements the same security pattern as getProducts().
+     * Contract Pricing: Automatically detects the user's assigned price book from their Account
+     * and displays negotiated contract prices instead of standard list prices.
      * 
      * @param productId The ID of the product to retrieve.
      * @return A single Product2 record with full details and pricing.
@@ -123,14 +147,33 @@ public with sharing class ProductController {
                 'Pricebook2Id'
             });
 
-            // 4. Execute the query with proper error handling.
+            // ** START: NEW LOGIC FOR CONTRACT PRICING **
+            Id pricebookIdToUse;
+            Id userAccountId = [SELECT AccountId FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1].AccountId;
+
+            if (userAccountId != null) {
+                // Check the user's Account for an assigned price book ID.
+                Account userAccount = [SELECT Assigned_Price_Book_ID__c FROM Account WHERE Id = :userAccountId LIMIT 1];
+                if (String.isNotBlank(userAccount.Assigned_Price_Book_ID__c)) {
+                    pricebookIdToUse = userAccount.Assigned_Price_Book_ID__c;
+                }
+            }
+
+            // If no custom price book is assigned, default to the standard one.
+            if (pricebookIdToUse == null) {
+                pricebookIdToUse = Test.getStandardPricebookId();
+            }
+            // ** END: NEW LOGIC FOR CONTRACT PRICING **
+
+            // 4. ** MODIFIED QUERY ** - Now uses dynamic pricebookIdToUse variable.
+            // The subquery dynamically selects the correct price book for contract pricing.
             List<Product2> products = [
                 SELECT
                     Id, Name, Description, Image_URL__c, IsActive,
                     Stock_Quantity__c, Is_Top_Seller__c,
                     (SELECT UnitPrice, IsActive, Pricebook2Id 
                      FROM PricebookEntries 
-                     WHERE Pricebook2.IsStandard = true 
+                     WHERE Pricebook2Id = :pricebookIdToUse 
                      AND IsActive = true 
                      LIMIT 1)
                 FROM Product2
@@ -163,9 +206,12 @@ public with sharing class ProductController {
 
     /**
      * @description Searches products by name or description for the search functionality.
+     * **UPDATED** to support contract pricing via custom Price Books.
      * This method supports the product search feature in the LWC.
      * 
      * Security: Implements the same security pattern as other methods.
+     * Contract Pricing: Automatically detects the user's assigned price book from their Account
+     * and displays negotiated contract prices instead of standard list prices.
      * 
      * @param searchTerm The search term to look for in product names and descriptions.
      * @return A list of Product2 records matching the search criteria.
@@ -200,13 +246,32 @@ public with sharing class ProductController {
                 'Pricebook2Id'
             });
 
-            // 5. Execute the search query with proper escaping.
+            // ** START: NEW LOGIC FOR CONTRACT PRICING **
+            Id pricebookIdToUse;
+            Id userAccountId = [SELECT AccountId FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1].AccountId;
+
+            if (userAccountId != null) {
+                // Check the user's Account for an assigned price book ID.
+                Account userAccount = [SELECT Assigned_Price_Book_ID__c FROM Account WHERE Id = :userAccountId LIMIT 1];
+                if (String.isNotBlank(userAccount.Assigned_Price_Book_ID__c)) {
+                    pricebookIdToUse = userAccount.Assigned_Price_Book_ID__c;
+                }
+            }
+
+            // If no custom price book is assigned, default to the standard one.
+            if (pricebookIdToUse == null) {
+                pricebookIdToUse = Test.getStandardPricebookId();
+            }
+            // ** END: NEW LOGIC FOR CONTRACT PRICING **
+
+            // 5. ** MODIFIED QUERY ** - Now uses dynamic pricebookIdToUse variable.
+            // The subquery dynamically selects the correct price book for contract pricing.
             List<Product2> products = [
                 SELECT
                     Id, Name, Description, Image_URL__c, IsActive,
                     (SELECT UnitPrice, IsActive, Pricebook2Id 
                      FROM PricebookEntries 
-                     WHERE Pricebook2.IsStandard = true 
+                     WHERE Pricebook2Id = :pricebookIdToUse 
                      AND IsActive = true 
                      LIMIT 1)
                 FROM Product2
