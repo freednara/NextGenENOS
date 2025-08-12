@@ -33,6 +33,14 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
+    <variables>
+        <name>selectedAddress</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Shipping_Address__c</objectType>
+    </variables>
     <recordLookups>
         <name>Get_Current_User_Account</name>
         <label>Get Current User Account</label>
