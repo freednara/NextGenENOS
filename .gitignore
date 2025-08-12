@@ -62,6 +62,31 @@ temp/
 *.backup
 *.orig
 
+# Editor history and backup files
+.history/
+*_2025*.cls
+*_2025*.xml
+*_2025*.html
+*_2025*.js
+*_2025*.css
+*_2025*.md
+
+# Timestamped backup files (any year)
+*_20*.cls
+*_20*.xml
+*_20*.html
+*_20*.js
+*_20*.css
+*_20*.md
+
+# Additional backup patterns
+*_2025*.cls
+*_2025*.xml
+*_2025*.html
+*_2025*.js
+*_2025*.css
+*_2025*.md
+
 # ========================================
 # TESTING AND COVERAGE
 # ========================================
