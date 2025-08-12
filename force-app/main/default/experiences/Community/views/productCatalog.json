@@ -1,0 +1,14 @@
+{
+  "id": "productCatalog",
+  "label": "Product Catalog",
+  "viewType": "custom",
+  "regions": [
+    {
+      "id": "content",
+      "regionType": "main",
+      "components": [
+        { "id": "productCatalogComp", "componentName": "c__productCatalog", "type": "LWC" }
+      ]
+    }
+  ]
+}

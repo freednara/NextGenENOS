@@ -1,0 +1,7 @@
+{
+  "id": "orderHistory",
+  "label": "Order History",
+  "routeType": "Custom",
+  "urlPrefix": "orders",
+  "activeViewId": "orderHistory"
+}

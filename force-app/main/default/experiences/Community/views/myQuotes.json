@@ -1,0 +1,14 @@
+{
+  "id": "myQuotes",
+  "label": "My Quotes",
+  "viewType": "custom",
+  "regions": [
+    {
+      "id": "content",
+      "regionType": "main",
+      "components": [
+        { "id": "myQuotesComp", "componentName": "c__myQuotes", "type": "LWC" }
+      ]
+    }
+  ]
+}
