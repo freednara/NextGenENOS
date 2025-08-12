@@ -259,15 +259,72 @@ public with sharing class StoreConnectController {
                 Product__c = productId,
                 Last_Viewed_Date__c = System.now()
             );
-            
+
             upsert viewTracking;
-            
+
         } catch (Exception e) {
             // Don't throw error for tracking - just log it
             System.debug('Error tracking product view: ' + e.getMessage());
         }
     }
-    
+
+    /**
+     * @description Retrieves the last 5 products viewed by the current user
+     * @return List of recently viewed Product2 records
+     * @throws AuraHandledException if operation fails or security check fails
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<Product2> getRecentlyViewed() {
+        try {
+            // Security: Check object and field level permissions
+            if (!StoreConnectSecurityUtil.hasReadPermission('View_Tracking__c') ||
+                !StoreConnectSecurityUtil.hasReadPermission('Product2') ||
+                !StoreConnectSecurityUtil.hasReadPermission('PricebookEntry')) {
+                throw new SecurityException('User lacks permission to view recently viewed products');
+            }
+
+            if (!StoreConnectSecurityUtil.hasFieldReadPermission('Product2', 'Name') ||
+                !StoreConnectSecurityUtil.hasFieldReadPermission('Product2', 'ProductCode') ||
+                !StoreConnectSecurityUtil.hasFieldReadPermission('Product2', 'Image_URL__c') ||
+                !StoreConnectSecurityUtil.hasFieldReadPermission('PricebookEntry', 'UnitPrice')) {
+                throw new SecurityException('User lacks permission to view required product fields');
+            }
+
+            Id userId = UserInfo.getUserId();
+
+            List<View_Tracking__c> tracking = [
+                SELECT Product__c, Last_Viewed_Date__c
+                FROM View_Tracking__c
+                WHERE CreatedById = :userId
+                ORDER BY Last_Viewed_Date__c DESC
+                LIMIT 5
+            ];
+
+            Set<Id> productIds = new Set<Id>();
+            for (View_Tracking__c vt : tracking) {
+                productIds.add(vt.Product__c);
+            }
+
+            if (productIds.isEmpty()) {
+                return new List<Product2>();
+            }
+
+            List<Product2> products = [
+                SELECT Id, Name, ProductCode, Image_URL__c,
+                       (SELECT UnitPrice FROM PricebookEntries WHERE IsActive = true AND Pricebook2.IsStandard = true LIMIT 1)
+                FROM Product2
+                WHERE Id IN :productIds
+            ];
+
+            return products;
+
+        } catch (StoreConnectSecurityUtil.SecurityException e) {
+            throw new AuraHandledException('Security violation: ' + e.getMessage());
+        } catch (Exception e) {
+            throw new AuraHandledException('Error retrieving recently viewed products: ' + e.getMessage());
+        }
+    }
+
     // Request back-in-stock notification
     @AuraEnabled
     public static void requestBackInStockNotification(Id contactId, Id productId) {
