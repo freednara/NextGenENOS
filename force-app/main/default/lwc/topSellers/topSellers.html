@@ -1,0 +1,126 @@
+<template>
+    <lightning-card title="Top Sellers" icon-name="standard:top">
+        <div slot="actions">
+            <lightning-button 
+                label="Refresh" 
+                variant="neutral" 
+                icon-name="utility:refresh"
+                onclick={refreshTopSellers}
+                disabled={isLoading}>
+            </lightning-button>
+        </div>
+
+        <div class="slds-var-p-around_medium">
+            
+            <!-- Loading State -->
+            <template if:true={isLoading}>
+                <div class="slds-var-p-around_medium slds-text-align_center">
+                    <lightning-spinner alternative-text="Loading top sellers..." size="medium"></lightning-spinner>
+                    <p class="slds-var-p-top_medium">Loading top sellers...</p>
+                </div>
+            </template>
+
+            <!-- Error State -->
+            <template if:true={hasError}>
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                    <span class="slds-assistive-text">error</span>
+                    <lightning-icon icon-name="utility:error" alternative-text="Error" size="small"></lightning-icon>
+                    <h2>Unable to Load Top Sellers</h2>
+                    <p>{errorMessage}</p>
+                    <div class="slds-var-p-top_small">
+                        <lightning-button 
+                            variant="neutral" 
+                            label="Try Again" 
+                            onclick={refreshTopSellers}
+                            class="slds-var-m-right_small">
+                        </lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Top Sellers Content -->
+            <template if:false={hasError}>
+                <template if:true={hasTopSellers}>
+                    <!-- Top Sellers Grid -->
+                    <div class="top-sellers-grid">
+                        <template for:each={topSellers} for:item="product" for:index="index">
+                            <div key={product.Id} class="product-card" data-product-id={product.Id} onclick={handleProductClick}>
+                                <div class="product-image-container">
+                                    <template if:true={product.Image_URL__c}>
+                                        <img src={product.Image_URL__c} alt={product.Name} class="product-image" />
+                                    </template>
+                                    <template if:false={product.Image_URL__c}>
+                                        <div class="product-image-placeholder">
+                                            <lightning-icon icon-name="standard:products" size="large" alternative-text="Product"></lightning-icon>
+                                        </div>
+                                    </template>
+                                    <div class="top-seller-badge">
+                                        <lightning-icon icon-name="utility:top" size="x-small" alternative-text="Top Seller"></lightning-icon>
+                                        <span>Top Seller</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="product-info">
+                                    <h3 class="product-name">{product.Name}</h3>
+                                    <template if:true={product.PricebookEntries}>
+                                        <p class="product-price">
+                                            <lightning-formatted-number
+                                                value={product.PricebookEntries.records[0].UnitPrice}
+                                                format-style="currency"
+                                                currency-code="USD">
+                                            </lightning-formatted-number>
+                                        </p>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Top Sellers Info -->
+                    <div class="slds-var-p-top_medium">
+                        <div class="slds-box slds-theme_shade slds-var-p-around_small">
+                            <h3 class="slds-text-heading_small slds-var-m-bottom_small">About Top Sellers:</h3>
+                            <ul class="slds-list_dotted">
+                                <li>Products are ranked based on order frequency from the last 90 days</li>
+                                <li>Updated automatically by our recommendation engine</li>
+                                <li>Click on any product to view details and add to cart</li>
+                                <li>Top sellers are refreshed weekly for optimal accuracy</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </template>
+
+                <!-- Empty Top Sellers State -->
+                <template if:false={hasTopSellers}>
+                    <div class="slds-var-p-around_large slds-text-align_center empty-top-sellers">
+                        <lightning-icon 
+                            icon-name="standard:top" 
+                            size="x-large" 
+                            alternative-text="No Top Sellers"
+                            class="slds-var-m-bottom_medium">
+                        </lightning-icon>
+                        
+                        <h2 class="slds-text-heading_medium slds-var-m-bottom_small">No top sellers available</h2>
+                        
+                        <p class="slds-text-body_regular slds-var-m-bottom_large slds-text-color_weak">
+                            Top sellers are calculated based on order frequency and will appear here once data is available.
+                        </p>
+                        
+                        <div class="slds-box slds-theme_shade slds-var-p-around_small">
+                            <h3 class="slds-text-heading_small slds-var-m-bottom_small">How Top Sellers Work:</h3>
+                            <ol class="slds-list_ordered">
+                                <li>Our system analyzes order data from the last 90 days</li>
+                                <li>Products are ranked by frequency of orders</li>
+                                <li>The top 200 products are flagged as top sellers</li>
+                                <li>This list is updated automatically on a weekly basis</li>
+                            </ol>
+                        </div>
+                    </div>
+                </template>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>
+

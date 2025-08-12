@@ -1,0 +1,307 @@
+/**
+ * @description CSS styles for the Top Sellers component.
+ * 
+ * This file provides styling for the top sellers display interface,
+ * including responsive grid layout and product card design.
+ * 
+ * @author StoreConnect Development Team
+ * @version 1.0.0
+ * @since 2024-12-01
+ */
+
+/* Top Sellers Grid Layout */
+.top-sellers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 1rem 0;
+}
+
+/* Product Card Styling */
+.product-card {
+    background: #ffffff;
+    border: 1px solid #dddbda;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #0070d2;
+}
+
+.product-card:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Product Image Container */
+.product-image-container {
+    position: relative;
+    margin-bottom: 1rem;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    background: #f8f9fa;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0.25rem;
+}
+
+.product-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 200px;
+    background: #f8f9fa;
+    color: #706e6b;
+}
+
+/* Top Seller Badge */
+.top-seller-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: #04844b;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.top-seller-badge lightning-icon {
+    color: white;
+}
+
+/* Product Information */
+.product-info {
+    text-align: center;
+}
+
+.product-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #16325c;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-price {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #04844b;
+    margin: 0;
+}
+
+/* Empty State Styling */
+.empty-top-sellers {
+    padding: 2rem;
+}
+
+.empty-top-sellers lightning-icon {
+    color: #706e6b;
+}
+
+.empty-top-sellers h2 {
+    color: #16325c;
+    margin-bottom: 1rem;
+}
+
+.empty-top-sellers p {
+    color: #706e6b;
+    margin-bottom: 2rem;
+}
+
+/* Instructions Box */
+.empty-top-sellers .slds-box {
+    background: #f8f9fa;
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    margin-top: 1rem;
+}
+
+.empty-top-sellers .slds-box h3 {
+    color: #16325c;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.empty-top-sellers .slds-list_ordered li {
+    color: #706e6b;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .top-sellers-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .product-card {
+        padding: 0.75rem;
+    }
+    
+    .product-image-container {
+        min-height: 150px;
+    }
+    
+    .product-image {
+        height: 150px;
+    }
+    
+    .product-image-placeholder {
+        height: 150px;
+    }
+    
+    .empty-top-sellers {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .top-sellers-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .product-card {
+        padding: 0.5rem;
+    }
+    
+    .product-name {
+        font-size: 0.875rem;
+    }
+    
+    .product-price {
+        font-size: 1rem;
+    }
+}
+
+/* Loading and Error States */
+.slds-spinner_container {
+    margin: 2rem 0;
+}
+
+.slds-notify_alert {
+    border-radius: 0.25rem;
+    margin: 1rem 0;
+}
+
+/* Action Buttons */
+.slds-var-m-right_small {
+    margin-right: 0.5rem;
+}
+
+.slds-var-m-bottom_small {
+    margin-bottom: 0.5rem;
+}
+
+.slds-var-m-bottom_medium {
+    margin-bottom: 1rem;
+}
+
+.slds-var-m-bottom_large {
+    margin-bottom: 2rem;
+}
+
+.slds-var-p-around_medium {
+    padding: 1rem;
+}
+
+.slds-var-p-around_small {
+    padding: 0.75rem;
+}
+
+.slds-var-p-around_large {
+    padding: 2rem;
+}
+
+.slds-var-p-top_medium {
+    padding-top: 1rem;
+}
+
+.slds-var-p-top_small {
+    padding-top: 0.5rem;
+}
+
+.slds-text-align_center {
+    text-align: center;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .product-card {
+        border-width: 2px;
+    }
+    
+    .product-card:hover {
+        border-width: 3px;
+    }
+    
+    .top-seller-badge {
+        border: 2px solid #ffffff;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .product-card {
+        transition: none;
+    }
+    
+    .product-card:hover {
+        transform: none;
+    }
+}
+
+/* Focus States for Accessibility */
+.product-card:focus {
+    outline: 2px solid #0070d2;
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+}
+
+.product-card:focus-within {
+    outline: 2px solid #0070d2;
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+}
+
+/* Print Styles */
+@media print {
+    .product-card {
+        break-inside: avoid;
+        border: 1px solid #000000;
+        box-shadow: none;
+    }
+    
+    .top-seller-badge {
+        background: #000000 !important;
+        color: #ffffff !important;
+    }
+}
+
