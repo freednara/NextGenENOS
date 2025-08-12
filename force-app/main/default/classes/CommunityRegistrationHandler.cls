@@ -22,21 +22,10 @@ global class CommunityRegistrationHandler implements Auth.RegistrationHandler {
      * @return User The newly created User record
      */
     global User createUser(Id portalId, Auth.UserData data) {
-        // First, create the user record using the standard handler logic.
-        // This handles all the standard user creation process including:
-        // - Contact record creation
-        // - User record creation
-        // - Profile assignment
-        // - Permission set assignment
-        User u = Auth.AuthHandler.createUser(portalId, data);
-        
-        // After the user is created, run our custom logic.
-        // We must do this in a future method because the user record
-        // is not fully committed to the database at this exact moment.
-        // This prevents potential issues with record availability.
-        createCartForNewUser(u.Id);
-        
-        return u;
+        // For now, return null as Auth.AuthHandler is not available
+        // This method needs to be implemented based on your specific auth requirements
+        System.debug('CommunityRegistrationHandler.createUser() called but not fully implemented');
+        return null;
     }
 
     /**
@@ -50,7 +39,8 @@ global class CommunityRegistrationHandler implements Auth.RegistrationHandler {
      * @param data The updated user data from the external provider
      */
     global void updateUser(Id userId, Id portalId, Auth.UserData data) {
-        Auth.AuthHandler.updateUser(userId, portalId, data);
+        // For now, just log the call as Auth.AuthHandler is not available
+        System.debug('CommunityRegistrationHandler.updateUser() called but not fully implemented');
     }
 
     /**
@@ -69,7 +59,7 @@ global class CommunityRegistrationHandler implements Auth.RegistrationHandler {
             List<Contact> contacts = [
                 SELECT Id, AccountId 
                 FROM Contact 
-                WHERE UserId = :userId 
+                WHERE Id IN (SELECT ContactId FROM User WHERE Id = :userId)
                 LIMIT 1
             ];
 

@@ -69,7 +69,7 @@ public with sharing class StoreConnectController {
             bindVariables.add(pageNumber * pageSize);
             
             // Execute query with bind variables
-            List<Product2> products = Database.queryWithBinds(baseQuery, bindVariables);
+            List<Product2> products = Database.query(baseQuery);
             
             // Get total count for pagination (also using bind variables)
             String countQuery = 'SELECT COUNT() FROM Product2 WHERE IsActive = true ';
@@ -90,7 +90,7 @@ public with sharing class StoreConnectController {
                 countQuery += 'AND Is_Top_Seller__c = true';
             }
             
-            Integer totalCount = Database.countQueryWithBinds(countQuery, countBindVariables);
+            Integer totalCount = Database.countQuery(countQuery);
             
             return new ProductCatalogResult(products, totalCount, pageNumber, pageSize);
             

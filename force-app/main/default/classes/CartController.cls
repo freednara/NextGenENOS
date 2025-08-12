@@ -694,9 +694,9 @@ public with sharing class CartController {
         @AuraEnabled public Id cartId;
         @AuraEnabled public List<CartItemWrapper> cartItems;
         @AuraEnabled public Decimal subtotal;
-        @AuraEnabled public Integer totalItems;
+        @AuraEnabled public Decimal totalItems;
 
-        public CartWrapper(Id cartId, List<CartItemWrapper> cartItems, Decimal subtotal, Integer totalItems) {
+        public CartWrapper(Id cartId, List<CartItemWrapper> cartItems, Decimal subtotal, Decimal totalItems) {
             this.cartId = cartId;
             this.cartItems = cartItems;
             this.subtotal = subtotal;
@@ -713,12 +713,12 @@ public with sharing class CartController {
         @AuraEnabled public Id productId;
         @AuraEnabled public String productName;
         @AuraEnabled public String productImageUrl;
-        @AuraEnabled public Integer quantity;
+        @AuraEnabled public Decimal quantity;
         @AuraEnabled public Decimal unitPrice;
         @AuraEnabled public Decimal lineTotal;
 
         public CartItemWrapper(Id cartItemId, Id productId, String productName, String productImageUrl, 
-                             Integer quantity, Decimal unitPrice, Decimal lineTotal) {
+                             Decimal quantity, Decimal unitPrice, Decimal lineTotal) {
             this.cartItemId = cartItemId;
             this.productId = productId;
             this.productName = productName;

@@ -2,7 +2,7 @@ import { LightningElement, api, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 // Import LMS resources
 import { publish, MessageContext } from 'lightning/messageService';
-import CART_UPDATE_CHANNEL from '@salesforce/messageChannel/CartUpdate__c';
+import CART_UPDATE_CHANNEL from '@salesforce/messageChannel/CartUpdate';
 // Import Apex
 import getProductById from '@salesforce/apex/ProductController.getProductById';
 import addItemToCart from '@salesforce/apex/CartController.addItemToCart';

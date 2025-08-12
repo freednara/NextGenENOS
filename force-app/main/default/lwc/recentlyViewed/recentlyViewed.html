@@ -62,10 +62,10 @@
                                 
                                 <div class="product-info">
                                     <h3 class="product-name">{product.Name}</h3>
-                                    <template if:true={product.PricebookEntries}>
+                                    <template if:true={product.UnitPrice}>
                                         <p class="product-price">
                                             <lightning-formatted-number
-                                                value={product.PricebookEntries.records[0].UnitPrice}
+                                                value={product.UnitPrice}
                                                 format-style="currency"
                                                 currency-code="USD">
                                             </lightning-formatted-number>

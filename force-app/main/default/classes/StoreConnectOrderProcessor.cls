@@ -89,8 +89,7 @@ public with sharing class StoreConnectOrderProcessor {
                 OrderId = orderId,
                 Product2Id = cartItem.Product__c,
                 Quantity = cartItem.Quantity__c,
-                UnitPrice = cartItem.Unit_Price__c,
-                TotalPrice = cartItem.Line_Total__c
+                UnitPrice = cartItem.Unit_Price__c
             );
             orderItems.add(orderItem);
         }
@@ -101,7 +100,7 @@ public with sharing class StoreConnectOrderProcessor {
     
     // Update inventory levels
     private static void updateInventory(List<Cart_Item__c> cartItems) {
-        Map<Id, Integer> productQuantityMap = new Map<Id, Integer>();
+        Map<Id, Decimal> productQuantityMap = new Map<Id, Decimal>();
         
         for (Cart_Item__c item : cartItems) {
             if (productQuantityMap.containsKey(item.Product__c)) {

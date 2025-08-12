@@ -67,13 +67,25 @@
                                 <!-- Unit Price -->
                                 <div class="slds-col slds-size_1-of-6">
                                     <p class="slds-text-body_small slds-text-color_weak">Unit Price</p>
-                                    <p class="slds-text-heading_small">{formatCurrency(item.Unit_Price__c)}</p>
+                                    <p class="slds-text-heading_small">
+                                        <lightning-formatted-number
+                                            value={item.Unit_Price__c}
+                                            format-style="currency"
+                                            currency-code="USD">
+                                        </lightning-formatted-number>
+                                    </p>
                                 </div>
                                 
                                 <!-- Line Total -->
                                 <div class="slds-col slds-size_1-of-6">
                                     <p class="slds-text-body_small slds-text-color_weak">Total</p>
-                                    <p class="slds-text-heading_small">{formatCurrency(item.Line_Total__c)}</p>
+                                    <p class="slds-text-heading_small">
+                                        <lightning-formatted-number
+                                            value={item.Line_Total__c}
+                                            format-style="currency"
+                                            currency-code="USD">
+                                        </lightning-formatted-number>
+                                    </p>
                                 </div>
                                 
                                 <!-- Remove Button -->
@@ -96,12 +108,24 @@
                     <div class="slds-p-around_medium">
                         <div class="slds-grid slds-grid_align-spread slds-m-bottom_medium">
                             <span class="slds-text-heading_medium">Cart Summary</span>
-                            <span class="slds-text-heading_medium">{formatCurrency(cartSubtotal)}</span>
+                            <span class="slds-text-heading_medium">
+                                <lightning-formatted-number
+                                    value={cartSubtotal}
+                                    format-style="currency"
+                                    currency-code="USD">
+                                </lightning-formatted-number>
+                            </span>
                         </div>
                         
                         <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
                             <span class="slds-text-body_regular">Items: {cartTotalItems}</span>
-                            <span class="slds-text-body_regular">Subtotal: {formatCurrency(cartSubtotal)}</span>
+                            <span class="slds-text-body_regular">Subtotal: 
+                                <lightning-formatted-number
+                                    value={cartSubtotal}
+                                    format-style="currency"
+                                    currency-code="USD">
+                                </lightning-formatted-number>
+                            </span>
                         </div>
                         
                         <!-- Shipping Address Selection -->
@@ -158,8 +182,14 @@
                             <p class="slds-text-body_regular">Please review your order details:</p>
                             <ul class="slds-list_dotted slds-m-top_small">
                                 <li>Items: {cartTotalItems}</li>
-                                <li>Subtotal: {formatCurrency(cartSubtotal)}</li>
-                                <li>Shipping Address: {getShippingAddressDisplay(selectedShippingAddress)}</li>
+                                <li>Subtotal: 
+                                    <lightning-formatted-number
+                                        value={cartSubtotal}
+                                        format-style="currency"
+                                        currency-code="USD">
+                                    </lightning-formatted-number>
+                                </li>
+                                <li>Shipping Address: {selectedShippingAddressDisplay}</li>
                             </ul>
                         </div>
                         

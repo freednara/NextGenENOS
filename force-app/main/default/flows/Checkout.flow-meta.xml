@@ -25,6 +25,8 @@
         <isCollection>false</isCollection>
         <isInput>true</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
         <name>paymentTokenFromLWC</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
@@ -83,7 +85,6 @@
         <allowPause>false</allowPause>
         <fields>
             <fieldText>
-                <name>Address_Selection_Header</name>
                 <fieldText>Choose a Shipping Address</fieldText>
                 <inputParameter>
                     <assignToReference>Address_Selection_Header</assignToReference>

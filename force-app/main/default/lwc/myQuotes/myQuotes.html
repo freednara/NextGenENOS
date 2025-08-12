@@ -72,9 +72,9 @@
                             <div class="slds-col slds-size_1-of-3 slds-var-p-bottom_small">
                                 <div class="slds-box slds-theme_shade slds-text-align_center">
                                     <h3 class="slds-text-heading_small slds-var-m-bottom_x-small">Status Breakdown</h3>
-                                    <template for:each={quotesByStatus} for:key="status">
-                                        <div class="slds-var-p-bottom_xx-small">
-                                            <span class="slds-text-body_small">{key}: {value}</span>
+                                    <template for:each={quotesByStatus} for:item="statusItem" for:key="statusItem.key">
+                                        <div key={statusItem.key} class="slds-var-p-bottom_xx-small">
+                                            <span class="slds-text-body_small">{statusItem.key}: {statusItem.value}</span>
                                         </div>
                                     </template>
                                 </div>

@@ -210,7 +210,7 @@ public with sharing class OrderService {
         CreateOrderResponse response = new CreateOrderResponse();
         
         // Define a savepoint for rollback in case of failure
-        Database.Savepoint sp = Database.setSavepoint();
+        Savepoint sp = Database.setSavepoint();
 
         try {
             // 1. Process Payment (In a real scenario, this would be a callout to Stripe, etc.)

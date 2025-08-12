@@ -9,9 +9,5 @@
         <target>lightning__RecordPage</target>
         <target>lightning__HomePage</target>
     </targets>
-    <targetConfigs>
-        <targetConfig targets="lightningCommunity__Page">
-            <property name="recordId" type="String" description="Record ID for the current page context" />
-        </targetConfig>
-    </targetConfigs>
+
 </LightningComponentBundle>

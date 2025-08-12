@@ -78,18 +78,14 @@
 
                                     <!-- Product Price -->
                                     <div class="slds-text-title_bold slds-var-p-top_small">
-                                        <template if:true={product.PricebookEntries}>
-                                            <template if:true={product.PricebookEntries.records}>
-                                                <template if:true={product.PricebookEntries.records.length}>
-                                                    <lightning-formatted-number
-                                                        value={product.PricebookEntries.records[0].UnitPrice}
-                                                        format-style="currency"
-                                                        currency-code="USD">
-                                                    </lightning-formatted-number>
-                                                </template>
-                                            </template>
+                                        <template if:true={product.UnitPrice}>
+                                            <lightning-formatted-number
+                                                value={product.UnitPrice}
+                                                format-style="currency"
+                                                currency-code="USD">
+                                            </lightning-formatted-number>
                                         </template>
-                                        <template if:false={product.PricebookEntries}>
+                                        <template if:false={product.UnitPrice}>
                                             <span class="slds-text-color_weak">Price unavailable</span>
                                         </template>
                                     </div>

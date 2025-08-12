@@ -46,11 +46,6 @@
                 <elementReference>orderId</elementReference>
             </value>
         </filters>
-        <getRecord>
-            <field>AccountId</field>
-            <field>ContactId</field>
-            <field>OrderNumber</field>
-        </getRecord>
     </recordLookups>
     <screens>
         <name>Describe_Your_Issue</name>

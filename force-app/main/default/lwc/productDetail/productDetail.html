@@ -3,9 +3,9 @@
         <lightning-card icon-name="standard:products">
             <h1 slot="title" class="slds-text-heading_large">{product.data.Name}</h1>
             <div slot="actions">
-                <template if:true={product.data.PricebookEntries}>
+                <template if:true={product.data.UnitPrice}>
                     <lightning-formatted-number
-                        value={product.data.PricebookEntries.records[0].UnitPrice}
+                        value={product.data.UnitPrice}
                         format-style="currency"
                         currency-code="USD"
                         class="slds-text-heading_large">

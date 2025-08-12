@@ -6,7 +6,7 @@
     <referenceTo>Contact</referenceTo>
     <relationshipLabel>Notification Requests</relationshipLabel>
     <relationshipName>Notification_Requests</relationshipName>
-    <relationshipOrder>0</relationshipOrder>
+
     <required>true</required>
     <deleteConstraint>Restrict</deleteConstraint>
     <trackHistory>false</trackHistory>

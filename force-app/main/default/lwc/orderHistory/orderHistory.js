@@ -160,16 +160,11 @@ export default class OrderHistory extends LightningElement {
     refreshOrders() {
         this.isLoading = true;
         
-        // Import refreshApex dynamically to avoid issues
-        import('@salesforce/apex').then(({ refreshApex }) => {
-            if (this.wiredOrdersResult) {
-                refreshApex(this.wiredOrdersResult);
-            }
-            this.isLoading = false;
-        }).catch(error => {
-            console.error('Error refreshing orders:', error);
-            this.isLoading = false;
-        });
+        // Use refreshApex to update the wire service
+        if (this.wiredOrdersResult) {
+            refreshApex(this.wiredOrdersResult);
+        }
+        this.isLoading = false;
     }
 
     /**
