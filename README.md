@@ -70,6 +70,11 @@ StoreConnect is a comprehensive, production-ready e-commerce solution built enti
    - Configure the StoreConnect site
    - Assign permission sets to community users
 
+4. **Load Sample Data**
+   ```bash
+   sfdx force:apex:execute -f scripts/apex/sampleData.apex
+   ```
+
 ### **Configuration**
 
 1. **Set Up Custom Objects**
