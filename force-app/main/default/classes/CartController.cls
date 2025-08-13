@@ -57,6 +57,7 @@ public with sharing class CartController {
                 'Id', 'Quantity__c', 'Cart__c', 'Product__c'
             });
             
+            SecurityUtils.checkObjectReadable('PricebookEntry');
             SecurityUtils.checkFieldReadAccess('PricebookEntry', new List<String>{
                 'UnitPrice', 'Product2Id', 'IsActive'
             });
