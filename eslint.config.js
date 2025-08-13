@@ -1,11 +1,9 @@
-const { defineConfig } = require('eslint/config');
-const eslintJs = require('@eslint/js');
 const jestPlugin = require('eslint-plugin-jest');
 const auraConfig = require('@salesforce/eslint-plugin-aura');
 const lwcConfig = require('@salesforce/eslint-config-lwc/recommended');
 const globals = require('globals');
 
-module.exports = defineConfig([
+module.exports = [
     // Aura configuration
     {
         files: ['**/aura/**/*.js'],
@@ -21,7 +19,7 @@ module.exports = defineConfig([
         extends: [lwcConfig]
     },
 
-    // LWC configuration with override for LWC test files
+    // LWC test files
     {
         files: ['**/lwc/**/*.test.js'],
         extends: [lwcConfig],
@@ -48,8 +46,8 @@ module.exports = defineConfig([
             }
         },
         plugins: {
-            eslintJs
+            jest: jestPlugin
         },
-        extends: ['eslintJs/recommended']
+        extends: ['eslint:recommended']
     }
-]);
+];

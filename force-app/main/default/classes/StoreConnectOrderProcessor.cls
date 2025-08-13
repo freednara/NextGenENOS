@@ -110,14 +110,11 @@ public with sharing class StoreConnectOrderProcessor {
             }
         }
         
-        List<Product2> productsToUpdate = new List<Product2>();
-        for (Id productId : productQuantityMap.keySet()) {
-            productsToUpdate.add(new Product2(
-                Id = productId,
-                Stock_Quantity__c = [SELECT Stock_Quantity__c FROM Product2 WHERE Id = :productId].Stock_Quantity__c - productQuantityMap.get(productId)
-            ));
+        List<Product2> productsToUpdate = [SELECT Id, Stock_Quantity__c FROM Product2 WHERE Id IN :productQuantityMap.keySet()];
+        for (Product2 p : productsToUpdate) {
+            p.Stock_Quantity__c = p.Stock_Quantity__c - productQuantityMap.get(p.Id);
         }
-        
+
         update productsToUpdate;
     }
     
