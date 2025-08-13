@@ -3,8 +3,20 @@ private class StoreConnectSecurityUtilTest {
 
     @IsTest
     static void requiresEncryption_detectsPii() {
-        System.assertEquals(true, StoreConnectSecurityUtil.requiresEncryption('Email', 'Contact'));
-        System.assertEquals(false, StoreConnectSecurityUtil.requiresEncryption('Name', 'Account'));
+        System.assert(
+            StoreConnectSecurityUtil.requiresEncryption('Email', 'Contact'),
+            'Email should require encryption'
+        );
+        System.assertEquals(
+            false,
+            StoreConnectSecurityUtil.requiresEncryption('Name', 'Account'),
+            'Name should not require encryption'
+        );
+        System.assertEquals(
+            false,
+            StoreConnectSecurityUtil.requiresEncryption('', 'Account'),
+            'Blank field should not require encryption'
+        );
     }
 
     @IsTest

@@ -14,6 +14,21 @@ public with sharing class StoreConnectSecurityUtil {
         new Map<String, Schema.DescribeSObjectResult>();
     private static final Map<String, Map<String, Schema.SObjectField>> FIELD_MAP_CACHE =
         new Map<String, Map<String, Schema.SObjectField>>();
+    private static final Set<String> PII_KEYWORDS = new Set<String>{
+        'EMAIL',
+        'PHONE',
+        'MOBILE',
+        'SSN',
+        'SOCIAL',
+        'ACCOUNT',
+        'CREDIT',
+        'CARD',
+        'ADDRESS',
+        'DOB',
+        'BIRTH',
+        'TAX',
+        'PASSPORT'
+    };
 
     // Private constructor to prevent instantiation
     private StoreConnectSecurityUtil() {}
@@ -306,24 +321,25 @@ public with sharing class StoreConnectSecurityUtil {
             return true;
         }
 
-        // Check security classification when available.  A restricted field
-        // indicates sensitive data that should be encrypted.
+        // Check security classification when available. Confidential or restricted
+        // fields indicate sensitive data that should be encrypted.
         try {
-            if (fieldDescribe.getSecurityClassification() == Schema.SecurityClassification.RESTRICTED) {
+            Schema.SecurityClassification classification = fieldDescribe.getSecurityClassification();
+            if (
+                classification == Schema.SecurityClassification.RESTRICTED ||
+                classification == Schema.SecurityClassification.CONFIDENTIAL
+            ) {
                 return true;
             }
         } catch (Exception e) {
             // Ignore when security classification is not supported
         }
 
-        // Basic PII keyword matching on field names to enforce encryption policy.
+        // Basic PII keyword matching on field names and labels to enforce encryption policy.
         String upperName = fieldName.toUpperCase();
-        List<String> piiKeywords = new List<String>{
-            'EMAIL', 'PHONE', 'MOBILE', 'SSN', 'SOCIAL', 'ACCOUNT', 'CREDIT',
-            'CARD', 'ADDRESS', 'DOB', 'BIRTH', 'TAX', 'PASSPORT'
-        };
-        for (String keyword : piiKeywords) {
-            if (upperName.contains(keyword)) {
+        String upperLabel = fieldDescribe.getLabel().toUpperCase();
+        for (String keyword : PII_KEYWORDS) {
+            if (upperName.contains(keyword) || upperLabel.contains(keyword)) {
                 return true;
             }
         }
