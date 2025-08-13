@@ -1,16 +1,19 @@
 # 🏗️ **Experience Builder Setup Guide - StoreConnect Product Catalog**
 
 ## 📋 **Overview**
+
 This guide walks you through setting up the complete product catalog experience in Experience Builder, including the Products page, Product Detail page, and site header configuration.
 
 ## 🚀 **Step 1: Access Experience Builder**
 
 ### **Navigate to Experience Builder:**
+
 1. In your Salesforce org, go to **Setup** → **User Interface** → **Lightning Experience**
 2. Click **All Sites** or look for **Experience Builder**
 3. If you don't see an existing site, you'll need to create one first
 
 ### **Create Experience Site (if needed):**
+
 1. Click **New** to create a new Experience Cloud site
 2. Choose **Customer Account Portal** template
 3. Name it **"StoreConnect"**
@@ -22,6 +25,7 @@ This guide walks you through setting up the complete product catalog experience 
 ## 📄 **Step 2: Create the "Products" Page**
 
 ### **Create Standard Page:**
+
 1. In Experience Builder, click **Pages** in the left sidebar
 2. Click **New Page**
 3. Choose **Standard Page**
@@ -29,6 +33,7 @@ This guide walks you through setting up the complete product catalog experience 
 5. Click **Create**
 
 ### **Add Product Browser Component:**
+
 1. In the **Components** panel (right side), find **productBrowser**
 2. Drag the **productBrowser** LWC onto the main content area
 3. The component will automatically:
@@ -43,6 +48,7 @@ This guide walks you through setting up the complete product catalog experience 
 ## 🔍 **Step 3: Create the "Product Detail" Page**
 
 ### **Create Object Page:**
+
 1. Click **New Page** again
 2. Choose **Object Page**
 3. Select **Product2** as the object
@@ -50,6 +56,7 @@ This guide walks you through setting up the complete product catalog experience 
 5. Click **Create**
 
 ### **Add Product Detail Component:**
+
 1. Drag the **productDetail** LWC onto the page
 2. The component will automatically:
    - Get the `recordId` from the page URL
@@ -63,11 +70,13 @@ This guide walks you through setting up the complete product catalog experience 
 ## 🎨 **Step 4: Configure the Site Header**
 
 ### **Edit Theme Layout:**
+
 1. Click **Theme** in the left sidebar
 2. Click **Edit** on the default theme
 3. In the header section, you'll see the default navigation
 
 ### **Add Mini Cart Component:**
+
 1. In the **Components** panel, find **miniCart**
 2. Drag the **miniCart** LWC to the right side of the header
 3. The component will:
@@ -77,6 +86,7 @@ This guide walks you through setting up the complete product catalog experience 
    - Provide quick access to cart details
 
 ### **Save Theme Changes:**
+
 1. Click **Save** to apply the header changes
 2. The mini cart will now be visible on all pages
 
@@ -85,6 +95,7 @@ This guide walks you through setting up the complete product catalog experience 
 ## 🔗 **Step 5: Link the Pages Together**
 
 ### **Navigation Setup:**
+
 The pages are now automatically linked! Here's how it works:
 
 1. **Products Page** → **Product Detail Page:**
@@ -97,6 +108,7 @@ The pages are now automatically linked! Here's how it works:
    - Or add breadcrumb navigation if desired
 
 ### **How the Linking Works:**
+
 - **HTML Structure:** Each product card is wrapped in a clickable `<a>` tag
 - **JavaScript Navigation:** Uses `NavigationMixin` to navigate to Product2 record pages
 - **Event Handling:** Add to Cart button prevents navigation (uses `stopPropagation`)
@@ -107,6 +119,7 @@ The pages are now automatically linked! Here's how it works:
 ## 🎯 **Step 6: Test the Experience**
 
 ### **Test Product Browsing:**
+
 1. Navigate to the **Products** page
 2. Verify that:
    - All products are displayed in a grid
@@ -115,6 +128,7 @@ The pages are now automatically linked! Here's how it works:
    - Add to Cart buttons work independently
 
 ### **Test Product Details:**
+
 1. Click on any product card
 2. Verify that:
    - Product detail page loads correctly
@@ -123,6 +137,7 @@ The pages are now automatically linked! Here's how it works:
    - Navigation back to products works
 
 ### **Test Mini Cart:**
+
 1. Add products to cart from either page
 2. Verify that:
    - Mini cart updates in real-time
@@ -134,6 +149,7 @@ The pages are now automatically linked! Here's how it works:
 ## 🔧 **Technical Implementation Details**
 
 ### **Component Architecture:**
+
 ```
 productBrowser (Products Page)
 ├── Displays product grid
@@ -155,6 +171,7 @@ miniCart (Header Component)
 ```
 
 ### **Navigation Flow:**
+
 ```
 Products Page → Click Product Card → Product Detail Page
      ↑                                              ↓
@@ -162,6 +179,7 @@ Products Page → Click Product Card → Product Detail Page
 ```
 
 ### **Data Flow:**
+
 1. **Product Browser:** Calls `ProductController.getProducts()` and `ProductController.searchProducts()`
 2. **Product Detail:** Gets product data via `@wire(getRecord)` using page `recordId`
 3. **Mini Cart:** Listens for cart update messages via Lightning Message Service
@@ -171,16 +189,19 @@ Products Page → Click Product Card → Product Detail Page
 ## 🎨 **Customization Options**
 
 ### **Styling Customization:**
+
 - Modify CSS in each component's `.css` file
 - Adjust grid layouts, colors, and spacing
 - Customize hover effects and transitions
 
 ### **Layout Customization:**
+
 - Add additional components to pages
 - Create custom page layouts
 - Add navigation menus and breadcrumbs
 
 ### **Functionality Enhancement:**
+
 - Add product filtering by category
 - Implement product comparison
 - Add wishlist functionality
@@ -222,6 +243,7 @@ Products Page → Click Product Card → Product Detail Page
    - Ensure miniCart component is listening for updates
 
 ### **Debug Steps:**
+
 1. Check browser console for errors
 2. Verify component deployment status
 3. Test Apex methods in Developer Console
@@ -232,6 +254,7 @@ Products Page → Click Product Card → Product Detail Page
 ## 🎉 **Success!**
 
 Once you've completed all steps, you'll have a fully functional product catalog experience where customers can:
+
 - Browse products in an attractive grid layout
 - Search and filter products
 - View detailed product information

@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>64.0</apiVersion>
-    <description>Checkout flow for StoreConnect e-commerce application</description>
+    <description
+  >Checkout flow for StoreConnect e-commerce application</description>
     <environments>Default</environments>
     <interviewLabel>Checkout {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Checkout</label>
@@ -64,7 +65,8 @@
             <fieldText>
                 <fieldText>Choose a Shipping Address</fieldText>
                 <inputParameter>
-                    <assignToReference>Address_Selection_Header</assignToReference>
+                    <assignToReference
+          >Address_Selection_Header</assignToReference>
                 </inputParameter>
             </fieldText>
         </fields>

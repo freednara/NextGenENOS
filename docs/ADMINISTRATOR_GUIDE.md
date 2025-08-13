@@ -33,23 +33,25 @@ Before configuring StoreConnect, ensure you have:
 
 Navigate to **Setup → Object Manager** and confirm these objects are available:
 
-- ✅ **Cart__c** - Shopping cart container
-- ✅ **Cart_Item__c** - Cart line items
-- ✅ **Shipping_Address__c** - Customer address book
-- ✅ **View_Tracking__c** - Product view tracking
-- ✅ **Notification_Request__c** - Back-in-stock notifications
+- ✅ **Cart\_\_c** - Shopping cart container
+- ✅ **Cart_Item\_\_c** - Cart line items
+- ✅ **Shipping_Address\_\_c** - Customer address book
+- ✅ **View_Tracking\_\_c** - Product view tracking
+- ✅ **Notification_Request\_\_c** - Back-in-stock notifications
 
 ### Step 2: Verify Custom Fields
 
 Check that these custom fields exist on standard objects:
 
 **Product2 Object:**
-- ✅ **Image_URL__c** - Product image URL
-- ✅ **Stock_Quantity__c** - Available inventory
-- ✅ **Is_Top_Seller__c** - Top seller flag
+
+- ✅ **Image_URL\_\_c** - Product image URL
+- ✅ **Stock_Quantity\_\_c** - Available inventory
+- ✅ **Is_Top_Seller\_\_c** - Top seller flag
 
 **Account Object:**
-- ✅ **Assigned_Price_Book_ID__c** - B2B pricing support
+
+- ✅ **Assigned_Price_Book_ID\_\_c** - B2B pricing support
 
 ## Permission Set Configuration
 
@@ -67,16 +69,18 @@ Check that these custom fields exist on standard objects:
 The permission set includes:
 
 **Object Permissions:**
+
 - **Product2**: Read access
-- **Cart__c**: Read, Create, Edit, Delete
-- **Cart_Item__c**: Read, Create, Edit, Delete
-- **Shipping_Address__c**: Read, Create, Edit, Delete
-- **View_Tracking__c**: Read, Create
-- **Notification_Request__c**: Read, Create
+- **Cart\_\_c**: Read, Create, Edit, Delete
+- **Cart_Item\_\_c**: Read, Create, Edit, Delete
+- **Shipping_Address\_\_c**: Read, Create, Edit, Delete
+- **View_Tracking\_\_c**: Read, Create
+- **Notification_Request\_\_c**: Read, Create
 - **Order**: Read access
 - **OrderItem**: Read access
 
 **Field Permissions:**
+
 - All custom fields properly configured
 - Standard fields set to appropriate access levels
 
@@ -162,9 +166,9 @@ The permission set includes:
    - **Product Code**: Enter SKU
    - **Description**: Product description
    - **Is Active**: Checked
-   - **Image_URL__c**: Product image URL
-   - **Stock_Quantity__c**: Available inventory
-   - **Is_Top_Seller__c**: Set as needed
+   - **Image_URL\_\_c**: Product image URL
+   - **Stock_Quantity\_\_c**: Available inventory
+   - **Is_Top_Seller\_\_c**: Set as needed
 
 ### Step 2: Set Up Price Books
 
@@ -175,7 +179,7 @@ The permission set includes:
 2. **B2B Price Book:**
    - Create custom price book for business customers
    - Add products with contract pricing
-   - Assign to accounts via **Assigned_Price_Book_ID__c**
+   - Assign to accounts via **Assigned_Price_Book_ID\_\_c**
 
 ### Step 3: Configure Product Categories
 

@@ -45,6 +45,7 @@
     ]
   },
   "dependencies": {
+    "@anthropic-ai/claude-code": "^1.0.77",
     "@modelcontextprotocol/sdk": "^1.17.2",
     "@salesforce/mcp": "^0.17.0"
   }

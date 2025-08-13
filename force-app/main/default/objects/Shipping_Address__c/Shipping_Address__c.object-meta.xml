@@ -1,8 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
+    <description
+  >Customer address book for storing multiple shipping addresses. Each address is linked to an Account and includes complete shipping information with a default address flag. Used in StoreConnect e-commerce platform for checkout and order fulfillment processes.</description>
     <enableActivities>true</enableActivities>
     <enableReports>true</enableReports>
     <enableBulkApi>true</enableBulkApi>
@@ -18,7 +20,7 @@
         <type>Text</type>
     </nameField>
     <pluralLabel>Shipping Addresses</pluralLabel>
-    <searchLayouts/>
+    <searchLayouts />
     <sharingModel>ReadWrite</sharingModel>
     <visibility>Public</visibility>
 </CustomObject>
