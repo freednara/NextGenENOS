@@ -1,0 +1,7 @@
+{
+  "id": "myQuotes",
+  "label": "My Quotes",
+  "routeType": "Custom",
+  "urlPrefix": "quotes",
+  "activeViewId": "myQuotes"
+}

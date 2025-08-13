@@ -1,0 +1,7 @@
+{
+  "id": "productCatalog",
+  "label": "Product Catalog",
+  "routeType": "Custom",
+  "urlPrefix": "catalog",
+  "activeViewId": "productCatalog"
+}
