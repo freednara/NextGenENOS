@@ -37,6 +37,50 @@ public with sharing class SecurityUtils {
     }
 
     /**
+     * @description Verifies access to a field path, supporting relationship traversal.
+     * Throws an exception for unknown fields or insufficient access.
+     *
+     * @param sObjectName Root SObject name
+     * @param fieldPath Dot-separated field path (e.g., 'Contact__r.AccountId')
+     * @param editMode Whether to check for edit (true) or read (false) access
+     */
+    private static void verifyFieldAccess(String sObjectName, String fieldPath, Boolean editMode) {
+        Schema.DescribeSObjectResult describeResult = getDescribe(sObjectName);
+        if (describeResult == null) {
+            throw new AuraHandledException('Security Error: Unknown SObject ' + sObjectName);
+        }
+
+        List<String> parts = fieldPath.split('\\.');
+        Map<String, Schema.SObjectField> fieldMap = describeResult.fields.getMap();
+
+        for (Integer i = 0; i < parts.size(); i++) {
+            String part = parts[i];
+            if (!fieldMap.containsKey(part)) {
+                throw new AuraHandledException('Security Error: Unknown field ' + part + ' on ' + describeResult.getName());
+            }
+            Schema.DescribeFieldResult fieldDesc = fieldMap.get(part).getDescribe();
+
+            // final segment check
+            if (i == parts.size() - 1) {
+                if (editMode && !fieldDesc.isUpdateable()) {
+                    throw new AuraHandledException('Security Error: You do not have permission to edit the ' + fieldPath + ' field.');
+                }
+                if (!editMode && !fieldDesc.isAccessible()) {
+                    throw new AuraHandledException('Security Error: You do not have permission to view the ' + fieldPath + ' field.');
+                }
+            } else {
+                // traverse reference
+                if (fieldDesc.getReferenceTo().size() == 1) {
+                    describeResult = fieldDesc.getReferenceTo()[0].getDescribe();
+                    fieldMap = describeResult.fields.getMap();
+                } else {
+                    throw new AuraHandledException('Security Error: Cannot traverse relationship on field ' + part + ' of ' + describeResult.getName());
+                }
+            }
+        }
+    }
+
+    /**
      * @description Checks if the current user has READ access to a list of fields on a given SObject.
      * Throws an AuraHandledException if access is denied for any field.
      * 
@@ -56,24 +100,9 @@ public with sharing class SecurityUtils {
             throw new AuraHandledException('Security Error: Invalid parameters provided for field access check.');
         }
 
-        // Get the describe result for the SObject
-        Schema.DescribeSObjectResult sObjectDescribe = getDescribe(sObjectName);
-        if (sObjectDescribe == null) {
-            throw new AuraHandledException('Security Error: Unknown SObject ' + sObjectName);
-        }
-
-        // Get a map of all fields for the SObject
-        Map<String, Schema.SObjectField> fieldMap = sObjectDescribe.fields.getMap();
-
+        // Verify each field path
         for (String fieldName : fieldsToCheck) {
-            if (fieldMap.containsKey(fieldName)) {
-                // Check if the field is accessible
-                if (!fieldMap.get(fieldName).getDescribe().isAccessible()) {
-                    // Throw a security exception if a field is not readable.
-                    // AuraHandledException is used to pass a clean error message to LWCs.
-                    throw new AuraHandledException('Security Error: You do not have permission to view the ' + fieldName + ' field on ' + sObjectName);
-                }
-            }
+            verifyFieldAccess(sObjectName, fieldName, false);
         }
     }
 
@@ -241,23 +270,9 @@ public with sharing class SecurityUtils {
             throw new AuraHandledException('Security Error: Invalid parameters provided for field edit access check.');
         }
 
-        // Get the describe result for the SObject
-        Schema.DescribeSObjectResult sObjectDescribe = getDescribe(sObjectName);
-        if (sObjectDescribe == null) {
-            throw new AuraHandledException('Security Error: Unknown SObject ' + sObjectName);
-        }
-
-        // Get a map of all fields for the SObject
-        Map<String, Schema.SObjectField> fieldMap = sObjectDescribe.fields.getMap();
-
+        // Verify each field path for edit access
         for (String fieldName : fieldsToCheck) {
-            if (fieldMap.containsKey(fieldName)) {
-                // Check if the field is editable
-                if (!fieldMap.get(fieldName).getDescribe().isUpdateable()) {
-                    // Throw a security exception if a field is not editable.
-                    throw new AuraHandledException('Security Error: You do not have permission to edit the ' + fieldName + ' field on ' + sObjectName);
-                }
-            }
+            verifyFieldAccess(sObjectName, fieldName, true);
         }
     }
 

@@ -10,6 +10,9 @@
  */
 public with sharing class OrderService {
 
+    // Cache standard pricebook ID per transaction
+    private static Id stdPricebookId;
+
     /**
      * @description Inner class to define the inputs for the Invocable Method.
      * Contains all necessary data for order creation.
@@ -52,11 +55,15 @@ public with sharing class OrderService {
      */
     @InvocableMethod(label='Create Order from Cart' description='Processes payment and converts a Cart to an Order in a single transaction.')
     public static List<CreateOrderResponse> createOrder(List<CreateOrderRequest> requests) {
+        if (requests == null || requests.isEmpty()) {
+            throw new AuraHandledException('No order requests supplied.');
+        }
+
         List<CreateOrderResponse> responses = new List<CreateOrderResponse>();
-        
+
         for (CreateOrderRequest req : requests) {
             CreateOrderResponse response = new CreateOrderResponse();
-            
+
             try {
                 // 1. Validate input parameters
                 if (req.cartId == null || req.shippingAddressId == null || String.isBlank(req.paymentToken)) {
@@ -67,7 +74,7 @@ public with sharing class OrderService {
                 Cart__c cart = getCartWithSecurity(req.cartId);
                 List<Cart_Item__c> cartItems = getCartItemsWithSecurity(req.cartId);
                 Shipping_Address__c shippingAddress = getShippingAddressWithSecurity(req.shippingAddressId);
-                
+
                 // 3. Validate cart has items
                 if (cartItems.isEmpty()) {
                     throw new IllegalArgumentException('Cart must contain at least one item to create an order.');
@@ -75,7 +82,10 @@ public with sharing class OrderService {
 
                 // 4. Process the order creation transaction
                 response = processOrderCreation(cart, cartItems, shippingAddress, req.paymentToken);
-                
+
+            } catch (IllegalArgumentException e) {
+                response.isSuccess = false;
+                response.message = e.getMessage();
             } catch (Exception e) {
                 // Create error response
                 response.isSuccess = false;
@@ -83,10 +93,10 @@ public with sharing class OrderService {
                 System.debug(LoggingLevel.ERROR, 'Order creation error: ' + e.getMessage());
                 System.debug(LoggingLevel.ERROR, 'Stack trace: ' + e.getStackTraceString());
             }
-            
+
             responses.add(response);
         }
-        
+
         return responses;
     }
 
@@ -354,10 +364,11 @@ public with sharing class OrderService {
      * @return Id of the standard pricebook
      */
     private static Id getStandardPricebookId() {
-        // In production, you might want to store this in custom metadata
-        // or query it once and cache it
-        return Test.isRunningTest() ? Test.getStandardPricebookId() : 
-               [SELECT Id FROM Pricebook2 WHERE IsStandard = true LIMIT 1].Id;
+        if (stdPricebookId == null) {
+            stdPricebookId = Test.isRunningTest() ? Test.getStandardPricebookId() :
+                [SELECT Id FROM Pricebook2 WHERE IsStandard = true LIMIT 1].Id;
+        }
+        return stdPricebookId;
     }
 
     /**
