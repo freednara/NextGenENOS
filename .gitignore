@@ -32,6 +32,7 @@ unpackaged/
 *~
 .DS_Store
 Thumbs.db
+.cursorrules
 
 # Node.js dependencies (if using any build tools)
 node_modules/
