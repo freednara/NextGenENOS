@@ -1,4 +1,4 @@
-import { createElement } from "lwc";
+import { createElement } from 'lwc';
 import ShoppingCart from "c/shoppingCart";
 
 describe("ShoppingCart Smoke Test", () => {

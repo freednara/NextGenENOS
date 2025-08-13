@@ -1,74 +1,22 @@
 {
-  "objects": [
+  "items": [
     {
-      "name": "Category__c",
-      "operation": "Upsert",
-      "externalId": "Name",
-      "fieldsToImport": [
-        "Name",
-        "Description__c",
-        "Is_Active__c",
-        "Sort_Order__c"
-      ]
+      "sobject": "Category__c",
+      "files": ["data/sfdmu/csv/Category__c.csv"]
     },
     {
-      "name": "Pricebook2",
-      "operation": "Upsert",
-      "externalId": "Name",
-      "fieldsToImport": [
-        "Name",
-        "IsActive"
-      ]
+      "sobject": "Pricebook2",
+      "files": ["data/sfdmu/csv/Pricebook2.csv"]
     },
     {
-      "name": "Product2",
-      "operation": "Upsert",
-      "externalId": "ProductCode",
-      "fieldsToImport": [
-        "Name",
-        "ProductCode",
-        "IsActive",
-        "Description",
-        "Stock_Quantity__c",
-        "Is_Top_Seller__c",
-        "Image_URL__c",
-        "Category__c"
-      ],
-      "lookups": [
-        {
-          "lookupField": "Category__c",
-          "lookupObjectName": "Category__c",
-          "externalId": "Name",
-          "displayFields": ["Name", "Description__c"]
-        }
-      ]
+      "sobject": "Product2",
+      "files": ["data/sfdmu/csv/Product2.csv"]
     },
     {
-      "name": "PricebookEntry",
-      "operation": "Insert",
-      "fieldsToImport": [
-        "UnitPrice",
-        "IsActive"
-      ],
-      "lookups": [
-        {
-          "lookupField": "Pricebook2Id",
-          "lookupObjectName": "Pricebook2",
-          "externalId": "Name",
-          "displayFields": ["Name"]
-        },
-        {
-          "lookupField": "Product2Id",
-          "lookupObjectName": "Product2",
-          "externalId": "ProductCode",
-          "displayFields": ["ProductCode", "Name"]
-        }
-      ]
+      "sobject": "PricebookEntry",
+      "files": ["data/sfdmu/csv/PricebookEntry.csv"]
     }
-  ],
-  "importCSVFilesAsIs": true,
-  "useFieldMapping": true,
-  "csvReadFileCharset": "utf-8"
+  ]
 }
 
 
