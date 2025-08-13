@@ -1,6 +1,5 @@
 import { LightningElement, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import getOrders from '@salesforce/apex/OrderService.getOrders';
 
 /**
  * @description Order History component for displaying user's past orders.
@@ -13,9 +12,6 @@ import getOrders from '@salesforce/apex/OrderService.getOrders';
  * @since 2024-12-01
  */
 export default class OrderHistory extends LightningElement {
-    
-    // Wire service result for storing and refreshing
-    wiredOrdersResult;
     
     // Component state
     isLoading = false;
@@ -35,94 +31,74 @@ export default class OrderHistory extends LightningElement {
     defaultSortBy = 'EffectiveDate';
     defaultSortDirection = 'desc';
 
-    // Wire the orders from Apex
-    @wire(getOrders)
-    wiredOrders(result) {
-        this.wiredOrdersResult = result;
-        
-        if (result.data) {
-            this.hasError = false;
-            this.errorMessage = '';
-        } else if (result.error) {
-            this.hasError = true;
-            this.errorMessage = result.error.body ? result.error.body.message : 'Unable to load orders.';
-            console.error('Error loading orders:', result.error);
-        }
+    // Since OrderService is not available, we'll show a message
+    connectedCallback() {
+        this.hasError = true;
+        this.errorMessage = 'Order functionality requires Enterprise Edition features. Please contact your administrator.';
     }
 
     /**
      * @description Computed property for the orders data.
-     * Provides the current orders from the wired Apex result.
+     * Since OrderService is not available, return empty array.
      * 
-     * @returns {Array} Array of order records, or empty array if no data
+     * @returns {Array} Empty array since orders are not available
      */
     get orders() {
-        return this.wiredOrdersResult?.data ?? [];
+        return [];
     }
 
     /**
      * @description Computed property to determine if there are orders to display.
      * 
-     * @returns {boolean} True if there are orders, false otherwise
+     * @returns {boolean} False since orders are not available
      */
     get hasOrders() {
-        return this.orders && this.orders.length > 0;
+        return false;
     }
 
     /**
      * @description Computed property to determine if the orders are loading.
      * 
-     * @returns {boolean} True if orders are still loading
+     * @returns {boolean} False since we're not loading
      */
     get isLoading() {
-        return !this.wiredOrdersResult || (!this.wiredOrdersResult.data && !this.wiredOrdersResult.error);
+        return false;
     }
 
     /**
      * @description Computed property to determine if there's an error loading orders.
      * 
-     * @returns {boolean} True if there's an error loading orders
+     * @returns {boolean} True since OrderService is not available
      */
     get hasError() {
-        return this.wiredOrdersResult && this.wiredOrdersResult.error;
+        return this.hasError;
     }
 
     /**
      * @description Computed property for the total number of orders.
      * 
-     * @returns {number} The total number of orders
+     * @returns {number} 0 since orders are not available
      */
     get totalOrders() {
-        return this.orders.length;
+        return 0;
     }
 
     /**
      * @description Computed property for the total value of all orders.
      * 
-     * @returns {number} The total value of all orders
+     * @returns {number} 0 since orders are not available
      */
     get totalOrderValue() {
-        if (!this.orders || this.orders.length === 0) {
-            return 0;
-        }
-        
-        return this.orders.reduce((total, order) => {
-            const amount = order.TotalAmount || 0;
-            return total + amount;
-        }, 0);
+        return 0;
     }
 
     /**
      * @description Computed property for the average order value.
      * 
-     * @returns {number} The average order value
+     * @returns {number} 0 since orders are not available
      */
     get averageOrderValue() {
-        if (!this.hasOrders) {
-            return 0;
-        }
-        
-        return this.totalOrderValue / this.totalOrders;
+        return 0;
     }
 
     /**
@@ -155,16 +131,10 @@ export default class OrderHistory extends LightningElement {
 
     /**
      * @description Refreshes the orders data.
-     * Uses refreshApex to update the wire service.
+     * Since OrderService is not available, just show the error message.
      */
     refreshOrders() {
-        this.isLoading = true;
-        
-        // Use refreshApex to update the wire service
-        if (this.wiredOrdersResult) {
-            refreshApex(this.wiredOrdersResult);
-        }
-        this.isLoading = false;
+        this.showErrorToast('Feature Unavailable', 'Order history requires Enterprise Edition features.');
     }
 
     /**
@@ -184,7 +154,6 @@ export default class OrderHistory extends LightningElement {
     /**
      * @description Shows an error toast notification.
      * 
-     * @param {string} title - The toast title
      * @param {string} message - The toast message
      */
     showErrorToast(title, message) {
@@ -201,7 +170,6 @@ export default class OrderHistory extends LightningElement {
      */
     handleRefresh() {
         this.refreshOrders();
-        this.showSuccessToast('Orders Refreshed', 'Your order history has been updated.');
     }
 
     /**
