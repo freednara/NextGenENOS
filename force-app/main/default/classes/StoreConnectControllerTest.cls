@@ -6,7 +6,7 @@ private class StoreConnectControllerTest {
         insert acc;
         Contact con = new Contact(LastName = 'Tester', AccountId = acc.Id);
         insert con;
-        Product2 prod = new Product2(Name = 'Test Product', IsActive = true);
+        Product2 prod = new Product2(Name = 'Test Product', ProductCode = 'TEST-001', IsActive = true);
         insert prod;
         Id pbId = Test.getStandardPricebookId();
         insert new PricebookEntry(Product2Id = prod.Id, Pricebook2Id = pbId, UnitPrice = 10, IsActive = true);
@@ -54,5 +54,51 @@ private class StoreConnectControllerTest {
             }
             System.assert(thrown, 'Expected security exception to be thrown');
         }
+    }
+    
+    @IsTest
+    static void testGetProducts() {
+        Test.startTest();
+        StoreConnectController.ProductCatalogResult result = StoreConnectController.getProducts('', '', 0, 10, false);
+        Test.stopTest();
+        
+        System.assertNotEquals(null, result, 'Result should not be null');
+        System.assertEquals(1, result.products.size(), 'Should return 1 product');
+        System.assertEquals('Test Product', result.products[0].Name, 'Product name should match');
+        System.assertEquals(1, result.totalCount, 'Total count should be 1');
+        System.assertEquals(0, result.pageNumber, 'Page number should be 0');
+        System.assertEquals(10, result.pageSize, 'Page size should be 10');
+    }
+    
+    @IsTest
+    static void testGetProductsWithSearch() {
+        Test.startTest();
+        StoreConnectController.ProductCatalogResult result = StoreConnectController.getProducts('Test', '', 0, 10, false);
+        Test.stopTest();
+        
+        System.assertNotEquals(null, result, 'Result should not be null');
+        System.assertEquals(1, result.products.size(), 'Should return 1 product matching search');
+        System.assertEquals('Test Product', result.products[0].Name, 'Product name should match search');
+    }
+    
+    @IsTest
+    static void testGetProductsWithCategory() {
+        Test.startTest();
+        StoreConnectController.ProductCatalogResult result = StoreConnectController.getProducts('', 'TEST', 0, 10, false);
+        Test.stopTest();
+        
+        System.assertNotEquals(null, result, 'Result should not be null');
+        System.assertEquals(1, result.products.size(), 'Should return 1 product matching category');
+    }
+    
+    @IsTest
+    static void testGetProductsPagination() {
+        Test.startTest();
+        StoreConnectController.ProductCatalogResult result = StoreConnectController.getProducts('', '', 0, 5, false);
+        Test.stopTest();
+        
+        System.assertNotEquals(null, result, 'Result should not be null');
+        System.assertEquals(1, result.products.size(), 'Should return 1 product');
+        System.assertEquals(5, result.pageSize, 'Page size should be 5');
     }
 }

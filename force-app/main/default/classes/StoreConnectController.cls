@@ -38,7 +38,7 @@ public with sharing class StoreConnectController {
             }
             
             // Build static query with bind variables to prevent SOQL injection
-            String baseQuery = 'SELECT Id, Name, ProductCode, Description, Image_URL__c, Stock_Quantity__c, Is_Top_Seller__c, IsActive ' +
+            String baseQuery = 'SELECT Id, Name, ProductCode, Description, IsActive ' +
                              'FROM Product2 ' +
                              'WHERE IsActive = true ';
 
@@ -56,9 +56,10 @@ public with sharing class StoreConnectController {
                 conditions.add('ProductCode LIKE :categoryPattern');
             }
 
-            if (topSellersOnly) {
-                conditions.add('Is_Top_Seller__c = true');
-            }
+            // Note: topSellersOnly filter removed since Is_Top_Seller__c field doesn't exist
+            // if (topSellersOnly) {
+            //     conditions.add('Is_Top_Seller__c = true');
+            // }
 
             if (!conditions.isEmpty()) {
                 baseQuery += 'AND ' + String.join(conditions, ' AND ');
@@ -81,9 +82,10 @@ public with sharing class StoreConnectController {
                 countQuery += 'AND ProductCode LIKE :categoryPattern ';
             }
 
-            if (topSellersOnly) {
-                countQuery += 'AND Is_Top_Seller__c = true';
-            }
+            // Note: topSellersOnly filter removed since Is_Top_Seller__c field doesn't exist
+            // if (topSellersOnly) {
+            //     countQuery += 'AND Is_Top_Seller__c = true';
+            // }
 
             Integer totalCount = Database.countQuery(countQuery);
             
