@@ -4,18 +4,21 @@
   "version": "1.0.0",
   "description": "Salesforce App",
   "scripts": {
-    "lint": "eslint **/{aura,lwc}/**/*.js",
+    "lint": "./node_modules/.bin/eslint **/lwc/**/*.js --ignore-pattern '.history/**'",
     "test": "npm run test:unit",
-    "test:unit": "sfdx-lwc-jest",
-    "test:unit:watch": "sfdx-lwc-jest --watch",
-    "test:unit:debug": "sfdx-lwc-jest --debug",
-    "test:unit:coverage": "sfdx-lwc-jest --coverage",
-    "prettier": "prettier --write \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
-    "prettier:verify": "prettier --check \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
+    "test:unit": "./node_modules/.bin/sfdx-lwc-jest -- --passWithNoTests",
+    "test:unit:watch": "./node_modules/.bin/sfdx-lwc-jest --watch",
+    "test:unit:debug": "./node_modules/.bin/sfdx-lwc-jest --debug",
+    "test:unit:coverage": "./node_modules/.bin/sfdx-lwc-jest --coverage",
+    "prettier": "./node_modules/.bin/prettier --write \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
+    "prettier:verify": "./node_modules/.bin/prettier --check \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
     "prepare": "husky || true",
     "precommit": "lint-staged"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.28.0",
+    "@babel/plugin-proposal-decorators": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
     "@lwc/eslint-plugin-lwc": "^3.1.0",
     "@prettier/plugin-xml": "^3.4.1",
     "@salesforce/eslint-config-lwc": "^4.0.0",
@@ -32,13 +35,13 @@
   },
   "lint-staged": {
     "**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}": [
-      "prettier --write"
+      "./node_modules/.bin/prettier --write"
     ],
     "**/{aura,lwc}/**/*.js": [
-      "eslint"
+      "./node_modules/.bin/eslint"
     ],
     "**/lwc/**": [
-      "sfdx-lwc-jest -- --bail --findRelatedTests --passWithNoTests"
+      "./node_modules/.bin/sfdx-lwc-jest -- --bail --findRelatedTests --passWithNoTests"
     ]
   },
   "dependencies": {

@@ -1,44 +1,41 @@
 const jestPlugin = require('eslint-plugin-jest');
-const auraConfig = require('@salesforce/eslint-plugin-aura');
-const lwcConfig = require('@salesforce/eslint-config-lwc/recommended');
 const globals = require('globals');
 
 module.exports = [
-    // Aura configuration
-    {
-        files: ['**/aura/**/*.js'],
-        extends: [
-            ...auraConfig.configs.recommended,
-            ...auraConfig.configs.locker
-        ]
-    },
-
-    // LWC configuration
+    // LWC specific configuration with decorator support
     {
         files: ['**/lwc/**/*.js'],
-        extends: [lwcConfig]
-    },
-
-    // LWC test files
-    {
-        files: ['**/lwc/**/*.test.js'],
-        extends: [lwcConfig],
-        rules: {
-            '@lwc/lwc/no-unexpected-wire-adapter-usages': 'off'
-        },
         languageOptions: {
+            ecmaVersion: 'latest',
+            sourceType: 'module',
             globals: {
-                ...globals.node
+                ...globals.browser,
+                ...globals.es2021
+            },
+            parser: require('@babel/eslint-parser'),
+            parserOptions: {
+                requireConfigFile: false,
+                babelOptions: {
+                    presets: ['@babel/preset-env'],
+                    plugins: [
+                        ['@babel/plugin-proposal-decorators', { legacy: true }]
+                    ]
+                }
             }
+        },
+        rules: {
+            'no-unused-vars': 'warn',
+            'no-console': 'warn',
+            'no-debugger': 'error'
         }
     },
 
-    // Jest mocks configuration
+    // Test files configuration
     {
-        files: ['**/jest-mocks/**/*.js'],
+        files: ['**/*.test.js', '**/*.spec.js'],
         languageOptions: {
-            sourceType: 'module',
             ecmaVersion: 'latest',
+            sourceType: 'module',
             globals: {
                 ...globals.node,
                 ...globals.es2021,
@@ -48,6 +45,9 @@ module.exports = [
         plugins: {
             jest: jestPlugin
         },
-        extends: ['eslint:recommended']
+        rules: {
+            'no-unused-vars': 'warn',
+            'no-console': 'warn'
+        }
     }
 ];
