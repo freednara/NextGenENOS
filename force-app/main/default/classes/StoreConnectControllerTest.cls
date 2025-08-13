@@ -1,29 +1,43 @@
 @IsTest
 private class StoreConnectControllerTest {
   @TestSetup
-  static void setup() {
-    Account acc = new Account(Name = 'Test Account');
-    insert acc;
-    Contact con = new Contact(LastName = 'Tester', AccountId = acc.Id);
-    insert con;
-    Product2 prod = new Product2(
-      Name = 'Test Product',
-      ProductCode = 'TEST-001',
-      IsActive = true
+  static void setupTestData() {
+    // Create test account
+    Account testAccount = new Account(Name = 'Test Account');
+    insert testAccount;
+
+    // Create test contact
+    Contact testContact = new Contact(
+      FirstName = 'John',
+      LastName = 'Doe',
+      Email = 'john.doe.test@storeconnect.com',
+      AccountId = testAccount.Id
     );
-    insert prod;
-    Id pbId = Test.getStandardPricebookId();
-    insert new PricebookEntry(
-      Product2Id = prod.Id,
-      Pricebook2Id = pbId,
-      UnitPrice = 10,
-      IsActive = true
+    insert testContact;
+
+    // Get the Customer Community Plus Login User profile for testing
+    Profile communityProfile = [
+        SELECT Id
+        FROM Profile
+        WHERE Name = 'Customer Community Plus Login User'
+        LIMIT 1
+    ];
+
+    // Create test user with StoreConnect Community profile
+    User testUser = new User(
+      Username = 'john.doe.test@storeconnect.com',
+      FirstName = 'John',
+      LastName = 'Doe',
+      Email = 'john.doe.test@storeconnect.com',
+      Alias = 'jdoe',
+      TimeZoneSidKey = 'America/Los_Angeles',
+      LocaleSidKey = 'en_US',
+      EmailEncodingKey = 'UTF-8',
+      LanguageLocaleKey = 'en_US',
+      ProfileId = communityProfile.Id,
+      ContactId = testContact.Id
     );
-    insert new View_Tracking__c(
-      User_Contact__c = con.Id,
-      Product__c = prod.Id,
-      Last_Viewed_Date__c = System.now()
-    );
+    insert testUser;
   }
 
   @IsTest

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="NextGenENOS PMD Rules"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0
+                             https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        Custom PMD ruleset for NextGenENOS Salesforce project.
+        Focuses on security, performance, and maintainability.
+    </description>
+
+    <!-- Security Rules -->
+    <rule ref="category/apex/security.xml" />
+    
+    <!-- Performance Rules -->
+    <rule ref="category/apex/performance.xml">
+        <!-- Allow DML in loops for specific cases -->
+        <exclude name="AvoidDmlStatementsInLoops" />
+    </rule>
+    
+    <!-- Best Practices -->
+    <rule ref="category/apex/bestpractices.xml">
+        <!-- Allow unused variables in test classes -->
+        <exclude name="UnusedLocalVariable" />
+    </rule>
+    
+    <!-- Code Style -->
+    <rule ref="category/apex/codestyle.xml">
+        <!-- Allow short variable names in loops -->
+        <exclude name="ShortVariable" />
+        <!-- Allow long parameter lists for constructors -->
+        <exclude name="ExcessiveParameterList" />
+    </rule>
+    
+    <!-- Design Rules -->
+    <rule ref="category/apex/design.xml">
+        <!-- Allow deep nesting for specific complex logic -->
+        <exclude name="AvoidDeeplyNestedIfStmts" />
+        <!-- Allow complex classes for controllers -->
+        <exclude name="ExcessiveClassLength" />
+        <exclude name="ExcessivePublicCount" />
+    </rule>
+    
+    <!-- Error Prone Rules -->
+    <rule ref="category/apex/errorprone.xml" />
+    
+    <!-- Documentation Rules -->
+    <rule ref="category/apex/documentation.xml">
+        <!-- Require class comments but not method comments for obvious methods -->
+        <exclude name="ApexDoc" />
+    </rule>
+    
+    <!-- Custom Security Rules -->
+    <rule name="ApexSOQLInjection"
+          language="apex"
+          message="Potential SOQL injection vulnerability"
+          class="net.sourceforge.pmd.lang.apex.rule.security.ApexSOQLInjectionRule" />
+    
+    <rule name="ApexCRUDViolation"
+          language="apex"
+          message="Missing CRUD/FLS security check"
+          class="net.sourceforge.pmd.lang.apex.rule.security.ApexCRUDViolationRule" />
+    
+    <!-- Performance Rules -->
+    <rule name="AvoidHardcodingId"
+          language="apex"
+          message="Avoid hardcoding Salesforce IDs"
+          class="net.sourceforge.pmd.lang.apex.rule.performance.AvoidHardcodingIdRule" />
+    
+    <!-- Custom Rules for StoreConnect -->
+    <rule name="StoreConnectNamingConvention"
+          language="apex"
+          message="Follow StoreConnect naming conventions"
+          class="net.sourceforge.pmd.lang.apex.rule.codestyle.VariableNamingConventionsRule">
+        <properties>
+            <property name="staticMethodPattern" value="[a-z][a-zA-Z0-9]*" />
+            <property name="instanceMethodPattern" value="[a-z][a-zA-Z0-9]*" />
+            <property name="staticVariablePattern" value="[A-Z][A-Z0-9_]*" />
+            <property name="instanceVariablePattern" value="[a-z][a-zA-Z0-9]*" />
+            <property name="localVariablePattern" value="[a-z][a-zA-Z0-9]*" />
+        </properties>
+    </rule>
+    
+    <!-- Exclude test classes from certain rules -->
+    <exclude-pattern>.*/test/.*</exclude-pattern>
+    <exclude-pattern>.*Test\.cls</exclude-pattern>
+    <exclude-pattern>.*TestUtil\.cls</exclude-pattern>
+    <exclude-pattern>.*Mock.*\.cls</exclude-pattern>
+    
+</ruleset>

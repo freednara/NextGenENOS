@@ -167,16 +167,6 @@ public with sharing class StoreConnectSecurityUtil {
         // If field is already encrypted -> requirement exists
         if (f.isEncrypted()) return true;
 
-        // Use Security Classification when available
-        try {
-            Schema.SecurityClassification c = f.getSecurityClassification();
-            if (c == Schema.SecurityClassification.RESTRICTED || c == Schema.SecurityClassification.CONFIDENTIAL) {
-                return true;
-            }
-        } catch (Exception e) {
-            // org may not support classification; ignore
-        }
-
         // Keyword heuristic on API name and label
         String upperName  = fieldApiName.toUpperCase();
         String upperLabel = f.getLabel() != null ? f.getLabel().toUpperCase() : '';

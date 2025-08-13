@@ -11,36 +11,39 @@ private class CartControllerTest {
    */
   @TestSetup
   static void setupTestData() {
-    // Create test account and contact
-    Account testAccount = new Account(Name = 'Test Store Account');
+    // Create test account
+    Account testAccount = new Account(Name = 'Test Account');
     insert testAccount;
 
+    // Create test contact
     Contact testContact = new Contact(
       FirstName = 'John',
       LastName = 'Doe',
-      Email = 'john.doe@test.com',
+      Email = 'john.doe.test@storeconnect.com',
       AccountId = testAccount.Id
     );
     insert testContact;
 
-    // Create test user associated with contact
-    Profile communityProfile = [
-      SELECT Id
-      FROM Profile
-      WHERE Name LIKE '%Customer Community%'
-      LIMIT 1
+    // Get the Standard User profile for testing
+    Profile standardProfile = [
+        SELECT Id
+        FROM Profile
+        WHERE Name = 'Standard User'
+        LIMIT 1
     ];
+
+    // Create test user with StoreConnect Community profile
     User testUser = new User(
+      Username = 'john.doe.test@storeconnect.com',
       FirstName = 'John',
       LastName = 'Doe',
-      Email = 'john.doe@test.com',
-      Username = 'john.doe.test@storeconnect.com',
+      Email = 'john.doe.test@storeconnect.com',
       Alias = 'jdoe',
-      TimeZoneSidKey = 'America/New_York',
+      TimeZoneSidKey = 'America/Los_Angeles',
       LocaleSidKey = 'en_US',
       EmailEncodingKey = 'UTF-8',
       LanguageLocaleKey = 'en_US',
-      ProfileId = communityProfile.Id,
+      ProfileId = standardProfile.Id,
       ContactId = testContact.Id
     );
     insert testUser;

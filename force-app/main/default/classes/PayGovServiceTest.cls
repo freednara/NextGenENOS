@@ -12,39 +12,40 @@ private class PayGovServiceTest {
      */
     @TestSetup
     static void setupTestData() {
-        // Create test account and contact
-        Account testAccount = new Account(Name = 'Test Federal Agency');
+        // Create test account
+        Account testAccount = new Account(Name = 'Test Account');
         insert testAccount;
-
+    
+        // Create test contact
         Contact testContact = new Contact(
-            FirstName = 'Jane',
-            LastName = 'Smith',
-            Email = 'jane.smith@agency.gov',
+            FirstName = 'John',
+            LastName = 'Doe',
+            Email = 'john.doe.test@storeconnect.com',
             AccountId = testAccount.Id
         );
         insert testContact;
-
-        // Create test user associated with contact
+    
+        // Get the Customer Community Plus Login User profile for testing
         Profile communityProfile = [
             SELECT Id
             FROM Profile
-            WHERE Name LIKE '%Customer Community%'
-            ORDER BY CreatedDate DESC
+            WHERE Name = 'Customer Community Plus Login User'
             LIMIT 1
         ];
-
+    
+        // Create test user with StoreConnect Community profile
         User testUser = new User(
-            FirstName = 'Jane',
-            LastName = 'Smith',
-            Email = 'jane.smith@agency.gov',
-            Username = 'jane.smith.paygov.test@agency.gov.test',
-            Alias = 'jsmith',
-            ProfileId = communityProfile.Id,
-            ContactId = testContact.Id,
-            TimeZoneSidKey = 'America/New_York',
+            Username = 'john.doe.test@storeconnect.com',
+            FirstName = 'John',
+            LastName = 'Doe',
+            Email = 'john.doe.test@storeconnect.com',
+            Alias = 'jdoe',
+            TimeZoneSidKey = 'America/Los_Angeles',
             LocaleSidKey = 'en_US',
             EmailEncodingKey = 'UTF-8',
-            LanguageLocaleKey = 'en_US'
+            LanguageLocaleKey = 'en_US',
+            ProfileId = communityProfile.Id,
+            ContactId = testContact.Id
         );
         insert testUser;
     }
