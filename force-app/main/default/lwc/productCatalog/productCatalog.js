@@ -102,27 +102,32 @@ export default class ProductCatalog extends NavigationMixin(LightningElement) {
     // Add to cart
     async handleAddToCart(event) {
         const productId = event.currentTarget.dataset.productId;
-        const quantity = parseInt(event.currentTarget.dataset.quantity);
-        
+        const quantity = parseInt(event.currentTarget.dataset.quantity, 10);
+
+        if (isNaN(quantity) || quantity < 1) {
+            this.showToast('Error', 'Invalid quantity', 'error');
+            return;
+        }
+
         try {
             // Get or create cart first
             if (!this.cartId) {
                 const cart = await getOrCreateCart({ contactId: this.recordId });
                 this.cartId = cart.Id;
             }
-            
+
             // Add item to cart
             await addToCart({
                 cartId: this.cartId,
                 productId: productId,
                 quantity: quantity
             });
-            
+
             this.showToast('Success', 'Product added to cart!', 'success');
-            
+
             // Dispatch event to update cart display
             this.dispatchEvent(new CustomEvent('cartupdated'));
-            
+
         } catch (error) {
             this.showToast('Error', 'Failed to add to cart: ' + error.body.message, 'error');
         }
