@@ -1,0 +1,7 @@
+{
+  "navigationMenuItems": [
+    { "id": "catalogNav", "label": "Product Catalog", "type": "InternalLink", "target": "productCatalog" },
+    { "id": "quotesNav", "label": "My Quotes", "type": "InternalLink", "target": "myQuotes" },
+    { "id": "ordersNav", "label": "Order History", "type": "InternalLink", "target": "orderHistory" }
+  ]
+}

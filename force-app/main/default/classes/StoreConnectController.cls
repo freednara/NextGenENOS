@@ -248,7 +248,63 @@ public with sharing class StoreConnectController {
             throw new AuraHandledException('Error retrieving shipping addresses: ' + e.getMessage());
         }
     }
-    
+
+    // Get recently viewed products
+    @AuraEnabled(cacheable=true)
+    public static List<RecentlyViewedProduct> getRecentlyViewed(Id contactId) {
+        try {
+            if (!StoreConnectSecurityUtil.hasReadPermission('View_Tracking__c') ||
+                !StoreConnectSecurityUtil.hasReadPermission('Product2')) {
+                throw new SecurityException('User lacks permission to read recently viewed products');
+            }
+
+            if (contactId == null) {
+                throw new IllegalArgumentException('Contact ID cannot be null');
+            }
+
+            Integer limitSize = 5;
+
+            List<View_Tracking__c> views = [
+                SELECT Product__c, Last_Viewed_Date__c
+                FROM View_Tracking__c
+                WHERE User_Contact__c = :contactId
+                ORDER BY Last_Viewed_Date__c DESC
+                LIMIT :limitSize
+            ];
+
+            if (views.isEmpty()) {
+                return new List<RecentlyViewedProduct>();
+            }
+
+            Set<Id> productIds = new Set<Id>();
+            for (View_Tracking__c vt : views) {
+                productIds.add(vt.Product__c);
+            }
+
+            Map<Id, Product2> products = new Map<Id, Product2>([
+                SELECT Id, Name, Image_URL__c,
+                       (SELECT UnitPrice FROM PricebookEntries WHERE Pricebook2.IsStandard = true LIMIT 1)
+                FROM Product2
+                WHERE Id IN :productIds AND IsActive = true
+            ]);
+
+            List<RecentlyViewedProduct> results = new List<RecentlyViewedProduct>();
+            for (View_Tracking__c vt : views) {
+                Product2 p = products.get(vt.Product__c);
+                if (p != null) {
+                    Decimal unitPrice = (p.PricebookEntries.isEmpty() ? null : p.PricebookEntries[0].UnitPrice);
+                    results.add(new RecentlyViewedProduct(p.Id, p.Name, p.Image_URL__c, unitPrice));
+                }
+            }
+            return results;
+
+        } catch (StoreConnectSecurityUtil.SecurityException e) {
+            throw new AuraHandledException('Security violation: ' + e.getMessage());
+        } catch (Exception e) {
+            throw new AuraHandledException('Error retrieving recently viewed products: ' + e.getMessage());
+        }
+    }
+
     // Track product view
     @AuraEnabled
     public static void trackProductView(Id contactId, Id productId) {
@@ -259,72 +315,15 @@ public with sharing class StoreConnectController {
                 Product__c = productId,
                 Last_Viewed_Date__c = System.now()
             );
-
+            
             upsert viewTracking;
-
+            
         } catch (Exception e) {
             // Don't throw error for tracking - just log it
             System.debug('Error tracking product view: ' + e.getMessage());
         }
     }
-
-    /**
-     * @description Retrieves the last 5 products viewed by the current user
-     * @return List of recently viewed Product2 records
-     * @throws AuraHandledException if operation fails or security check fails
-     */
-    @AuraEnabled(cacheable=true)
-    public static List<Product2> getRecentlyViewed() {
-        try {
-            // Security: Check object and field level permissions
-            if (!StoreConnectSecurityUtil.hasReadPermission('View_Tracking__c') ||
-                !StoreConnectSecurityUtil.hasReadPermission('Product2') ||
-                !StoreConnectSecurityUtil.hasReadPermission('PricebookEntry')) {
-                throw new SecurityException('User lacks permission to view recently viewed products');
-            }
-
-            if (!StoreConnectSecurityUtil.hasFieldReadPermission('Product2', 'Name') ||
-                !StoreConnectSecurityUtil.hasFieldReadPermission('Product2', 'ProductCode') ||
-                !StoreConnectSecurityUtil.hasFieldReadPermission('Product2', 'Image_URL__c') ||
-                !StoreConnectSecurityUtil.hasFieldReadPermission('PricebookEntry', 'UnitPrice')) {
-                throw new SecurityException('User lacks permission to view required product fields');
-            }
-
-            Id userId = UserInfo.getUserId();
-
-            List<View_Tracking__c> tracking = [
-                SELECT Product__c, Last_Viewed_Date__c
-                FROM View_Tracking__c
-                WHERE CreatedById = :userId
-                ORDER BY Last_Viewed_Date__c DESC
-                LIMIT 5
-            ];
-
-            Set<Id> productIds = new Set<Id>();
-            for (View_Tracking__c vt : tracking) {
-                productIds.add(vt.Product__c);
-            }
-
-            if (productIds.isEmpty()) {
-                return new List<Product2>();
-            }
-
-            List<Product2> products = [
-                SELECT Id, Name, ProductCode, Image_URL__c,
-                       (SELECT UnitPrice FROM PricebookEntries WHERE IsActive = true AND Pricebook2.IsStandard = true LIMIT 1)
-                FROM Product2
-                WHERE Id IN :productIds
-            ];
-
-            return products;
-
-        } catch (StoreConnectSecurityUtil.SecurityException e) {
-            throw new AuraHandledException('Security violation: ' + e.getMessage());
-        } catch (Exception e) {
-            throw new AuraHandledException('Error retrieving recently viewed products: ' + e.getMessage());
-        }
-    }
-
+    
     // Request back-in-stock notification
     @AuraEnabled
     public static void requestBackInStockNotification(Id contactId, Id productId) {
@@ -358,7 +357,22 @@ public with sharing class StoreConnectController {
         // For now, return a default price
         return 99.99;
     }
-    
+
+    // Wrapper class for recently viewed products
+    public class RecentlyViewedProduct {
+        @AuraEnabled public Id Id;
+        @AuraEnabled public String Name;
+        @AuraEnabled public String Image_URL__c;
+        @AuraEnabled public Decimal UnitPrice;
+
+        public RecentlyViewedProduct(Id id, String name, String imageUrl, Decimal unitPrice) {
+            this.Id = id;
+            this.Name = name;
+            this.Image_URL__c = imageUrl;
+            this.UnitPrice = unitPrice;
+        }
+    }
+
     // Wrapper class for product catalog results
     public class ProductCatalogResult {
         @AuraEnabled public List<Product2> products;

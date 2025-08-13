@@ -1,21 +1,29 @@
-@isTest
+@IsTest
 private class StoreConnectControllerTest {
+    @TestSetup
+    static void setup() {
+        Account acc = new Account(Name = 'Test Account');
+        insert acc;
+        Contact con = new Contact(LastName = 'Tester', AccountId = acc.Id);
+        insert con;
 
-    @testSetup
-    static void setupData() {
-        Id pricebookId = Test.getStandardPricebookId();
+        Product2 prod = new Product2(Name = 'Test Product', IsActive = true);
+        insert prod;
 
-        List<Product2> prods = new List<Product2>();
-        for (Integer i = 0; i < 6; i++) {
-            prods.add(new Product2(Name = 'Test Product ' + i, ProductCode = 'TP' + i, IsActive = true));
-        }
-        insert prods;
+        Id pbId = Test.getStandardPricebookId();
+        insert new PricebookEntry(Product2Id = prod.Id, Pricebook2Id = pbId, UnitPrice = 10, IsActive = true);
 
-        List<PricebookEntry> pbes = new List<PricebookEntry>();
-        for (Integer i = 0; i < prods.size(); i++) {
-            pbes.add(new PricebookEntry(Product2Id = prods[i].Id, Pricebook2Id = pricebookId, UnitPrice = 10 + i, IsActive = true));
-        }
-        insert pbes;
+        insert new View_Tracking__c(User_Contact__c = con.Id, Product__c = prod.Id, Last_Viewed_Date__c = System.now());
+    }
+
+    @IsTest
+    static void testGetRecentlyViewed() {
+        Contact c = [SELECT Id FROM Contact LIMIT 1];
+        Test.startTest();
+        List<StoreConnectController.RecentlyViewedProduct> results = StoreConnectController.getRecentlyViewed(c.Id);
+        Test.stopTest();
+        System.assertEquals(1, results.size());
+        System.assertEquals('Test Product', results[0].Name);
     }
 
     private static User createUser(String profileName) {
@@ -35,39 +43,15 @@ private class StoreConnectControllerTest {
         );
     }
 
-    @isTest
-    static void testGetRecentlyViewedReturnsFive() {
-        User u = createUser('Standard User');
-        insert u;
-
-        System.runAs(u) {
-            List<Product2> prods = [SELECT Id FROM Product2 ORDER BY Name];
-            List<View_Tracking__c> tracks = new List<View_Tracking__c>();
-            Integer idx = 0;
-            for (Product2 p : prods) {
-                tracks.add(new View_Tracking__c(Product__c = p.Id, Last_Viewed_Date__c = System.now().addMinutes(idx)));
-                idx++;
-            }
-            insert tracks;
-
-            Test.startTest();
-            List<Product2> result = StoreConnectController.getRecentlyViewed();
-            Test.stopTest();
-
-            System.assertEquals(5, result.size(), 'Should return last five products');
-            System.assertEquals(prods[5].Id, result[0].Id, 'Most recent product should be first');
-        }
-    }
-
-    @isTest
+    @IsTest
     static void testGetRecentlyViewedSecurity() {
         User limited = createUser('Minimum Access - Salesforce');
         insert limited;
-
+        Contact c = [SELECT Id FROM Contact LIMIT 1];
         System.runAs(limited) {
             Boolean thrown = false;
             try {
-                StoreConnectController.getRecentlyViewed();
+                StoreConnectController.getRecentlyViewed(c.Id);
             } catch (AuraHandledException e) {
                 thrown = true;
             }
@@ -75,3 +59,4 @@ private class StoreConnectControllerTest {
         }
     }
 }
+

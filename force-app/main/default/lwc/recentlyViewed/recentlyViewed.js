@@ -1,39 +1,40 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
 import getRecentlyViewed from '@salesforce/apex/StoreConnectController.getRecentlyViewed';
 import { NavigationMixin } from 'lightning/navigation';
 
 export default class RecentlyViewed extends NavigationMixin(LightningElement) {
+    @api recordId; // Contact Id
     @track recentlyViewed = [];
     @track isLoading = false;
-    @track hasError = false;
     @track errorMessage;
 
     get hasRecentlyViewed() {
-        return this.recentlyViewed && this.recentlyViewed.length > 0;
+        return this.recentlyViewed.length > 0;
+    }
+
+    get hasError() {
+        return !!this.errorMessage;
     }
 
     connectedCallback() {
-        this.refreshRecentlyViewed();
+        this.loadRecentlyViewed();
     }
 
-    async refreshRecentlyViewed() {
+    async loadRecentlyViewed() {
         this.isLoading = true;
-        this.hasError = false;
         try {
-            const products = await getRecentlyViewed();
-            this.recentlyViewed = (products || []).map((p) => {
-                const unitPrice =
-                    p.PricebookEntries && p.PricebookEntries.length > 0
-                        ? p.PricebookEntries[0].UnitPrice
-                        : null;
-                return { ...p, UnitPrice: unitPrice };
-            });
-        } catch (error) {
-            this.hasError = true;
-            this.errorMessage = error.body ? error.body.message : error.message;
+            this.recentlyViewed = await getRecentlyViewed({ contactId: this.recordId });
+            this.errorMessage = undefined;
+        } catch (e) {
+            this.errorMessage = e.body ? e.body.message : e.message;
+            this.recentlyViewed = [];
         } finally {
             this.isLoading = false;
         }
+    }
+
+    refreshRecentlyViewed() {
+        this.loadRecentlyViewed();
     }
 
     handleProductClick(event) {

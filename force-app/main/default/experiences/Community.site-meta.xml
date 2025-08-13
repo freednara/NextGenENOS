@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Site xmlns="http://soap.sforce.com/2006/04/metadata">
+  <label>Community</label>
+  <description>NextGenENOS Experience Cloud site</description>
+  <status>Inactive</status>
+</Site>
