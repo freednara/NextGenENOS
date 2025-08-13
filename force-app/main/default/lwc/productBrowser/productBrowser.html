@@ -31,7 +31,7 @@
 
                 <!-- Products Display -->
                 <lightning-layout multiple-rows="true" pull-to-boundary="small">
-                    <template for:each={products.data} for:item="product">
+                    <template for:each={enhancedProducts} for:item="product">
                         <lightning-layout-item 
                             key={product.Id} 
                             size="12" 
@@ -45,24 +45,13 @@
                                 <div class="slds-box slds-box_border product-card">
                                     <!-- Product Image -->
                                     <div class="product-image-container">
-                                        <template if:true={product.Image_URL__c}>
-                                            <img 
-                                                src={product.Image_URL__c} 
-                                                alt={product.Name}
-                                                class="product-image"
-                                                onerror={handleImageError}
-                                                data-product-id={product.Id}
-                                            />
-                                        </template>
-                                        <template if:false={product.Image_URL__c}>
-                                            <div class="slds-var-p-around_medium slds-text-align_center">
-                                                <lightning-icon 
-                                                    icon-name="standard:products" 
-                                                    size="large" 
-                                                    alternative-text="No Image">
-                                                </lightning-icon>
-                                            </div>
-                                        </template>
+                                        <div class="slds-var-p-around_medium slds-text-align_center">
+                                            <lightning-icon 
+                                                icon-name="standard:products" 
+                                                size="large" 
+                                                alternative-text="Product Image">
+                                            </lightning-icon>
+                                        </div>
                                     </div>
 
                                     <!-- Product Information -->
@@ -70,6 +59,11 @@
                                         <h2 class="slds-truncate slds-text-heading_medium" title={product.Name}>
                                             {product.Name}
                                         </h2>
+                                        
+                                        <!-- Product Code -->
+                                        <p class="slds-text-body_small slds-var-p-top_x-small slds-var-p-bottom_small">
+                                            Code: {product.ProductCode}
+                                        </p>
                                         
                                         <!-- Product Description -->
                                         <template if:true={product.Description}>
@@ -80,14 +74,10 @@
 
                                         <!-- Product Price -->
                                         <div class="slds-text-title_bold slds-var-p-top_small">
-                                            <template if:true={product.UnitPrice}>
-                                                <lightning-formatted-number
-                                                    value={product.UnitPrice}
-                                                    format-style="currency"
-                                                    currency-code="USD">
-                                                </lightning-formatted-number>
+                                            <template if:true={product.hasPrice}>
+                                                <span>{product.displayPrice}</span>
                                             </template>
-                                            <template if:false={product.UnitPrice}>
+                                            <template if:false={product.hasPrice}>
                                                 <span class="slds-text-color_weak">Price unavailable</span>
                                             </template>
                                         </div>
@@ -112,11 +102,11 @@
                 </lightning-layout>
 
                 <!-- No Products Found -->
-                <template if:true={products.data}>
-                    <template if:true={products.data.length}>
+                <template if:true={enhancedProducts}>
+                    <template if:true={enhancedProducts.length}>
                         <!-- Products are displayed above -->
                     </template>
-                    <template if:false={products.data.length}>
+                    <template if:false={enhancedProducts.length}>
                         <div class="slds-var-p-around_medium slds-text-align_center">
                             <lightning-icon 
                                 icon-name="utility:search" 

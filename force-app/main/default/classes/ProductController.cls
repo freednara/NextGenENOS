@@ -36,8 +36,8 @@ public with sharing class ProductController {
             List<String> fieldsToCheck = new List<String>{
                 'Id',
                 'Name',
+                'ProductCode',
                 'Description',
-                'Image_URL__c',
                 'IsActive'
             };
 
@@ -66,7 +66,7 @@ public with sharing class ProductController {
 
             // If no custom price book is assigned, default to the standard one.
             if (pricebookIdToUse == null) {
-                pricebookIdToUse = Test.getStandardPricebookId();
+                pricebookIdToUse = [SELECT Id FROM Pricebook2 WHERE IsStandard = true LIMIT 1].Id;
             }
             // ** END: NEW LOGIC FOR CONTRACT PRICING **
 
@@ -74,7 +74,7 @@ public with sharing class ProductController {
             // The subquery dynamically selects the correct price book for contract pricing.
             List<Product2> products = [
                 SELECT
-                    Id, Name, Description, Image_URL__c, IsActive,
+                    Id, Name, ProductCode, Description, IsActive,
                     (SELECT UnitPrice, IsActive, Pricebook2Id 
                      FROM PricebookEntries 
                      WHERE Pricebook2Id = :pricebookIdToUse 
@@ -132,11 +132,9 @@ public with sharing class ProductController {
             List<String> fieldsToCheck = new List<String>{
                 'Id',
                 'Name',
+                'ProductCode',
                 'Description',
-                'Image_URL__c',
-                'IsActive',
-                'Stock_Quantity__c',
-                'Is_Top_Seller__c'
+                'IsActive'
             };
 
             // 3. Enforce FLS read access.
@@ -161,7 +159,7 @@ public with sharing class ProductController {
 
             // If no custom price book is assigned, default to the standard one.
             if (pricebookIdToUse == null) {
-                pricebookIdToUse = Test.getStandardPricebookId();
+                pricebookIdToUse = [SELECT Id FROM Pricebook2 WHERE IsStandard = true LIMIT 1].Id;
             }
             // ** END: NEW LOGIC FOR CONTRACT PRICING **
 
@@ -169,8 +167,7 @@ public with sharing class ProductController {
             // The subquery dynamically selects the correct price book for contract pricing.
             List<Product2> products = [
                 SELECT
-                    Id, Name, Description, Image_URL__c, IsActive,
-                    Stock_Quantity__c, Is_Top_Seller__c,
+                    Id, Name, ProductCode, Description, IsActive,
                     (SELECT UnitPrice, IsActive, Pricebook2Id 
                      FROM PricebookEntries 
                      WHERE Pricebook2Id = :pricebookIdToUse 
@@ -233,8 +230,8 @@ public with sharing class ProductController {
             List<String> fieldsToCheck = new List<String>{
                 'Id',
                 'Name',
+                'ProductCode',
                 'Description',
-                'Image_URL__c',
                 'IsActive'
             };
 
@@ -260,7 +257,7 @@ public with sharing class ProductController {
 
             // If no custom price book is assigned, default to the standard one.
             if (pricebookIdToUse == null) {
-                pricebookIdToUse = Test.getStandardPricebookId();
+                pricebookIdToUse = [SELECT Id FROM Pricebook2 WHERE IsStandard = true LIMIT 1].Id;
             }
             // ** END: NEW LOGIC FOR CONTRACT PRICING **
 
@@ -268,7 +265,7 @@ public with sharing class ProductController {
             // The subquery dynamically selects the correct price book for contract pricing.
             List<Product2> products = [
                 SELECT
-                    Id, Name, Description, Image_URL__c, IsActive,
+                    Id, Name, ProductCode, Description, IsActive,
                     (SELECT UnitPrice, IsActive, Pricebook2Id 
                      FROM PricebookEntries 
                      WHERE Pricebook2Id = :pricebookIdToUse 

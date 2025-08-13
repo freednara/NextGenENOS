@@ -216,4 +216,49 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
     get errorMessage() {
         return this.products && this.products.error ? this.products.error.body.message : '';
     }
+
+    /**
+     * @description Returns products with enhanced data for display.
+     * Adds computed properties like price and formatted data.
+     */
+    get enhancedProducts() {
+        if (!this.products || !this.products.data) {
+            return [];
+        }
+        
+        return this.products.data.map(product => ({
+            ...product,
+            displayPrice: this.getProductPrice(product),
+            hasPrice: this.hasProductPrice(product)
+        }));
+    }
+
+    /**
+     * @description Gets the display price for a product.
+     * @param {Object} product - The product record
+     * @returns {string} Formatted price or null
+     */
+    getProductPrice(product) {
+        if (product.PricebookEntries && 
+            product.PricebookEntries.records && 
+            product.PricebookEntries.records.length > 0) {
+            const price = product.PricebookEntries.records[0].UnitPrice;
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(price);
+        }
+        return null;
+    }
+
+    /**
+     * @description Checks if a product has a price.
+     * @param {Object} product - The product record
+     * @returns {boolean} True if product has a price
+     */
+    hasProductPrice(product) {
+        return product.PricebookEntries && 
+               product.PricebookEntries.records && 
+               product.PricebookEntries.records.length > 0;
+    }
 }
