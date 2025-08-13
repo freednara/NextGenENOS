@@ -286,12 +286,49 @@ public with sharing class StoreConnectSecurityUtil {
      * @return Boolean indicating if field requires encryption
      */
     public static Boolean requiresEncryption(String fieldName, String objectName) {
-        // TODO: Implement encryption requirement validation
-        // This will include:
-        // - PII field identification
-        // - Encryption policy enforcement
-        // - Compliance requirement checking
-        return false; // Placeholder return
+        if (String.isBlank(objectName) || String.isBlank(fieldName)) {
+            return false;
+        }
+
+        Map<String, Schema.SObjectField> fieldMap = getFieldMap(objectName);
+        if (fieldMap == null) {
+            throw new SecurityException('Invalid object name: ' + objectName);
+        }
+
+        if (!fieldMap.containsKey(fieldName)) {
+            throw new SecurityException('Invalid field name: ' + fieldName + ' on object: ' + objectName);
+        }
+
+        Schema.DescribeFieldResult fieldDescribe = fieldMap.get(fieldName).getDescribe();
+
+        // If the field is already encrypted, an encryption requirement exists
+        if (fieldDescribe.isEncrypted()) {
+            return true;
+        }
+
+        // Check security classification when available.  A restricted field
+        // indicates sensitive data that should be encrypted.
+        try {
+            if (fieldDescribe.getSecurityClassification() == Schema.SecurityClassification.RESTRICTED) {
+                return true;
+            }
+        } catch (Exception e) {
+            // Ignore when security classification is not supported
+        }
+
+        // Basic PII keyword matching on field names to enforce encryption policy.
+        String upperName = fieldName.toUpperCase();
+        List<String> piiKeywords = new List<String>{
+            'EMAIL', 'PHONE', 'MOBILE', 'SSN', 'SOCIAL', 'ACCOUNT', 'CREDIT',
+            'CARD', 'ADDRESS', 'DOB', 'BIRTH', 'TAX', 'PASSPORT'
+        };
+        for (String keyword : piiKeywords) {
+            if (upperName.contains(keyword)) {
+                return true;
+            }
+        }
+
+        return false;
     }
     
     /**
