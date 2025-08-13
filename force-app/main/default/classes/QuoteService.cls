@@ -40,7 +40,6 @@ public with sharing class QuoteService {
         } catch (StoreConnectSecurityUtil.SecurityException e) {
             throw new AuraHandledException('Security violation: ' + e.getMessage());
         } catch (Exception e) {
-            System.debug(LoggingLevel.ERROR, 'Error retrieving quotes: ' + e.getMessage());
             throw new AuraHandledException('Unable to retrieve quotes at this time. Please try again later.');
         }
     }
@@ -71,7 +70,6 @@ public with sharing class QuoteService {
         } catch (StoreConnectSecurityUtil.SecurityException e) {
             throw new AuraHandledException('Security violation: ' + e.getMessage());
         } catch (Exception e) {
-            System.debug(LoggingLevel.ERROR, 'Error retrieving quotes for account: ' + e.getMessage());
             throw new AuraHandledException('Error retrieving quotes: ' + e.getMessage());
         }
     }
@@ -122,7 +120,6 @@ public with sharing class QuoteService {
         } catch (StoreConnectSecurityUtil.SecurityException e) {
             throw new AuraHandledException('Security violation: ' + e.getMessage());
         } catch (Exception e) {
-            System.debug(LoggingLevel.ERROR, 'Error creating quote from cart: ' + e.getMessage());
             throw new AuraHandledException('Unable to create quote at this time. Please try again later.');
         }
     }
@@ -156,7 +153,6 @@ public with sharing class QuoteService {
         } catch (StoreConnectSecurityUtil.SecurityException e) {
             throw new AuraHandledException('Security violation: ' + e.getMessage());
         } catch (Exception e) {
-            System.debug(LoggingLevel.ERROR, 'Error creating quote: ' + e.getMessage());
             throw new AuraHandledException('Error creating quote: ' + e.getMessage());
         }
     }
@@ -167,6 +163,21 @@ public with sharing class QuoteService {
      * @return Id of Account or null
      */
     private static Id getCurrentUserAccountId() {
+        if (!StoreConnectSecurityUtil.hasReadPermission('User')) {
+            throw new StoreConnectSecurityUtil.SecurityException('User lacks read access to User.');
+        }
+        for (String fieldName : new List<String>{'ContactId'}) {
+            if (!StoreConnectSecurityUtil.hasFieldReadPermission('User', fieldName)) {
+                throw new StoreConnectSecurityUtil.SecurityException('No access to field User.' + fieldName);
+            }
+        }
+        if (!StoreConnectSecurityUtil.hasReadPermission('Contact')) {
+            throw new StoreConnectSecurityUtil.SecurityException('User lacks read access to Contact.');
+        }
+        if (!StoreConnectSecurityUtil.hasFieldReadPermission('Contact', 'AccountId')) {
+            throw new StoreConnectSecurityUtil.SecurityException('No access to field Contact.AccountId');
+        }
+
         List<User> users = [
             SELECT Contact.AccountId
             FROM User
@@ -182,6 +193,13 @@ public with sharing class QuoteService {
      * @return Id of Contact or null
      */
     private static Id getCurrentUserContactId() {
+        if (!StoreConnectSecurityUtil.hasReadPermission('User')) {
+            throw new StoreConnectSecurityUtil.SecurityException('User lacks read access to User.');
+        }
+        if (!StoreConnectSecurityUtil.hasFieldReadPermission('User', 'ContactId')) {
+            throw new StoreConnectSecurityUtil.SecurityException('No access to field User.ContactId');
+        }
+
         List<User> users = [
             SELECT ContactId
             FROM User
