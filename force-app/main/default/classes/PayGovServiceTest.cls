@@ -59,7 +59,8 @@ private class PayGovServiceTest {
             'TEST_AGENCY_123',
             'ORDER-' + System.currentTimeMillis(),
             100.00,
-            'jane.smith@agency.gov'
+            'jane.smith@agency.gov',
+            'TOKEN-ABC'
         );
         
         paymentRequest.description = 'Test Payment Description';
@@ -93,7 +94,8 @@ private class PayGovServiceTest {
             null, // Invalid agency ID
             'ORDER-TEST',
             100.00,
-            'jane.smith@agency.gov'
+            'jane.smith@agency.gov',
+            'TOKEN-ABC'
         );
 
         Test.startTest();
@@ -182,7 +184,8 @@ private class PayGovServiceTest {
                 'TEST_AGENCY',
                 'ORDER-TEST',
                 -10.00, // Invalid negative amount
-                'test@agency.gov'
+                'test@agency.gov',
+                'TOKEN-ABC'
             );
             PayGovService.initiatePayment(invalidRequest);
             System.assert(false, 'Exception should be thrown for negative amount');
@@ -196,14 +199,30 @@ private class PayGovServiceTest {
                 'TEST_AGENCY',
                 'ORDER-TEST',
                 1000000.00, // Exceeds limit
-                'test@agency.gov'
+                'test@agency.gov',
+                'TOKEN-ABC'
             );
             PayGovService.initiatePayment(limitRequest);
             System.assert(false, 'Exception should be thrown for amount exceeding limit');
         } catch (PayGovService.PayGovException e) {
             System.assert(e.getMessage().contains('maximum allowed limit'), 'Exception should mention limit');
         }
-        
+
+        // Test missing payment token
+        try {
+            PayGovService.PayGovRequest noTokenRequest = new PayGovService.PayGovRequest(
+                'TEST_AGENCY',
+                'ORDER-TEST',
+                50.00,
+                'test@agency.gov',
+                null
+            );
+            PayGovService.initiatePayment(noTokenRequest);
+            System.assert(false, 'Exception should be thrown for missing payment token');
+        } catch (PayGovService.PayGovException e) {
+            System.assert(e.getMessage().contains('Payment token'), 'Exception should mention payment token');
+        }
+
         Test.stopTest();
     }
 
