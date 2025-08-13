@@ -41,55 +41,50 @@ public with sharing class StoreConnectController {
             String baseQuery = 'SELECT Id, Name, ProductCode, Description, Image_URL__c, Stock_Quantity__c, Is_Top_Seller__c, IsActive ' +
                              'FROM Product2 ' +
                              'WHERE IsActive = true ';
-            
+
             List<String> conditions = new List<String>();
-            List<Object> bindVariables = new List<Object>();
-            
+            String searchPattern;
+            String categoryPattern;
+
             if (String.isNotBlank(sanitizedSearchTerm)) {
-                conditions.add('(Name LIKE :searchPattern1 OR Description LIKE :searchPattern2)');
-                bindVariables.add('%' + sanitizedSearchTerm + '%');
-                bindVariables.add('%' + sanitizedSearchTerm + '%');
+                searchPattern = '%' + sanitizedSearchTerm + '%';
+                conditions.add('(Name LIKE :searchPattern OR Description LIKE :searchPattern)');
             }
-            
+
             if (String.isNotBlank(sanitizedCategory)) {
+                categoryPattern = '%' + sanitizedCategory + '%';
                 conditions.add('ProductCode LIKE :categoryPattern');
-                bindVariables.add('%' + sanitizedCategory + '%');
             }
-            
+
             if (topSellersOnly) {
                 conditions.add('Is_Top_Seller__c = true');
             }
-            
+
             if (!conditions.isEmpty()) {
                 baseQuery += 'AND ' + String.join(conditions, ' AND ');
             }
-            
+
+            Integer offset = pageNumber * pageSize;
             baseQuery += ' ORDER BY Name LIMIT :pageSize OFFSET :offset';
-            bindVariables.add(pageSize);
-            bindVariables.add(pageNumber * pageSize);
-            
+
             // Execute query with bind variables
             List<Product2> products = Database.query(baseQuery);
-            
+
             // Get total count for pagination (also using bind variables)
             String countQuery = 'SELECT COUNT() FROM Product2 WHERE IsActive = true ';
-            List<Object> countBindVariables = new List<Object>();
-            
+
             if (String.isNotBlank(sanitizedSearchTerm)) {
-                countQuery += 'AND (Name LIKE :searchPattern1 OR Description LIKE :searchPattern2) ';
-                countBindVariables.add('%' + sanitizedSearchTerm + '%');
-                countBindVariables.add('%' + sanitizedSearchTerm + '%');
+                countQuery += 'AND (Name LIKE :searchPattern OR Description LIKE :searchPattern) ';
             }
-            
+
             if (String.isNotBlank(sanitizedCategory)) {
                 countQuery += 'AND ProductCode LIKE :categoryPattern ';
-                countBindVariables.add('%' + sanitizedCategory + '%');
             }
-            
+
             if (topSellersOnly) {
                 countQuery += 'AND Is_Top_Seller__c = true';
             }
-            
+
             Integer totalCount = Database.countQuery(countQuery);
             
             return new ProductCatalogResult(products, totalCount, pageNumber, pageSize);

@@ -1,4 +1,4 @@
-import { LightningElement, track, wire, api } from 'lwc';
+import { LightningElement, api } from 'lwc';
 import getProducts from '@salesforce/apex/StoreConnectController.getProducts';
 import trackProductView from '@salesforce/apex/StoreConnectController.trackProductView';
 import addToCart from '@salesforce/apex/StoreConnectController.addToCart';
@@ -8,17 +8,17 @@ import { NavigationMixin } from 'lightning/navigation';
 
 export default class ProductCatalog extends NavigationMixin(LightningElement) {
     @api recordId; // Contact ID from the community user
-    @track products = [];
-    @track filteredProducts = [];
-    @track searchTerm = '';
-    @track selectedCategory = '';
-    @track topSellersOnly = false;
-    @track currentPage = 0;
-    @track pageSize = 12;
-    @track totalCount = 0;
-    @track totalPages = 0;
-    @track loading = false;
-    @track cartId;
+    products = [];
+    searchTerm = '';
+    selectedCategory = '';
+    topSellersOnly = false;
+    currentPage = 0;
+    pageSize = 12;
+    totalCount = 0;
+    totalPages = 0;
+    loading = false;
+    cartId;
+    searchDelay;
     
     // Pagination
     get hasNextPage() {
@@ -39,33 +39,33 @@ export default class ProductCatalog extends NavigationMixin(LightningElement) {
     handleSearchChange(event) {
         this.searchTerm = event.target.value;
         this.currentPage = 0;
-        this.loadProducts();
+        this.debounceLoadProducts();
     }
     
     handleCategoryChange(event) {
         this.selectedCategory = event.target.value;
         this.currentPage = 0;
-        this.loadProducts();
+        this.debounceLoadProducts();
     }
     
     handleTopSellersChange(event) {
         this.topSellersOnly = event.target.checked;
         this.currentPage = 0;
-        this.loadProducts();
+        this.debounceLoadProducts();
     }
     
     // Pagination methods
     handleNextPage() {
         if (this.hasNextPage) {
             this.currentPage++;
-            this.loadProducts();
+            this.debounceLoadProducts();
         }
     }
     
     handlePreviousPage() {
         if (this.hasPreviousPage) {
             this.currentPage--;
-            this.loadProducts();
+            this.debounceLoadProducts();
         }
     }
     
@@ -90,6 +90,13 @@ export default class ProductCatalog extends NavigationMixin(LightningElement) {
         } finally {
             this.loading = false;
         }
+    }
+
+    debounceLoadProducts() {
+        window.clearTimeout(this.searchDelay);
+        this.searchDelay = window.setTimeout(() => {
+            this.loadProducts();
+        }, 300);
     }
     
     // Add to cart
