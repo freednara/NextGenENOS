@@ -1,18 +1,24 @@
 <template>
-    <lightning-card title="My Quotes" icon-name="standard:quotes">
-        <div class="slds-p-around_medium">
-            <div class="slds-notify slds-notify_info slds-theme_info">
-                <span class="slds-icon_container slds-icon-utility-info slds-m-right_x-small">
-                    <lightning-icon icon-name="utility:info" size="x-small"></lightning-icon>
-                </span>
-                <span class="slds-notify__content">
-                    <h2 class="slds-text-heading_small">{message}</h2>
-                    <p class="slds-text-body_regular slds-m-top_x-small">
-                        This feature requires Salesforce Enterprise Edition or higher. 
-                        The current org is running Developer Edition which doesn't include Quote objects.
-                    </p>
-                </span>
-            </div>
-        </div>
-    </lightning-card>
+  <lightning-card title="My Quotes" icon-name="standard:quotes">
+    <div class="slds-p-around_medium">
+      <div class="slds-notify slds-notify_info slds-theme_info">
+        <span
+          class="slds-icon_container slds-icon-utility-info slds-m-right_x-small"
+        >
+          <lightning-icon
+            icon-name="utility:info"
+            size="x-small"
+          ></lightning-icon>
+        </span>
+        <span class="slds-notify__content">
+          <h2 class="slds-text-heading_small">{message}</h2>
+          <p class="slds-text-body_regular slds-m-top_x-small">
+            This feature requires Salesforce Enterprise Edition or higher. The
+            current org is running Developer Edition which doesn't include Quote
+            objects.
+          </p>
+        </span>
+      </div>
+    </div>
+  </lightning-card>
 </template>

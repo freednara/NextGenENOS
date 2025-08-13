@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "salesforce": {
+      "command": "npx",
+      "args": [
+        "@salesforce/mcp",
+        "--orgs",
+        "StoreConnect-Dev",
+        "--toolsets",
+        "metadata"
+      ],
+      "env": {}
+    }
+  }
+}

@@ -12,6 +12,7 @@
 StoreConnect is a comprehensive, production-ready e-commerce solution built entirely on the Salesforce platform. It provides a secure, scalable, and PCI-compliant shopping experience for B2B and B2C customers through Experience Cloud, leveraging Lightning Web Components, Apex, and Salesforce Flows.
 
 ### **Key Features**
+
 - 🛒 **Complete Shopping Experience** - Product browsing, cart management, and checkout
 - 🔒 **PCI-Compliant Security** - Secure payment processing without storing sensitive data
 - 🚀 **Lightning Performance** - Optimized LWC components with real-time updates
@@ -22,6 +23,7 @@ StoreConnect is a comprehensive, production-ready e-commerce solution built enti
 ## 🏗️ **Architecture & Technology Stack**
 
 ### **Salesforce Platform**
+
 - **Experience Cloud** - Customer-facing portal and authentication
 - **Lightning Web Components (LWC)** - Modern, performant UI components
 - **Apex** - Server-side business logic and data processing
@@ -29,12 +31,14 @@ StoreConnect is a comprehensive, production-ready e-commerce solution built enti
 - **Custom Objects** - Tailored data model for e-commerce operations
 
 ### **Security & Compliance**
+
 - **PCI DSS Compliance** - Secure payment processing architecture
 - **CRUD/FLS Enforcement** - Comprehensive security utility classes
 - **Sharing Model** - User data isolation and access control
 - **Input Validation** - Client and server-side security measures
 
 ### **Data Model**
+
 - **Cart Management** - Persistent shopping cart with real-time updates
 - **Product Catalog** - Flexible product management with pricing
 - **Order Processing** - Transactional order creation and management
@@ -43,6 +47,7 @@ StoreConnect is a comprehensive, production-ready e-commerce solution built enti
 ## 🚀 **Getting Started**
 
 ### **Prerequisites**
+
 - Salesforce org with Experience Cloud enabled
 - Customer Community Plus Login licenses
 - Salesforce CLI (SFDX) installed
@@ -51,16 +56,18 @@ StoreConnect is a comprehensive, production-ready e-commerce solution built enti
 ### **Installation**
 
 1. **Clone the Repository**
+
    ```bash
    git clone https://github.com/freednara/NextGenENOS.git
    cd NextGenENOS
    ```
 
 2. **Deploy to Salesforce**
+
    ```bash
    # Authenticate with your org
    sf org login web --set-default-dev-hub
-   
+
    # Deploy the source code
    sf project deploy start --source-dir force-app/main/default
    ```
@@ -135,24 +142,28 @@ NextGenENOS/
 ## 🔧 **Core Components**
 
 ### **Product Management**
+
 - **Product Browser** - Responsive product catalog with search
 - **Product Detail** - Comprehensive product information display
 - **Image Management** - External image hosting with fallbacks
 - **Pricing Engine** - Flexible pricing with B2B contract support
 
 ### **Shopping Cart**
+
 - **Real-time Updates** - Lightning Message Service integration
 - **Persistent Storage** - User-specific cart management
 - **Quantity Management** - Add, update, and remove items
 - **Price Calculation** - Automatic totals and line item calculations
 
 ### **Checkout Process**
+
 - **Multi-step Flow** - Shipping address, payment, and review
 - **Secure Payment** - PCI-compliant payment gateway integration
 - **Order Creation** - Transactional order processing
 - **Confirmation** - Order success and tracking information
 
 ### **User Management**
+
 - **Self-registration** - Community user account creation
 - **Profile Management** - Customer information and preferences
 - **Order History** - Complete purchase tracking
@@ -161,12 +172,14 @@ NextGenENOS/
 ## 🔒 **Security Features**
 
 ### **Data Protection**
+
 - **No Sensitive Storage** - Credit card data never touches Salesforce
 - **Token-based Processing** - Secure payment token handling
 - **User Isolation** - Complete data separation between users
 - **Audit Logging** - Comprehensive transaction tracking
 
 ### **Access Control**
+
 - **CRUD/FLS Enforcement** - Field and object-level security
 - **Sharing Rules** - Record-level access control
 - **Permission Sets** - Granular user permissions
@@ -175,12 +188,14 @@ NextGenENOS/
 ## 📊 **Performance & Scalability**
 
 ### **Optimization Features**
+
 - **LWC Caching** - `@wire` service with cacheable Apex
 - **Bulk Operations** - Governor limit compliance
 - **Asynchronous Processing** - Background job handling
 - **Efficient Queries** - SOQL optimization and indexing
 
 ### **Scalability Considerations**
+
 - **Modular Architecture** - Component-based design
 - **Service Layer** - Reusable business logic
 - **Configuration-driven** - Metadata-based customization
@@ -189,12 +204,14 @@ NextGenENOS/
 ## 🧪 **Testing & Quality Assurance**
 
 ### **Code Quality**
+
 - **Salesforce Code Analyzer** - Automated security scanning
 - **ApexDoc** - Comprehensive code documentation
 - **Best Practices** - Salesforce development standards
 - **Performance Monitoring** - Governor limit compliance
 
 ### **Testing Strategy**
+
 - **Unit Testing** - Apex class and method testing
 - **Integration Testing** - End-to-end process validation
 - **Security Testing** - PCI compliance verification
@@ -203,12 +220,14 @@ NextGenENOS/
 ## 🚀 **Deployment & DevOps**
 
 ### **CI/CD Pipeline**
+
 - **GitHub Actions** - Automated testing and deployment
 - **Salesforce CLI** - Command-line deployment tools
 - **Environment Management** - Sandbox and production deployment
 - **Version Control** - Git-based source code management
 
 ### **Deployment Options**
+
 - **Manual Deployment** - SFDX CLI commands
 - **Automated Deployment** - CI/CD pipeline integration
 - **Package Deployment** - Managed package distribution
@@ -217,12 +236,14 @@ NextGenENOS/
 ## 📚 **Documentation**
 
 ### **Available Guides**
+
 - **Master Build Plan** - Complete development roadmap
 - **Implementation Guides** - Step-by-step setup instructions
 - **Security Documentation** - PCI compliance and security measures
 - **API Documentation** - Apex class and method references
 
 ### **Getting Help**
+
 - **Project Issues** - GitHub issue tracking
 - **Documentation** - Comprehensive guides and examples
 - **Best Practices** - Salesforce development standards
@@ -231,12 +252,14 @@ NextGenENOS/
 ## 🤝 **Contributing**
 
 ### **Development Process**
+
 1. **Fork the Repository** - Create your own copy
 2. **Create Feature Branch** - Work on specific features
 3. **Follow Standards** - Adhere to coding and documentation standards
 4. **Submit Pull Request** - Request code review and integration
 
 ### **Code Standards**
+
 - **Salesforce Best Practices** - Follow platform guidelines
 - **Security First** - Implement proper security measures
 - **Documentation** - Maintain comprehensive documentation
@@ -264,4 +287,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **StoreConnect** - Building the future of e-commerce on Salesforce 🚀
 
-*Built with ❤️ using Salesforce Lightning Web Components, Apex, and Flows*
+_Built with ❤️ using Salesforce Lightning Web Components, Apex, and Flows_

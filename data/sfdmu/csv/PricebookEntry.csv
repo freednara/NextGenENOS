@@ -1,0 +1,23 @@
+Pricebook2Id__r.Name,Product2Id__r.ProductCode,UnitPrice,IsActive
+Standard Price Book,WH-001,199.99,true
+Standard Price Book,FW-002,149.99,true
+Standard Price Book,BS-003,89.99,true
+Standard Price Book,WC-004,29.99,true
+Standard Price Book,AC-005,249.99,true
+Standard Price Book,SH-006,129.99,true
+Standard Price Book,KB-007,109.99,true
+Standard Price Book,GM-008,59.99,true
+Standard Price Book,PB-009,39.99,true
+Standard Price Book,LB-010,49.99,true
+Standard Price Book,EB-011,119.99,true
+Standard Price Book,ST-012,179.99,true
+Standard Price Book,MN-013,399.99,true
+Standard Price Book,HB-014,69.99,true
+Standard Price Book,CH-015,299.99,true
+Standard Price Book,WC-016,79.99,true
+Standard Price Book,SD-017,129.99,true
+Standard Price Book,LS-018,39.99,true
+Standard Price Book,PR-019,49.99,true
+Standard Price Book,GH-020,139.99,true
+
+

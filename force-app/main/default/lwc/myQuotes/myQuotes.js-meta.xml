@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>64.0</apiVersion>
     <isExposed>true</isExposed>
@@ -11,7 +11,11 @@
     </targets>
     <targetConfigs>
         <targetConfig targets="lightningCommunity__Default">
-            <property name="recordId" type="String" description="Account ID for account-specific quotes" />
+            <property
+        name="recordId"
+        type="String"
+        description="Account ID for account-specific quotes"
+      />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

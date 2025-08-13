@@ -3,390 +3,540 @@
  * @author StoreConnect Development Team
  * @version 1.0.0
  * @since 2024-12-16
- * 
+ *
  * This class handles all core e-commerce operations including product queries,
  * cart management, and user interactions. All operations enforce CRUD/FLS
  * permissions and prevent SOQL injection attacks.
  */
 public with sharing class StoreConnectController {
-    
-    /**
-     * @description Retrieves products for the catalog with pagination and filtering
-     * @param searchTerm Search term for product name or description
-     * @param category Category filter for product code
-     * @param pageNumber Current page number (0-based)
-     * @param pageSize Number of products per page
-     * @param topSellersOnly Filter for top-selling products only
-     * @return ProductCatalogResult containing products and pagination info
-     * @throws AuraHandledException if operation fails or security check fails
-     */
-    @AuraEnabled(cacheable=true)
-    public static ProductCatalogResult getProducts(String searchTerm, String category, Integer pageNumber, Integer pageSize, Boolean topSellersOnly) {
-        try {
-            // Security: Check if user has read permission on Product2
-            if (!StoreConnectSecurityUtil.hasReadPermission('Product2')) {
-                throw new SecurityException('User lacks permission to read products');
-            }
-            
-            // Security: Sanitize and validate input parameters
-            String sanitizedSearchTerm = StoreConnectSecurityUtil.sanitizeInput(searchTerm, 255);
-            String sanitizedCategory = StoreConnectSecurityUtil.sanitizeInput(category, 100);
-            
-            // Validate pagination parameters
-            if (pageNumber < 0 || pageSize <= 0 || pageSize > 100) {
-                throw new IllegalArgumentException('Invalid pagination parameters');
-            }
-            
-            // Build static query with bind variables to prevent SOQL injection
-            String baseQuery = 'SELECT Id, Name, ProductCode, Description, IsActive ' +
-                             'FROM Product2 ' +
-                             'WHERE IsActive = true ';
+  /**
+   * @description Retrieves products for the catalog with pagination and filtering
+   * @param searchTerm Search term for product name or description
+   * @param category Category filter for product code
+   * @param pageNumber Current page number (0-based)
+   * @param pageSize Number of products per page
+   * @param topSellersOnly Filter for top-selling products only
+   * @return ProductCatalogResult containing products and pagination info
+   * @throws AuraHandledException if operation fails or security check fails
+   */
+  @AuraEnabled(cacheable=true)
+  public static ProductCatalogResult getProducts(
+    String searchTerm,
+    String category,
+    Integer pageNumber,
+    Integer pageSize,
+    Boolean topSellersOnly
+  ) {
+    try {
+      // Security: Check object-level permissions
+      if (!StoreConnectSecurityUtil.hasReadPermission('Product2')) {
+        throw new SecurityException('User lacks permission to read products');
+      }
+      SecurityUtils.checkObjectReadable('Product2');
+      SecurityUtils.checkObjectReadable('Pricebook2');
+      SecurityUtils.checkObjectReadable('PricebookEntry');
 
-            List<String> conditions = new List<String>();
-            String searchPattern;
-            String categoryPattern;
+      // Security: Sanitize and validate input parameters
+      String sanitizedSearchTerm = StoreConnectSecurityUtil.sanitizeInput(
+        searchTerm,
+        255
+      );
+      String sanitizedCategory = StoreConnectSecurityUtil.sanitizeInput(
+        category,
+        100
+      );
 
-            if (String.isNotBlank(sanitizedSearchTerm)) {
-                searchPattern = '%' + sanitizedSearchTerm + '%';
-                conditions.add('(Name LIKE :searchPattern OR Description LIKE :searchPattern)');
-            }
+      // Validate pagination parameters
+      if (pageNumber < 0 || pageSize <= 0 || pageSize > 100) {
+        throw new IllegalArgumentException('Invalid pagination parameters');
+      }
 
-            if (String.isNotBlank(sanitizedCategory)) {
-                categoryPattern = '%' + sanitizedCategory + '%';
-                conditions.add('ProductCode LIKE :categoryPattern');
-            }
+      // Build static query with bind variables to prevent SOQL injection
+      String baseQuery =
+        'SELECT Id, Name, ProductCode, Description, IsActive, ' +
+        'Stock_Quantity__c, Image_URL__c, Is_Top_Seller__c, ' +
+        '(SELECT UnitPrice FROM PricebookEntries ' +
+        ' WHERE Pricebook2.IsStandard = true AND IsActive = true LIMIT 1) ' +
+        'FROM Product2 WITH SECURITY_ENFORCED ' +
+        'WHERE IsActive = true ';
 
-            // Note: topSellersOnly filter removed since Is_Top_Seller__c field doesn't exist
-            // if (topSellersOnly) {
-            //     conditions.add('Is_Top_Seller__c = true');
-            // }
+      List<String> conditions = new List<String>();
+      String searchPattern;
+      String categoryPattern;
 
-            if (!conditions.isEmpty()) {
-                baseQuery += 'AND ' + String.join(conditions, ' AND ');
-            }
+      if (String.isNotBlank(sanitizedSearchTerm)) {
+        searchPattern = '%' + sanitizedSearchTerm + '%';
+        conditions.add(
+          '(Name LIKE :searchPattern OR Description LIKE :searchPattern)'
+        );
+      }
 
-            Integer offset = pageNumber * pageSize;
-            baseQuery += ' ORDER BY Name LIMIT :pageSize OFFSET :offset';
+      if (String.isNotBlank(sanitizedCategory)) {
+        categoryPattern = '%' + sanitizedCategory + '%';
+        conditions.add('ProductCode LIKE :categoryPattern');
+      }
 
-            // Execute query with bind variables
-            List<Product2> products = Database.query(baseQuery);
+      // Note: topSellersOnly filter removed since Is_Top_Seller__c field doesn't exist
+      // if (topSellersOnly) {
+      //     conditions.add('Is_Top_Seller__c = true');
+      // }
 
-            // Get total count for pagination (also using bind variables)
-            String countQuery = 'SELECT COUNT() FROM Product2 WHERE IsActive = true ';
+      if (!conditions.isEmpty()) {
+        baseQuery += 'AND ' + String.join(conditions, ' AND ');
+      }
 
-            if (String.isNotBlank(sanitizedSearchTerm)) {
-                countQuery += 'AND (Name LIKE :searchPattern OR Description LIKE :searchPattern) ';
-            }
+      Integer offset = pageNumber * pageSize;
+      baseQuery += ' ORDER BY Name LIMIT :pageSize OFFSET :offset';
 
-            if (String.isNotBlank(sanitizedCategory)) {
-                countQuery += 'AND ProductCode LIKE :categoryPattern ';
-            }
+      // Execute query with bind variables
+      List<Product2> products = Database.query(baseQuery);
 
-            // Note: topSellersOnly filter removed since Is_Top_Seller__c field doesn't exist
-            // if (topSellersOnly) {
-            //     countQuery += 'AND Is_Top_Seller__c = true';
-            // }
+      // Get total count for pagination (also using bind variables)
+      String countQuery = 'SELECT COUNT() FROM Product2 WITH SECURITY_ENFORCED WHERE IsActive = true ';
 
-            Integer totalCount = Database.countQuery(countQuery);
-            
-            return new ProductCatalogResult(products, totalCount, pageNumber, pageSize);
-            
-        } catch (StoreConnectSecurityUtil.SecurityException e) {
-            throw new AuraHandledException('Security violation: ' + e.getMessage());
-        } catch (Exception e) {
-            throw new AuraHandledException('Error retrieving products: ' + e.getMessage());
-        }
+      if (String.isNotBlank(sanitizedSearchTerm)) {
+        countQuery += 'AND (Name LIKE :searchPattern OR Description LIKE :searchPattern) ';
+      }
+
+      if (String.isNotBlank(sanitizedCategory)) {
+        countQuery += 'AND ProductCode LIKE :categoryPattern ';
+      }
+
+      // Note: topSellersOnly filter removed since Is_Top_Seller__c field doesn't exist
+      // if (topSellersOnly) {
+      //     countQuery += 'AND Is_Top_Seller__c = true';
+      // }
+
+      // security already enforced earlier in the query string
+      Integer totalCount = Database.countQuery(countQuery);
+
+      return new ProductCatalogResult(
+        products,
+        totalCount,
+        pageNumber,
+        pageSize
+      );
+    } catch (StoreConnectSecurityUtil.SecurityException e) {
+      throw new AuraHandledException('Security violation: ' + e.getMessage());
+    } catch (Exception e) {
+      throw new AuraHandledException(
+        'Error retrieving products: ' + e.getMessage()
+      );
     }
-    
-    /**
-     * @description Gets or creates a cart for the current user
-     * @param contactId The Contact ID of the current user
-     * @return Cart__c The user's active cart
-     * @throws AuraHandledException if operation fails or security check fails
-     */
+  }
+
+  /**
+   * @description Gets or creates a cart for the current user
+   * @param contactId The Contact ID of the current user
+   * @return Cart__c The user's active cart
+   * @throws AuraHandledException if operation fails or security check fails
+   */
+  @AuraEnabled
+  public static Cart__c getOrCreateCart(Id contactId) {
+    try {
+      // CRUD checks
+      SecurityUtils.checkObjectReadable('Cart__c');
+      SecurityUtils.checkObjectCreateable('Cart__c');
+
+      // Security: Check if user has read and create permissions on Cart__c
+      if (!StoreConnectSecurityUtil.hasReadPermission('Cart__c')) {
+        throw new SecurityException('User lacks permission to read carts');
+      }
+
+      // Validate input parameter
+      if (contactId == null) {
+        throw new IllegalArgumentException('Contact ID cannot be null');
+      }
+
+      // Check if user already has an active cart
+      List<Cart__c> existingCarts = [
+        SELECT
+          Id,
+          Name,
+          Status__c,
+          Subtotal__c,
+          Total_Items__c,
+          (
+            SELECT
+              Id,
+              Product__c,
+              Quantity__c,
+              Unit_Price__c,
+              Line_Total__c,
+              Product__r.Name,
+              Product__r.Image_URL__c,
+              Product__r.Stock_Quantity__c
+            FROM Cart_Items__r
+          )
+        FROM Cart__c
+        WHERE Contact__c = :contactId AND Status__c = 'Active'
+        WITH SECURITY_ENFORCED
+        LIMIT 1
+      ];
+
+      if (!existingCarts.isEmpty()) {
+        return existingCarts[0];
+      }
+
+      // Security: Check if user has create permission before creating new cart
+      if (!StoreConnectSecurityUtil.hasCreatePermission('Cart__c')) {
+        throw new SecurityException('User lacks permission to create carts');
+      }
+
+      // Create new cart
+      Cart__c newCart = new Cart__c(
+        Contact__c = contactId,
+        Status__c = 'Active'
+      );
+
+      // Security: Validate record access before insert
+      StoreConnectSecurityUtil.validateRecordAccess(
+        new List<Cart__c>{ newCart },
+        'CREATE'
+      );
+
+      insert newCart;
+
+      return newCart;
+    } catch (StoreConnectSecurityUtil.SecurityException e) {
+      throw new AuraHandledException('Security violation: ' + e.getMessage());
+    } catch (Exception e) {
+      throw new AuraHandledException(
+        'Error getting or creating cart: ' + e.getMessage()
+      );
+    }
+  }
+
+  // Add product to cart
+  @AuraEnabled
+  public static Cart_Item__c addToCart(
+    Id cartId,
+    Id productId,
+    Integer quantity
+  ) {
+    try {
+      // CRUD checks
+      SecurityUtils.checkObjectReadable('Product2');
+      SecurityUtils.checkObjectReadable('Cart_Item__c');
+      SecurityUtils.checkObjectUpdateable('Cart__c');
+      SecurityUtils.checkObjectCreateable('Cart_Item__c');
+
+      // Validate product and get price
+      Product2 product = [
+        SELECT Id, Name, Stock_Quantity__c
+        FROM Product2
+        WHERE Id = :productId AND IsActive = TRUE
+        WITH SECURITY_ENFORCED
+      ];
+
+      if (product.Stock_Quantity__c < quantity) {
+        throw new AuraHandledException(
+          'Insufficient stock. Available: ' + product.Stock_Quantity__c
+        );
+      }
+
+      // Check if product already in cart
+      List<Cart_Item__c> existingItems = [
+        SELECT Id, Quantity__c
+        FROM Cart_Item__c
+        WHERE Cart__c = :cartId AND Product__c = :productId
+        WITH SECURITY_ENFORCED
+      ];
+
+      if (!existingItems.isEmpty()) {
+        // Update quantity
+        existingItems[0].Quantity__c += quantity;
+        SecurityUtils.checkObjectUpdateable('Cart_Item__c');
+        update existingItems[0];
+        return existingItems[0];
+      }
+
+      // Create new cart item
+      Cart_Item__c newItem = new Cart_Item__c(
+        Cart__c = cartId,
+        Product__c = productId,
+        Quantity__c = quantity,
+        Unit_Price__c = getProductPrice(productId) // This would call your pricing logic
+      );
+
+      insert newItem;
+      return newItem;
+    } catch (Exception e) {
+      throw new AuraHandledException('Error adding to cart: ' + e.getMessage());
+    }
+  }
+
+  // Update cart item quantity
+  @AuraEnabled
+  public static void updateCartItemQuantity(
+    Id cartItemId,
+    Integer newQuantity
+  ) {
+    try {
+      SecurityUtils.checkObjectUpdateable('Cart_Item__c');
+      if (newQuantity <= 0) {
+        deleteCartItem(cartItemId);
+        return;
+      }
+
+      Cart_Item__c item = [
+        SELECT Id, Quantity__c, Product__r.Stock_Quantity__c
+        FROM Cart_Item__c
+        WHERE Id = :cartItemId
+        WITH SECURITY_ENFORCED
+      ];
+
+      if (item.Product__r.Stock_Quantity__c < newQuantity) {
+        throw new AuraHandledException(
+          'Insufficient stock. Available: ' + item.Product__r.Stock_Quantity__c
+        );
+      }
+
+      item.Quantity__c = newQuantity;
+      update item;
+    } catch (Exception e) {
+      throw new AuraHandledException(
+        'Error updating cart item: ' + e.getMessage()
+      );
+    }
+  }
+
+  // Remove item from cart
+  @AuraEnabled
+  public static void deleteCartItem(Id cartItemId) {
+    try {
+      SecurityUtils.checkObjectDeletable('Cart_Item__c');
+      delete [SELECT Id FROM Cart_Item__c WHERE Id = :cartItemId WITH SECURITY_ENFORCED];
+    } catch (Exception e) {
+      throw new AuraHandledException(
+        'Error removing cart item: ' + e.getMessage()
+      );
+    }
+  }
+
+  // Get shipping addresses for user
+  @AuraEnabled(cacheable=true)
+  public static List<Shipping_Address__c> getShippingAddresses(Id accountId) {
+    try {
+      SecurityUtils.checkObjectReadable('Shipping_Address__c');
+      return [
+        SELECT
+          Id,
+          Address_Label__c,
+          Street__c,
+          City__c,
+          State__c,
+          Postal_Code__c,
+          Country__c,
+          Is_Default__c
+        FROM Shipping_Address__c
+        WHERE Account__c = :accountId
+        WITH SECURITY_ENFORCED
+        ORDER BY Is_Default__c DESC, Address_Label__c
+      ];
+    } catch (Exception e) {
+      throw new AuraHandledException(
+        'Error retrieving shipping addresses: ' + e.getMessage()
+      );
+    }
+  }
+
+  // Get recently viewed products
+  @AuraEnabled(cacheable=true)
+  public static List<RecentlyViewedProduct> getRecentlyViewed(Id contactId) {
+    try {
+      if (
+        !StoreConnectSecurityUtil.hasReadPermission('View_Tracking__c') ||
+        !StoreConnectSecurityUtil.hasReadPermission('Product2')
+      ) {
+        throw new SecurityException(
+          'User lacks permission to read recently viewed products'
+        );
+      }
+      SecurityUtils.checkObjectReadable('View_Tracking__c');
+      SecurityUtils.checkObjectReadable('Product2');
+
+      if (contactId == null) {
+        throw new IllegalArgumentException('Contact ID cannot be null');
+      }
+
+      Integer limitSize = 5;
+
+      List<View_Tracking__c> views = [
+        SELECT Product__c, Last_Viewed_Date__c
+        FROM View_Tracking__c
+        WHERE User_Contact__c = :contactId
+        WITH SECURITY_ENFORCED
+        ORDER BY Last_Viewed_Date__c DESC
+        LIMIT :limitSize
+      ];
+
+      if (views.isEmpty()) {
+        return new List<RecentlyViewedProduct>();
+      }
+
+      Set<Id> productIds = new Set<Id>();
+      for (View_Tracking__c vt : views) {
+        productIds.add(vt.Product__c);
+      }
+
+      Map<Id, Product2> products = new Map<Id, Product2>(
+        [
+          SELECT
+            Id,
+            Name,
+            Image_URL__c,
+            (
+              SELECT UnitPrice
+              FROM PricebookEntries
+              WHERE Pricebook2.IsStandard = TRUE
+              LIMIT 1
+            )
+          FROM Product2
+          WHERE Id IN :productIds AND IsActive = TRUE
+          WITH SECURITY_ENFORCED
+        ]
+      );
+
+      List<RecentlyViewedProduct> results = new List<RecentlyViewedProduct>();
+      for (View_Tracking__c vt : views) {
+        Product2 p = products.get(vt.Product__c);
+        if (p != null) {
+          Decimal unitPrice = (p.PricebookEntries.isEmpty()
+            ? null
+            : p.PricebookEntries[0].UnitPrice);
+          results.add(
+            new RecentlyViewedProduct(p.Id, p.Name, p.Image_URL__c, unitPrice)
+          );
+        }
+      }
+      return results;
+    } catch (StoreConnectSecurityUtil.SecurityException e) {
+      throw new AuraHandledException('Security violation: ' + e.getMessage());
+    } catch (Exception e) {
+      throw new AuraHandledException(
+        'Error retrieving recently viewed products: ' + e.getMessage()
+      );
+    }
+  }
+
+  // Track product view
+  @AuraEnabled
+  public static void trackProductView(Id contactId, Id productId) {
+    try {
+      SecurityUtils.checkObjectCreateable('View_Tracking__c');
+      // Upsert view tracking record
+      View_Tracking__c viewTracking = new View_Tracking__c(
+        User_Contact__c = contactId,
+        Product__c = productId,
+        Last_Viewed_Date__c = System.now()
+      );
+
+      upsert viewTracking;
+    } catch (Exception e) {
+      // Don't throw error for tracking - just log it
+      System.debug('Error tracking product view: ' + e.getMessage());
+    }
+  }
+
+  // Request back-in-stock notification
+  @AuraEnabled
+  public static void requestBackInStockNotification(
+    Id contactId,
+    Id productId
+  ) {
+    try {
+      SecurityUtils.checkObjectReadable('Notification_Request__c');
+      SecurityUtils.checkObjectCreateable('Notification_Request__c');
+      // Check if notification already exists
+      List<Notification_Request__c> existingRequests = [
+        SELECT Id
+        FROM Notification_Request__c
+        WHERE
+          User_Contact__c = :contactId
+          AND Product__c = :productId
+          AND Status__c = 'Active'
+        WITH SECURITY_ENFORCED
+      ];
+
+      if (!existingRequests.isEmpty()) {
+        throw new AuraHandledException(
+          'Notification request already exists for this product.'
+        );
+      }
+
+      Notification_Request__c notification = new Notification_Request__c(
+        User_Contact__c = contactId,
+        Product__c = productId,
+        Status__c = 'Active'
+      );
+
+      insert notification;
+    } catch (Exception e) {
+      throw new AuraHandledException(
+        'Error requesting notification: ' + e.getMessage()
+      );
+    }
+  }
+
+  // Helper method to get product price (placeholder for your pricing logic)
+  private static Decimal getProductPrice(Id productId) {
+    // This would integrate with your pricing engine
+    // For now, return a default price
+    return 99.99;
+  }
+
+  // Wrapper class for recently viewed products
+  public class RecentlyViewedProduct {
     @AuraEnabled
-    public static Cart__c getOrCreateCart(Id contactId) {
-        try {
-            // Security: Check if user has read and create permissions on Cart__c
-            if (!StoreConnectSecurityUtil.hasReadPermission('Cart__c')) {
-                throw new SecurityException('User lacks permission to read carts');
-            }
-            
-            // Validate input parameter
-            if (contactId == null) {
-                throw new IllegalArgumentException('Contact ID cannot be null');
-            }
-            
-            // Check if user already has an active cart
-            List<Cart__c> existingCarts = [
-                SELECT Id, Name, Status__c, Subtotal__c, Total_Items__c,
-                       (SELECT Id, Product__c, Quantity__c, Unit_Price__c, Line_Total__c, 
-                               Product__r.Name, Product__r.Image_URL__c, Product__r.Stock_Quantity__c
-                        FROM Cart_Items__r)
-                FROM Cart__c 
-                WHERE Contact__c = :contactId AND Status__c = 'Active'
-                LIMIT 1
-            ];
-            
-            if (!existingCarts.isEmpty()) {
-                return existingCarts[0];
-            }
-            
-            // Security: Check if user has create permission before creating new cart
-            if (!StoreConnectSecurityUtil.hasCreatePermission('Cart__c')) {
-                throw new SecurityException('User lacks permission to create carts');
-            }
-            
-            // Create new cart
-            Cart__c newCart = new Cart__c(
-                Contact__c = contactId,
-                Status__c = 'Active'
-            );
-            
-            // Security: Validate record access before insert
-            StoreConnectSecurityUtil.validateRecordAccess(new List<Cart__c>{newCart}, 'CREATE');
-            
-            insert newCart;
-            
-            return newCart;
-            
-        } catch (StoreConnectSecurityUtil.SecurityException e) {
-            throw new AuraHandledException('Security violation: ' + e.getMessage());
-        } catch (Exception e) {
-            throw new AuraHandledException('Error getting or creating cart: ' + e.getMessage());
-        }
-    }
-    
-    // Add product to cart
+    public Id productId;
     @AuraEnabled
-    public static Cart_Item__c addToCart(Id cartId, Id productId, Integer quantity) {
-        try {
-            // Validate product and get price
-            Product2 product = [SELECT Id, Name, Stock_Quantity__c FROM Product2 WHERE Id = :productId AND IsActive = true];
-            
-            if (product.Stock_Quantity__c < quantity) {
-                throw new AuraHandledException('Insufficient stock. Available: ' + product.Stock_Quantity__c);
-            }
-            
-            // Check if product already in cart
-            List<Cart_Item__c> existingItems = [
-                SELECT Id, Quantity__c 
-                FROM Cart_Item__c 
-                WHERE Cart__c = :cartId AND Product__c = :productId
-            ];
-            
-            if (!existingItems.isEmpty()) {
-                // Update quantity
-                existingItems[0].Quantity__c += quantity;
-                update existingItems[0];
-                return existingItems[0];
-            }
-            
-            // Create new cart item
-            Cart_Item__c newItem = new Cart_Item__c(
-                Cart__c = cartId,
-                Product__c = productId,
-                Quantity__c = quantity,
-                Unit_Price__c = getProductPrice(productId) // This would call your pricing logic
-            );
-            
-            insert newItem;
-            return newItem;
-            
-        } catch (Exception e) {
-            throw new AuraHandledException('Error adding to cart: ' + e.getMessage());
-        }
-    }
-    
-    // Update cart item quantity
+    public String productName;
     @AuraEnabled
-    public static void updateCartItemQuantity(Id cartItemId, Integer newQuantity) {
-        try {
-            if (newQuantity <= 0) {
-                deleteCartItem(cartItemId);
-                return;
-            }
-            
-            Cart_Item__c item = [SELECT Id, Quantity__c, Product__r.Stock_Quantity__c FROM Cart_Item__c WHERE Id = :cartItemId];
-            
-            if (item.Product__r.Stock_Quantity__c < newQuantity) {
-                throw new AuraHandledException('Insufficient stock. Available: ' + item.Product__r.Stock_Quantity__c);
-            }
-            
-            item.Quantity__c = newQuantity;
-            update item;
-            
-        } catch (Exception e) {
-            throw new AuraHandledException('Error updating cart item: ' + e.getMessage());
-        }
-    }
-    
-    // Remove item from cart
+    public String imageUrl;
     @AuraEnabled
-    public static void deleteCartItem(Id cartItemId) {
-        try {
-            delete [SELECT Id FROM Cart_Item__c WHERE Id = :cartItemId];
-        } catch (Exception e) {
-            throw new AuraHandledException('Error removing cart item: ' + e.getMessage());
-        }
+    public Decimal unitPrice;
+
+    public RecentlyViewedProduct(
+      Id id,
+      String name,
+      String imageUrl,
+      Decimal unitPrice
+    ) {
+      this.productId = id;
+      this.productName = name;
+      this.imageUrl = imageUrl;
+      this.unitPrice = unitPrice;
     }
-    
-    // Get shipping addresses for user
-    @AuraEnabled(cacheable=true)
-    public static List<Shipping_Address__c> getShippingAddresses(Id accountId) {
-        try {
-            return [
-                SELECT Id, Address_Label__c, Street__c, City__c, State__c, Postal_Code__c, Country__c, Is_Default__c
-                FROM Shipping_Address__c
-                WHERE Account__c = :accountId
-                ORDER BY Is_Default__c DESC, Address_Label__c
-            ];
-        } catch (Exception e) {
-            throw new AuraHandledException('Error retrieving shipping addresses: ' + e.getMessage());
-        }
-    }
+  }
 
-    // Get recently viewed products
-    @AuraEnabled(cacheable=true)
-    public static List<RecentlyViewedProduct> getRecentlyViewed(Id contactId) {
-        try {
-            if (!StoreConnectSecurityUtil.hasReadPermission('View_Tracking__c') ||
-                !StoreConnectSecurityUtil.hasReadPermission('Product2')) {
-                throw new SecurityException('User lacks permission to read recently viewed products');
-            }
-
-            if (contactId == null) {
-                throw new IllegalArgumentException('Contact ID cannot be null');
-            }
-
-            Integer limitSize = 5;
-
-            List<View_Tracking__c> views = [
-                SELECT Product__c, Last_Viewed_Date__c
-                FROM View_Tracking__c
-                WHERE User_Contact__c = :contactId
-                ORDER BY Last_Viewed_Date__c DESC
-                LIMIT :limitSize
-            ];
-
-            if (views.isEmpty()) {
-                return new List<RecentlyViewedProduct>();
-            }
-
-            Set<Id> productIds = new Set<Id>();
-            for (View_Tracking__c vt : views) {
-                productIds.add(vt.Product__c);
-            }
-
-            Map<Id, Product2> products = new Map<Id, Product2>([
-                SELECT Id, Name, Image_URL__c,
-                       (SELECT UnitPrice FROM PricebookEntries WHERE Pricebook2.IsStandard = true LIMIT 1)
-                FROM Product2
-                WHERE Id IN :productIds AND IsActive = true
-            ]);
-
-            List<RecentlyViewedProduct> results = new List<RecentlyViewedProduct>();
-            for (View_Tracking__c vt : views) {
-                Product2 p = products.get(vt.Product__c);
-                if (p != null) {
-                    Decimal unitPrice = (p.PricebookEntries.isEmpty() ? null : p.PricebookEntries[0].UnitPrice);
-                    results.add(new RecentlyViewedProduct(p.Id, p.Name, p.Image_URL__c, unitPrice));
-                }
-            }
-            return results;
-
-        } catch (StoreConnectSecurityUtil.SecurityException e) {
-            throw new AuraHandledException('Security violation: ' + e.getMessage());
-        } catch (Exception e) {
-            throw new AuraHandledException('Error retrieving recently viewed products: ' + e.getMessage());
-        }
-    }
-
-    // Track product view
+  // Wrapper class for product catalog results
+  public class ProductCatalogResult {
     @AuraEnabled
-    public static void trackProductView(Id contactId, Id productId) {
-        try {
-            // Upsert view tracking record
-            View_Tracking__c viewTracking = new View_Tracking__c(
-                User_Contact__c = contactId,
-                Product__c = productId,
-                Last_Viewed_Date__c = System.now()
-            );
-            
-            upsert viewTracking;
-            
-        } catch (Exception e) {
-            // Don't throw error for tracking - just log it
-            System.debug('Error tracking product view: ' + e.getMessage());
-        }
-    }
-    
-    // Request back-in-stock notification
+    public List<Product2> products;
     @AuraEnabled
-    public static void requestBackInStockNotification(Id contactId, Id productId) {
-        try {
-            // Check if notification already exists
-            List<Notification_Request__c> existingRequests = [
-                SELECT Id FROM Notification_Request__c 
-                WHERE User_Contact__c = :contactId AND Product__c = :productId AND Status__c = 'Active'
-            ];
-            
-            if (!existingRequests.isEmpty()) {
-                throw new AuraHandledException('Notification request already exists for this product.');
-            }
-            
-            Notification_Request__c notification = new Notification_Request__c(
-                User_Contact__c = contactId,
-                Product__c = productId,
-                Status__c = 'Active'
-            );
-            
-            insert notification;
-            
-        } catch (Exception e) {
-            throw new AuraHandledException('Error requesting notification: ' + e.getMessage());
-        }
-    }
-    
-    // Helper method to get product price (placeholder for your pricing logic)
-    private static Decimal getProductPrice(Id productId) {
-        // This would integrate with your pricing engine
-        // For now, return a default price
-        return 99.99;
-    }
+    public Integer totalCount;
+    @AuraEnabled
+    public Integer pageNumber;
+    @AuraEnabled
+    public Integer pageSize;
 
-    // Wrapper class for recently viewed products
-    public class RecentlyViewedProduct {
-        @AuraEnabled public Id productId;
-        @AuraEnabled public String productName;
-        @AuraEnabled public String imageUrl;
-        @AuraEnabled public Decimal UnitPrice;
-
-        public RecentlyViewedProduct(Id id, String name, String imageUrl, Decimal unitPrice) {
-            this.productId = id;
-            this.productName = name;
-            this.imageUrl = imageUrl;
-            this.UnitPrice = unitPrice;
-        }
+    public ProductCatalogResult(
+      List<Product2> products,
+      Integer totalCount,
+      Integer pageNumber,
+      Integer pageSize
+    ) {
+      this.products = products;
+      this.totalCount = totalCount;
+      this.pageNumber = pageNumber;
+      this.pageSize = pageSize;
     }
+  }
 
-    // Wrapper class for product catalog results
-    public class ProductCatalogResult {
-        @AuraEnabled public List<Product2> products;
-        @AuraEnabled public Integer totalCount;
-        @AuraEnabled public Integer pageNumber;
-        @AuraEnabled public Integer pageSize;
-        
-        public ProductCatalogResult(List<Product2> products, Integer totalCount, Integer pageNumber, Integer pageSize) {
-            this.products = products;
-            this.totalCount = totalCount;
-            this.pageNumber = pageNumber;
-            this.pageSize = pageSize;
-        }
-    }
-    
-    /**
-     * @description Custom exception class for security violations
-     */
-    public class SecurityException extends Exception {}
+  /**
+   * @description Custom exception class for security violations
+   */
+  public class SecurityException extends Exception {
+  }
 }
