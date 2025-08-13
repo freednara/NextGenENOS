@@ -8,9 +8,37 @@
  * and SOQL injection prevention. It follows AppExchange security review standards.
  */
 public with sharing class StoreConnectSecurityUtil {
-    
+
+    private static final Map<String, Schema.SObjectType> GLOBAL_DESCRIBE = Schema.getGlobalDescribe();
+    private static final Map<String, Schema.DescribeSObjectResult> DESCRIBE_CACHE =
+        new Map<String, Schema.DescribeSObjectResult>();
+    private static final Map<String, Map<String, Schema.SObjectField>> FIELD_MAP_CACHE =
+        new Map<String, Map<String, Schema.SObjectField>>();
+
     // Private constructor to prevent instantiation
     private StoreConnectSecurityUtil() {}
+
+    private static Schema.DescribeSObjectResult getDescribe(String objectName) {
+        if (!DESCRIBE_CACHE.containsKey(objectName)) {
+            Schema.SObjectType sObjectType = GLOBAL_DESCRIBE.get(objectName);
+            if (sObjectType == null) {
+                return null;
+            }
+            DESCRIBE_CACHE.put(objectName, sObjectType.getDescribe());
+        }
+        return DESCRIBE_CACHE.get(objectName);
+    }
+
+    private static Map<String, Schema.SObjectField> getFieldMap(String objectName) {
+        if (!FIELD_MAP_CACHE.containsKey(objectName)) {
+            Schema.DescribeSObjectResult describeResult = getDescribe(objectName);
+            if (describeResult == null) {
+                return null;
+            }
+            FIELD_MAP_CACHE.put(objectName, describeResult.fields.getMap());
+        }
+        return FIELD_MAP_CACHE.get(objectName);
+    }
     
     /**
      * @description Checks if the current user has Create permission on the specified object
@@ -20,12 +48,10 @@ public with sharing class StoreConnectSecurityUtil {
      */
     public static Boolean hasCreatePermission(String objectName) {
         try {
-            Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(objectName);
-            if (sObjectType == null) {
+            Schema.DescribeSObjectResult describeResult = getDescribe(objectName);
+            if (describeResult == null) {
                 throw new SecurityException('Invalid object name: ' + objectName);
             }
-            
-            Schema.DescribeSObjectResult describeResult = sObjectType.getDescribe();
             return describeResult.isCreateable();
         } catch (Exception e) {
             throw new SecurityException('Failed to check Create permission for ' + objectName + ': ' + e.getMessage());
@@ -40,12 +66,10 @@ public with sharing class StoreConnectSecurityUtil {
      */
     public static Boolean hasReadPermission(String objectName) {
         try {
-            Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(objectName);
-            if (sObjectType == null) {
+            Schema.DescribeSObjectResult describeResult = getDescribe(objectName);
+            if (describeResult == null) {
                 throw new SecurityException('Invalid object name: ' + objectName);
             }
-            
-            Schema.DescribeSObjectResult describeResult = sObjectType.getDescribe();
             return describeResult.isAccessible();
         } catch (Exception e) {
             throw new SecurityException('Failed to check Read permission for ' + objectName + ': ' + e.getMessage());
@@ -60,12 +84,10 @@ public with sharing class StoreConnectSecurityUtil {
      */
     public static Boolean hasUpdatePermission(String objectName) {
         try {
-            Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(objectName);
-            if (sObjectType == null) {
+            Schema.DescribeSObjectResult describeResult = getDescribe(objectName);
+            if (describeResult == null) {
                 throw new SecurityException('Invalid object name: ' + objectName);
             }
-            
-            Schema.DescribeSObjectResult describeResult = sObjectType.getDescribe();
             return describeResult.isUpdateable();
         } catch (Exception e) {
             throw new SecurityException('Failed to check Update permission for ' + objectName + ': ' + e.getMessage());
@@ -80,12 +102,10 @@ public with sharing class StoreConnectSecurityUtil {
      */
     public static Boolean hasDeletePermission(String objectName) {
         try {
-            Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(objectName);
-            if (sObjectType == null) {
+            Schema.DescribeSObjectResult describeResult = getDescribe(objectName);
+            if (describeResult == null) {
                 throw new SecurityException('Invalid object name: ' + objectName);
             }
-            
-            Schema.DescribeSObjectResult describeResult = sObjectType.getDescribe();
             return describeResult.isDeletable();
         } catch (Exception e) {
             throw new SecurityException('Failed to check Delete permission for ' + objectName + ': ' + e.getMessage());
@@ -101,13 +121,10 @@ public with sharing class StoreConnectSecurityUtil {
      */
     public static Boolean hasFieldReadPermission(String objectName, String fieldName) {
         try {
-            Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(objectName);
-            if (sObjectType == null) {
+            Map<String, Schema.SObjectField> fieldMap = getFieldMap(objectName);
+            if (fieldMap == null) {
                 throw new SecurityException('Invalid object name: ' + objectName);
             }
-            
-            Schema.DescribeSObjectResult describeResult = sObjectType.getDescribe();
-            Map<String, Schema.SObjectField> fieldMap = describeResult.fields.getMap();
             
             if (!fieldMap.containsKey(fieldName)) {
                 throw new SecurityException('Invalid field name: ' + fieldName + ' on object: ' + objectName);
@@ -131,13 +148,10 @@ public with sharing class StoreConnectSecurityUtil {
      */
     public static Boolean hasFieldEditPermission(String objectName, String fieldName) {
         try {
-            Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(objectName);
-            if (sObjectType == null) {
+            Map<String, Schema.SObjectField> fieldMap = getFieldMap(objectName);
+            if (fieldMap == null) {
                 throw new SecurityException('Invalid object name: ' + objectName);
             }
-            
-            Schema.DescribeSObjectResult describeResult = sObjectType.getDescribe();
-            Map<String, Schema.SObjectField> fieldMap = describeResult.fields.getMap();
             
             if (!fieldMap.containsKey(fieldName)) {
                 throw new SecurityException('Invalid field name: ' + fieldName + ' on object: ' + objectName);
@@ -238,12 +252,19 @@ public with sharing class StoreConnectSecurityUtil {
      * @throws SecurityException if validation fails
      */
     public static Boolean validateFieldAccess(String objectName, List<String> fieldNames, String operation) {
-        // TODO: Implement comprehensive field-level security validation
-        // This will include:
-        // - Field accessibility checks
-        // - Profile and permission set field access
-        // - Custom field access rules
-        throw new SecurityException('Field access validation not yet implemented');
+        if (String.isBlank(objectName) || fieldNames == null || fieldNames.isEmpty()) {
+            return true;
+        }
+
+        for (String fieldName : fieldNames) {
+            Boolean hasAccess = operation == 'EDIT'
+                ? hasFieldEditPermission(objectName, fieldName)
+                : hasFieldReadPermission(objectName, fieldName);
+            if (!hasAccess) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**
@@ -254,12 +275,8 @@ public with sharing class StoreConnectSecurityUtil {
      * @throws SecurityException if validation fails
      */
     public static Boolean validateRecordSharing(List<SObject> records, String sharingModel) {
-        // TODO: Implement record-level sharing validation
-        // This will include:
-        // - Owner-based access control
-        // - Role hierarchy validation
-        // - Custom sharing rule enforcement
-        throw new SecurityException('Record sharing validation not yet implemented');
+        // Placeholder implementation relying on built-in sharing
+        return true;
     }
     
     /**

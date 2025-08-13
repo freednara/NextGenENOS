@@ -1,4 +1,4 @@
-import { LightningElement, track, api, wire } from 'lwc';
+import { LightningElement, api } from 'lwc';
 import getOrCreateCart from '@salesforce/apex/StoreConnectController.getOrCreateCart';
 import updateCartItemQuantity from '@salesforce/apex/StoreConnectController.updateCartItemQuantity';
 import deleteCartItem from '@salesforce/apex/StoreConnectController.deleteCartItem';
@@ -9,13 +9,13 @@ import { NavigationMixin } from 'lightning/navigation';
 
 export default class ShoppingCart extends NavigationMixin(LightningElement) {
     @api recordId; // Contact ID from the community user
-    @track cart;
-    @track cartItems = [];
-    @track shippingAddresses = [];
-    @track selectedShippingAddress;
-    @track loading = false;
-    @track checkoutLoading = false;
-    @track showCheckoutModal = false;
+    cart;
+    cartItems = [];
+    shippingAddresses = [];
+    selectedShippingAddress;
+    loading = false;
+    checkoutLoading = false;
+    showCheckoutModal = false;
     
     // Cart totals
     get cartSubtotal() {
@@ -35,9 +35,9 @@ export default class ShoppingCart extends NavigationMixin(LightningElement) {
     }
     
     // Lifecycle hooks
-    connectedCallback() {
-        this.loadCart();
-        this.loadShippingAddresses();
+    async connectedCallback() {
+        await this.loadCart();
+        await this.loadShippingAddresses();
     }
     
     // Load cart data
@@ -68,8 +68,12 @@ export default class ShoppingCart extends NavigationMixin(LightningElement) {
     // Update cart item quantity
     async handleQuantityChange(event) {
         const cartItemId = event.currentTarget.dataset.itemId;
-        const newQuantity = parseInt(event.target.value);
-        
+        const newQuantity = parseInt(event.target.value, 10);
+        if (isNaN(newQuantity) || newQuantity < 1) {
+            this.showToast('Error', 'Invalid quantity', 'error');
+            return;
+        }
+
         try {
             await updateCartItemQuantity({
                 cartItemId: cartItemId,

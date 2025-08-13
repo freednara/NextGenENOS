@@ -11,8 +11,30 @@
  */
 public with sharing class SecurityUtils {
 
+    // Cache global describe results to avoid repeated map creation
+    private static final Map<String, Schema.SObjectType> GLOBAL_DESCRIBE = Schema.getGlobalDescribe();
+    private static final Map<String, Schema.DescribeSObjectResult> DESCRIBE_CACHE =
+        new Map<String, Schema.DescribeSObjectResult>();
+
     // Private constructor to prevent instantiation of the class
     private SecurityUtils() {}
+
+    /**
+     * Retrieves and caches the DescribeSObjectResult for an SObject.
+     *
+     * @param sObjectName API name of the SObject
+     * @return DescribeSObjectResult or null if the SObject does not exist
+     */
+    private static Schema.DescribeSObjectResult getDescribe(String sObjectName) {
+        if (!DESCRIBE_CACHE.containsKey(sObjectName)) {
+            Schema.SObjectType sObjectType = GLOBAL_DESCRIBE.get(sObjectName);
+            if (sObjectType == null) {
+                return null;
+            }
+            DESCRIBE_CACHE.put(sObjectName, sObjectType.getDescribe());
+        }
+        return DESCRIBE_CACHE.get(sObjectName);
+    }
 
     /**
      * @description Checks if the current user has READ access to a list of fields on a given SObject.
@@ -35,7 +57,10 @@ public with sharing class SecurityUtils {
         }
 
         // Get the describe result for the SObject
-        Schema.DescribeSObjectResult sObjectDescribe = Schema.getGlobalDescribe().get(sObjectName).getDescribe();
+        Schema.DescribeSObjectResult sObjectDescribe = getDescribe(sObjectName);
+        if (sObjectDescribe == null) {
+            throw new AuraHandledException('Security Error: Unknown SObject ' + sObjectName);
+        }
 
         // Get a map of all fields for the SObject
         Map<String, Schema.SObjectField> fieldMap = sObjectDescribe.fields.getMap();
@@ -67,7 +92,10 @@ public with sharing class SecurityUtils {
             throw new AuraHandledException('Security Error: Invalid SObject name provided for create access check.');
         }
 
-        Schema.DescribeSObjectResult sObjectDescribe = Schema.getGlobalDescribe().get(sObjectName).getDescribe();
+        Schema.DescribeSObjectResult sObjectDescribe = getDescribe(sObjectName);
+        if (sObjectDescribe == null) {
+            throw new AuraHandledException('Security Error: Unknown SObject ' + sObjectName);
+        }
 
         if (!sObjectDescribe.isCreateable()) {
             throw new AuraHandledException('Security Error: You do not have permission to create ' + sObjectDescribe.getLabel() + ' records.');
@@ -89,7 +117,10 @@ public with sharing class SecurityUtils {
             throw new AuraHandledException('Security Error: Invalid SObject name provided for update access check.');
         }
 
-        Schema.DescribeSObjectResult sObjectDescribe = Schema.getGlobalDescribe().get(sObjectName).getDescribe();
+        Schema.DescribeSObjectResult sObjectDescribe = getDescribe(sObjectName);
+        if (sObjectDescribe == null) {
+            throw new AuraHandledException('Security Error: Unknown SObject ' + sObjectName);
+        }
 
         if (!sObjectDescribe.isUpdateable()) {
             throw new AuraHandledException('Security Error: You do not have permission to update ' + sObjectDescribe.getLabel() + ' records.');
@@ -111,7 +142,10 @@ public with sharing class SecurityUtils {
             throw new AuraHandledException('Security Error: Invalid SObject name provided for delete access check.');
         }
 
-        Schema.DescribeSObjectResult sObjectDescribe = Schema.getGlobalDescribe().get(sObjectName).getDescribe();
+        Schema.DescribeSObjectResult sObjectDescribe = getDescribe(sObjectName);
+        if (sObjectDescribe == null) {
+            throw new AuraHandledException('Security Error: Unknown SObject ' + sObjectName);
+        }
 
         if (!sObjectDescribe.isDeletable()) {
             throw new AuraHandledException('Security Error: You do not have permission to delete ' + sObjectDescribe.getLabel() + ' records.');
@@ -133,7 +167,10 @@ public with sharing class SecurityUtils {
             throw new AuraHandledException('Security Error: Invalid SObject name provided for read access check.');
         }
 
-        Schema.DescribeSObjectResult sObjectDescribe = Schema.getGlobalDescribe().get(sObjectName).getDescribe();
+        Schema.DescribeSObjectResult sObjectDescribe = getDescribe(sObjectName);
+        if (sObjectDescribe == null) {
+            throw new AuraHandledException('Security Error: Unknown SObject ' + sObjectName);
+        }
 
         if (!sObjectDescribe.isAccessible()) {
             throw new AuraHandledException('Security Error: You do not have permission to read ' + sObjectDescribe.getLabel() + ' records.');
@@ -205,7 +242,10 @@ public with sharing class SecurityUtils {
         }
 
         // Get the describe result for the SObject
-        Schema.DescribeSObjectResult sObjectDescribe = Schema.getGlobalDescribe().get(sObjectName).getDescribe();
+        Schema.DescribeSObjectResult sObjectDescribe = getDescribe(sObjectName);
+        if (sObjectDescribe == null) {
+            throw new AuraHandledException('Security Error: Unknown SObject ' + sObjectName);
+        }
 
         // Get a map of all fields for the SObject
         Map<String, Schema.SObjectField> fieldMap = sObjectDescribe.fields.getMap();
