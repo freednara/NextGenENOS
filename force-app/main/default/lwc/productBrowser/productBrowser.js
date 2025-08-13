@@ -2,6 +2,7 @@ import { LightningElement, wire, track } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { NavigationMixin } from "lightning/navigation";
 import { publish, MessageContext } from "lightning/messageService";
+import { refreshApex } from "@salesforce/apex";
 import CART_UPDATE_CHANNEL from "@salesforce/messageChannel/CartUpdate__c";
 import getProducts from "@salesforce/apex/ProductController.getProducts";
 import searchProducts from "@salesforce/apex/ProductController.searchProducts";
@@ -19,9 +20,9 @@ import addItemToCart from "@salesforce/apex/CartController.addItemToCart";
  * @since 2024-12-01
  */
 export default class ProductBrowser extends NavigationMixin(LightningElement) {
-  // Wire service for fetching products - automatically handles caching and server calls
+  // Wire service result holder (do not overwrite, used for refreshApex)
   @wire(getProducts)
-  products;
+  wiredProducts;
 
   // Wire message context for Lightning Message Service
   @wire(MessageContext)
@@ -31,6 +32,8 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
   @track isAddingToCart = false;
   @track searchTerm = "";
   @track debounceTimer;
+  @track manualProducts = null; // set when a search is performed
+  @track manualError = null;
 
   /**
    * @description Handles search input changes with debouncing for performance.
@@ -65,18 +68,19 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
         const searchResults = await searchProducts({
           searchTerm: searchTerm.trim()
         });
-        this.products = { data: searchResults, error: undefined };
+        this.manualProducts = Array.isArray(searchResults)
+          ? searchResults
+          : [];
+        this.manualError = null;
       } else {
         // If no search term, refresh the original products
         this.refreshProducts();
       }
-    } catch {
+    } catch (e) {
       // Log error for debugging (remove in production)
-      this.showToast(
-        "Error",
-        "Unable to search products. Please try again.",
-        "error"
-      );
+      this.manualProducts = null;
+      this.manualError = e;
+      this.showToast("Error", "Unable to search products. Please try again.", "error");
     }
   }
 
@@ -85,9 +89,16 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
    * This is used when clearing search results or handling errors.
    */
   refreshProducts() {
-    // Force a refresh of the wire service
-    this.products = undefined;
-    // The @wire decorator will automatically re-execute
+    // Clear manual results and refresh wired data
+    this.manualProducts = null;
+    this.manualError = null;
+    try {
+      if (this.wiredProducts) {
+        refreshApex(this.wiredProducts);
+      }
+    } catch {
+      // no-op
+    }
   }
 
   /**
@@ -241,7 +252,10 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
    * Used to show/hide the loading spinner.
    */
   get isLoading() {
-    return !this.products || (!this.products.data && !this.products.error);
+    if (this.manualProducts !== null || this.manualError !== null) {
+      return false;
+    }
+    return !this.wiredProducts || (!this.wiredProducts.data && !this.wiredProducts.error);
   }
 
   /**
@@ -249,7 +263,8 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
    * Used to show the "no products" message when appropriate.
    */
   get hasProducts() {
-    return this.products && this.products.data && this.products.data.length > 0;
+    const list = this.currentProductsRaw;
+    return Array.isArray(list) && list.length > 0;
   }
 
   /**
@@ -257,7 +272,10 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
    * Used to show error messages when API calls fail.
    */
   get hasError() {
-    return this.products && this.products.error;
+    if (this.manualProducts !== null) {
+      return false;
+    }
+    return this.wiredProducts && this.wiredProducts.error;
   }
 
   /**
@@ -265,8 +283,11 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
    * Provides user-friendly error information.
    */
   get errorMessage() {
-    return this.products && this.products.error
-      ? this.products.error.body.message
+    if (this.manualError) {
+      return this.manualError.body?.message || "";
+    }
+    return this.wiredProducts && this.wiredProducts.error
+      ? this.wiredProducts.error.body.message
       : "";
   }
 
@@ -274,12 +295,19 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
    * @description Returns products with enhanced data for display.
    * Adds computed properties like price and formatted data.
    */
+  get currentProductsRaw() {
+    if (this.manualProducts !== null) {
+      return this.manualProducts;
+    }
+    return (this.wiredProducts && this.wiredProducts.data) || [];
+  }
+
   get enhancedProducts() {
-    if (!this.products || !this.products.data) {
+    const list = this.currentProductsRaw;
+    if (!Array.isArray(list)) {
       return [];
     }
-
-    return this.products.data.map((product) => ({
+    return list.map((product) => ({
       ...product,
       displayPrice: this.getProductPrice(product),
       hasPrice: this.hasProductPrice(product)

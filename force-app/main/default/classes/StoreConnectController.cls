@@ -28,10 +28,13 @@ public with sharing class StoreConnectController {
     Boolean topSellersOnly
   ) {
     try {
-      // Security: Check if user has read permission on Product2
+      // Security: Check object-level permissions
       if (!StoreConnectSecurityUtil.hasReadPermission('Product2')) {
         throw new SecurityException('User lacks permission to read products');
       }
+      SecurityUtils.checkObjectReadable('Product2');
+      SecurityUtils.checkObjectReadable('Pricebook2');
+      SecurityUtils.checkObjectReadable('PricebookEntry');
 
       // Security: Sanitize and validate input parameters
       String sanitizedSearchTerm = StoreConnectSecurityUtil.sanitizeInput(
@@ -50,8 +53,11 @@ public with sharing class StoreConnectController {
 
       // Build static query with bind variables to prevent SOQL injection
       String baseQuery =
-        'SELECT Id, Name, ProductCode, Description, IsActive ' +
-        'FROM Product2 ' +
+        'SELECT Id, Name, ProductCode, Description, IsActive, ' +
+        'Stock_Quantity__c, Image_URL__c, Is_Top_Seller__c, ' +
+        '(SELECT UnitPrice FROM PricebookEntries ' +
+        ' WHERE Pricebook2.IsStandard = true AND IsActive = true LIMIT 1) ' +
+        'FROM Product2 WITH SECURITY_ENFORCED ' +
         'WHERE IsActive = true ';
 
       List<String> conditions = new List<String>();
@@ -86,7 +92,7 @@ public with sharing class StoreConnectController {
       List<Product2> products = Database.query(baseQuery);
 
       // Get total count for pagination (also using bind variables)
-      String countQuery = 'SELECT COUNT() FROM Product2 WHERE IsActive = true ';
+      String countQuery = 'SELECT COUNT() FROM Product2 WITH SECURITY_ENFORCED WHERE IsActive = true ';
 
       if (String.isNotBlank(sanitizedSearchTerm)) {
         countQuery += 'AND (Name LIKE :searchPattern OR Description LIKE :searchPattern) ';
@@ -101,6 +107,7 @@ public with sharing class StoreConnectController {
       //     countQuery += 'AND Is_Top_Seller__c = true';
       // }
 
+      // security already enforced earlier in the query string
       Integer totalCount = Database.countQuery(countQuery);
 
       return new ProductCatalogResult(
@@ -127,6 +134,10 @@ public with sharing class StoreConnectController {
   @AuraEnabled
   public static Cart__c getOrCreateCart(Id contactId) {
     try {
+      // CRUD checks
+      SecurityUtils.checkObjectReadable('Cart__c');
+      SecurityUtils.checkObjectCreateable('Cart__c');
+
       // Security: Check if user has read and create permissions on Cart__c
       if (!StoreConnectSecurityUtil.hasReadPermission('Cart__c')) {
         throw new SecurityException('User lacks permission to read carts');
@@ -159,6 +170,7 @@ public with sharing class StoreConnectController {
           )
         FROM Cart__c
         WHERE Contact__c = :contactId AND Status__c = 'Active'
+        WITH SECURITY_ENFORCED
         LIMIT 1
       ];
 
@@ -203,11 +215,18 @@ public with sharing class StoreConnectController {
     Integer quantity
   ) {
     try {
+      // CRUD checks
+      SecurityUtils.checkObjectReadable('Product2');
+      SecurityUtils.checkObjectReadable('Cart_Item__c');
+      SecurityUtils.checkObjectUpdateable('Cart__c');
+      SecurityUtils.checkObjectCreateable('Cart_Item__c');
+
       // Validate product and get price
       Product2 product = [
         SELECT Id, Name, Stock_Quantity__c
         FROM Product2
         WHERE Id = :productId AND IsActive = TRUE
+        WITH SECURITY_ENFORCED
       ];
 
       if (product.Stock_Quantity__c < quantity) {
@@ -221,11 +240,13 @@ public with sharing class StoreConnectController {
         SELECT Id, Quantity__c
         FROM Cart_Item__c
         WHERE Cart__c = :cartId AND Product__c = :productId
+        WITH SECURITY_ENFORCED
       ];
 
       if (!existingItems.isEmpty()) {
         // Update quantity
         existingItems[0].Quantity__c += quantity;
+        SecurityUtils.checkObjectUpdateable('Cart_Item__c');
         update existingItems[0];
         return existingItems[0];
       }
@@ -252,6 +273,7 @@ public with sharing class StoreConnectController {
     Integer newQuantity
   ) {
     try {
+      SecurityUtils.checkObjectUpdateable('Cart_Item__c');
       if (newQuantity <= 0) {
         deleteCartItem(cartItemId);
         return;
@@ -261,6 +283,7 @@ public with sharing class StoreConnectController {
         SELECT Id, Quantity__c, Product__r.Stock_Quantity__c
         FROM Cart_Item__c
         WHERE Id = :cartItemId
+        WITH SECURITY_ENFORCED
       ];
 
       if (item.Product__r.Stock_Quantity__c < newQuantity) {
@@ -282,7 +305,8 @@ public with sharing class StoreConnectController {
   @AuraEnabled
   public static void deleteCartItem(Id cartItemId) {
     try {
-      delete [SELECT Id FROM Cart_Item__c WHERE Id = :cartItemId];
+      SecurityUtils.checkObjectDeletable('Cart_Item__c');
+      delete [SELECT Id FROM Cart_Item__c WHERE Id = :cartItemId WITH SECURITY_ENFORCED];
     } catch (Exception e) {
       throw new AuraHandledException(
         'Error removing cart item: ' + e.getMessage()
@@ -294,6 +318,7 @@ public with sharing class StoreConnectController {
   @AuraEnabled(cacheable=true)
   public static List<Shipping_Address__c> getShippingAddresses(Id accountId) {
     try {
+      SecurityUtils.checkObjectReadable('Shipping_Address__c');
       return [
         SELECT
           Id,
@@ -306,6 +331,7 @@ public with sharing class StoreConnectController {
           Is_Default__c
         FROM Shipping_Address__c
         WHERE Account__c = :accountId
+        WITH SECURITY_ENFORCED
         ORDER BY Is_Default__c DESC, Address_Label__c
       ];
     } catch (Exception e) {
@@ -327,6 +353,8 @@ public with sharing class StoreConnectController {
           'User lacks permission to read recently viewed products'
         );
       }
+      SecurityUtils.checkObjectReadable('View_Tracking__c');
+      SecurityUtils.checkObjectReadable('Product2');
 
       if (contactId == null) {
         throw new IllegalArgumentException('Contact ID cannot be null');
@@ -338,6 +366,7 @@ public with sharing class StoreConnectController {
         SELECT Product__c, Last_Viewed_Date__c
         FROM View_Tracking__c
         WHERE User_Contact__c = :contactId
+        WITH SECURITY_ENFORCED
         ORDER BY Last_Viewed_Date__c DESC
         LIMIT :limitSize
       ];
@@ -365,6 +394,7 @@ public with sharing class StoreConnectController {
             )
           FROM Product2
           WHERE Id IN :productIds AND IsActive = TRUE
+          WITH SECURITY_ENFORCED
         ]
       );
 
@@ -394,6 +424,7 @@ public with sharing class StoreConnectController {
   @AuraEnabled
   public static void trackProductView(Id contactId, Id productId) {
     try {
+      SecurityUtils.checkObjectCreateable('View_Tracking__c');
       // Upsert view tracking record
       View_Tracking__c viewTracking = new View_Tracking__c(
         User_Contact__c = contactId,
@@ -415,6 +446,8 @@ public with sharing class StoreConnectController {
     Id productId
   ) {
     try {
+      SecurityUtils.checkObjectReadable('Notification_Request__c');
+      SecurityUtils.checkObjectCreateable('Notification_Request__c');
       // Check if notification already exists
       List<Notification_Request__c> existingRequests = [
         SELECT Id
@@ -423,6 +456,7 @@ public with sharing class StoreConnectController {
           User_Contact__c = :contactId
           AND Product__c = :productId
           AND Status__c = 'Active'
+        WITH SECURITY_ENFORCED
       ];
 
       if (!existingRequests.isEmpty()) {
@@ -461,7 +495,7 @@ public with sharing class StoreConnectController {
     @AuraEnabled
     public String imageUrl;
     @AuraEnabled
-    public Decimal UnitPrice;
+    public Decimal unitPrice;
 
     public RecentlyViewedProduct(
       Id id,
@@ -472,7 +506,7 @@ public with sharing class StoreConnectController {
       this.productId = id;
       this.productName = name;
       this.imageUrl = imageUrl;
-      this.UnitPrice = unitPrice;
+      this.unitPrice = unitPrice;
     }
   }
 

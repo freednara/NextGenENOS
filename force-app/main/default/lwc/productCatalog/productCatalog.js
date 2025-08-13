@@ -6,6 +6,7 @@ import { NavigationMixin } from "lightning/navigation";
 export default class ProductCatalog extends NavigationMixin(LightningElement) {
   @api recordId; // Contact ID from the community user
   products = [];
+  allProducts = [];
   searchTerm = "";
   selectedCategory = "";
   topSellersOnly = false;
@@ -34,37 +35,60 @@ export default class ProductCatalog extends NavigationMixin(LightningElement) {
     return `${start}-${end} of ${this.totalCount}`;
   }
 
+  // Dynamic category options from actual product data
+  get categoryOptions() {
+    if (!this.allProducts || this.allProducts.length === 0) {
+      return [{ label: "All Categories", value: "" }];
+    }
+
+    // Extract unique categories from products
+    const categories = new Set();
+    this.allProducts.forEach(product => {
+      if (product.Category__c) {
+        categories.add(product.Category__c);
+      }
+    });
+
+    // Convert to option format and sort
+    const options = [{ label: "All Categories", value: "" }];
+    Array.from(categories).sort().forEach(category => {
+      options.push({ label: category, value: category });
+    });
+
+    return options;
+  }
+
   // Search and filter methods
   handleSearchChange(event) {
     this.searchTerm = event.target.value;
     this.currentPage = 0;
-    this.debounceLoadProducts();
+    this.debounceRecomputeProducts();
   }
 
   handleCategoryChange(event) {
     this.selectedCategory = event.target.value;
     this.currentPage = 0;
-    this.debounceLoadProducts();
+    this.debounceRecomputeProducts();
   }
 
   handleTopSellersChange(event) {
     this.topSellersOnly = event.target.checked;
     this.currentPage = 0;
-    this.debounceLoadProducts();
+    this.debounceRecomputeProducts();
   }
 
   // Pagination methods
   handleNextPage() {
     if (this.hasNextPage) {
       this.currentPage++;
-      this.debounceLoadProducts();
+      this.debounceRecomputeProducts();
     }
   }
 
   handlePreviousPage() {
     if (this.hasPreviousPage) {
       this.currentPage--;
-      this.debounceLoadProducts();
+      this.debounceRecomputeProducts();
     }
   }
 
@@ -77,21 +101,17 @@ export default class ProductCatalog extends NavigationMixin(LightningElement) {
 
       // Handle the result based on what's actually returned
       if (Array.isArray(result)) {
-        this.products = result;
-        this.totalCount = result.length;
+        this.allProducts = result;
       } else if (result && result.products) {
-        this.products = result.products;
-        this.totalCount = result.totalCount || result.products.length;
+        this.allProducts = result.products;
       } else {
-        this.products = [];
-        this.totalCount = 0;
+        this.allProducts = [];
       }
 
-      this.totalPages = Math.ceil(this.totalCount / this.pageSize);
+      this.recomputeFilteredProducts();
     } catch {
-      this.products = [];
-      this.totalCount = 0;
-      this.totalPages = 0;
+      this.allProducts = [];
+      this.recomputeFilteredProducts();
     } finally {
       this.loading = false;
     }
@@ -102,6 +122,58 @@ export default class ProductCatalog extends NavigationMixin(LightningElement) {
     this.searchDelay = window.setTimeout(() => {
       this.loadProducts();
     }, 300);
+  }
+
+  debounceRecomputeProducts() {
+    window.clearTimeout(this.searchDelay);
+    this.searchDelay = window.setTimeout(() => {
+      if (!this.allProducts || this.allProducts.length === 0) {
+        this.loadProducts();
+      } else {
+        this.recomputeFilteredProducts();
+      }
+    }, 200);
+  }
+
+  applyFilters(products) {
+    let filtered = Array.isArray(products) ? products.slice() : [];
+
+    // Text search on Name and Description
+    const term = (this.searchTerm || "").trim().toLowerCase();
+    if (term) {
+      filtered = filtered.filter((p) => {
+        const name = (p.Name || "").toLowerCase();
+        const desc = (p.Description || "").toLowerCase();
+        return name.includes(term) || desc.includes(term);
+      });
+    }
+
+    // Category filter using actual Category__c field
+    if (this.selectedCategory) {
+      filtered = filtered.filter(
+        (p) => (p.Category__c || "").toLowerCase() === this.selectedCategory.toLowerCase()
+      );
+    }
+
+    // Top sellers only
+    if (this.topSellersOnly) {
+      filtered = filtered.filter((p) => !!p.Is_Top_Seller__c);
+    }
+
+    return filtered;
+  }
+
+  recomputeFilteredProducts() {
+    const filtered = this.applyFilters(this.allProducts);
+    this.totalCount = filtered.length;
+    this.totalPages = Math.max(1, Math.ceil(this.totalCount / this.pageSize));
+
+    // Clamp current page
+    if (this.currentPage > this.totalPages - 1) {
+      this.currentPage = Math.max(0, this.totalPages - 1);
+    }
+
+    this.products = filtered;
   }
 
   // Add to cart - simplified version
@@ -189,5 +261,11 @@ export default class ProductCatalog extends NavigationMixin(LightningElement) {
 
   get showNoResults() {
     return !this.loading && this.products.length === 0;
+  }
+
+  get displayedProducts() {
+    const start = this.currentPage * this.pageSize;
+    const end = Math.min(start + this.pageSize, this.products.length);
+    return this.products.slice(start, end);
   }
 }

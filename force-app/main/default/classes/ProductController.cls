@@ -50,22 +50,34 @@ public with sharing class ProductController {
         new List<String>{ 'UnitPrice', 'IsActive', 'Pricebook2Id' }
       );
 
+      // CRUD checks before SOQL queries
+      SecurityUtils.checkObjectReadable('User');
+      SecurityUtils.checkObjectReadable('Account');
+      SecurityUtils.checkObjectReadable('Pricebook2');
+      SecurityUtils.checkObjectReadable('Product2');
+      SecurityUtils.checkObjectReadable('PricebookEntry');
+
       // ** START: NEW LOGIC FOR CONTRACT PRICING **
       Id pricebookIdToUse;
+      // Validate FLS for traversed field
+      SecurityUtils.checkFieldReadAccess('User', new List<String>{ 'AccountId' });
       Id userAccountId = [
         SELECT AccountId
         FROM User
         WHERE Id = :UserInfo.getUserId()
+        WITH SECURITY_ENFORCED
         LIMIT 1
       ]
       .AccountId;
 
       if (userAccountId != null) {
         // Check the user's Account for an assigned price book ID.
+        SecurityUtils.checkFieldReadAccess('Account', new List<String>{ 'Assigned_Price_Book_ID__c' });
         Account userAccount = [
           SELECT Assigned_Price_Book_ID__c
           FROM Account
           WHERE Id = :userAccountId
+          WITH SECURITY_ENFORCED
           LIMIT 1
         ];
         if (String.isNotBlank(userAccount.Assigned_Price_Book_ID__c)) {
@@ -75,10 +87,12 @@ public with sharing class ProductController {
 
       // If no custom price book is assigned, default to the standard one.
       if (pricebookIdToUse == null) {
+        SecurityUtils.checkFieldReadAccess('Pricebook2', new List<String>{ 'IsStandard', 'Id' });
         pricebookIdToUse = [
           SELECT Id
           FROM Pricebook2
           WHERE IsStandard = TRUE
+          WITH SECURITY_ENFORCED
           LIMIT 1
         ]
         .Id;
@@ -102,6 +116,7 @@ public with sharing class ProductController {
           )
         FROM Product2
         WHERE IsActive = TRUE
+        WITH SECURITY_ENFORCED
         ORDER BY Name
         LIMIT 50
       ];
@@ -176,22 +191,33 @@ public with sharing class ProductController {
         new List<String>{ 'UnitPrice', 'IsActive', 'Pricebook2Id' }
       );
 
+      // CRUD checks before SOQL queries
+      SecurityUtils.checkObjectReadable('User');
+      SecurityUtils.checkObjectReadable('Account');
+      SecurityUtils.checkObjectReadable('Pricebook2');
+      SecurityUtils.checkObjectReadable('Product2');
+      SecurityUtils.checkObjectReadable('PricebookEntry');
+
       // ** START: NEW LOGIC FOR CONTRACT PRICING **
       Id pricebookIdToUse;
+      SecurityUtils.checkFieldReadAccess('User', new List<String>{ 'AccountId' });
       Id userAccountId = [
         SELECT AccountId
         FROM User
         WHERE Id = :UserInfo.getUserId()
+        WITH SECURITY_ENFORCED
         LIMIT 1
       ]
       .AccountId;
 
       if (userAccountId != null) {
         // Check the user's Account for an assigned price book ID.
+        SecurityUtils.checkFieldReadAccess('Account', new List<String>{ 'Assigned_Price_Book_ID__c' });
         Account userAccount = [
           SELECT Assigned_Price_Book_ID__c
           FROM Account
           WHERE Id = :userAccountId
+          WITH SECURITY_ENFORCED
           LIMIT 1
         ];
         if (String.isNotBlank(userAccount.Assigned_Price_Book_ID__c)) {
@@ -201,10 +227,12 @@ public with sharing class ProductController {
 
       // If no custom price book is assigned, default to the standard one.
       if (pricebookIdToUse == null) {
+        SecurityUtils.checkFieldReadAccess('Pricebook2', new List<String>{ 'IsStandard', 'Id' });
         pricebookIdToUse = [
           SELECT Id
           FROM Pricebook2
           WHERE IsStandard = TRUE
+          WITH SECURITY_ENFORCED
           LIMIT 1
         ]
         .Id;
@@ -228,6 +256,7 @@ public with sharing class ProductController {
           )
         FROM Product2
         WHERE Id = :productId AND IsActive = TRUE
+        WITH SECURITY_ENFORCED
         LIMIT 1
       ];
 
@@ -311,22 +340,33 @@ public with sharing class ProductController {
         new List<String>{ 'UnitPrice', 'IsActive', 'Pricebook2Id' }
       );
 
+      // CRUD checks before SOQL queries
+      SecurityUtils.checkObjectReadable('User');
+      SecurityUtils.checkObjectReadable('Account');
+      SecurityUtils.checkObjectReadable('Pricebook2');
+      SecurityUtils.checkObjectReadable('Product2');
+      SecurityUtils.checkObjectReadable('PricebookEntry');
+
       // ** START: NEW LOGIC FOR CONTRACT PRICING **
       Id pricebookIdToUse;
+      SecurityUtils.checkFieldReadAccess('User', new List<String>{ 'AccountId' });
       Id userAccountId = [
         SELECT AccountId
         FROM User
         WHERE Id = :UserInfo.getUserId()
+        WITH SECURITY_ENFORCED
         LIMIT 1
       ]
       .AccountId;
 
       if (userAccountId != null) {
         // Check the user's Account for an assigned price book ID.
+        SecurityUtils.checkFieldReadAccess('Account', new List<String>{ 'Assigned_Price_Book_ID__c' });
         Account userAccount = [
           SELECT Assigned_Price_Book_ID__c
           FROM Account
           WHERE Id = :userAccountId
+          WITH SECURITY_ENFORCED
           LIMIT 1
         ];
         if (String.isNotBlank(userAccount.Assigned_Price_Book_ID__c)) {
@@ -336,10 +376,12 @@ public with sharing class ProductController {
 
       // If no custom price book is assigned, default to the standard one.
       if (pricebookIdToUse == null) {
+        SecurityUtils.checkFieldReadAccess('Pricebook2', new List<String>{ 'IsStandard', 'Id' });
         pricebookIdToUse = [
           SELECT Id
           FROM Pricebook2
           WHERE IsStandard = TRUE
+          WITH SECURITY_ENFORCED
           LIMIT 1
         ]
         .Id;
@@ -366,6 +408,7 @@ public with sharing class ProductController {
           IsActive = TRUE
           AND (Name LIKE :sanitizedSearchTerm
           OR Description LIKE :sanitizedSearchTerm)
+        WITH SECURITY_ENFORCED
         ORDER BY Name
         LIMIT 50
       ];

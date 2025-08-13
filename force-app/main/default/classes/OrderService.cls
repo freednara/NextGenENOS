@@ -282,7 +282,7 @@ public with sharing class OrderService {
 
   /**
    * @description Processes the actual order creation in a transactional manner.
-   * Creates Order and OrderItem records, then cleans up the cart.
+   * Creates Order and OrderItem records with Pay.gov payment processing, then cleans up the cart.
    *
    * @param cart The cart record to convert
    * @param cartItems The items in the cart
@@ -302,15 +302,24 @@ public with sharing class OrderService {
     Savepoint sp = Database.setSavepoint();
 
     try {
-      // 1. Process Payment (In a real scenario, this would be a callout to Stripe, etc.)
-      // For now, we simulate success. If this failed, it would throw an exception.
-      System.debug('Processing payment with token: ' + paymentToken);
+      // 1. Calculate total amount for payment processing
+      Decimal totalAmount = calculateTotalAmount(cartItems);
+      
+      // 2. Process Payment through Pay.gov
+      PayGovService.PayGovResponse paymentResponse = processPayGovPayment(
+        cart, 
+        totalAmount, 
+        paymentToken
+      );
+      
+      if (!paymentResponse.success) {
+        throw new PayGovService.PayGovException('Payment processing failed: ' + paymentResponse.errorMessage);
+      }
+      
+      System.debug('Pay.gov payment initiated successfully. Transaction ID: ' + paymentResponse.transactionId);
 
-      // TODO: Implement actual payment gateway callout here
-      // Example: PaymentGateway.processPayment(paymentToken, calculateTotalAmount(cartItems));
-
-      // 2. Create the Order record
-      Order newOrder = createOrderRecord(cart, shippingAddress);
+      // 3. Create the Order record with payment information
+      Order newOrder = createOrderRecord(cart, shippingAddress, paymentResponse.transactionId);
       insert newOrder;
 
       // 3. Create OrderItem records from Cart_Item records
@@ -350,15 +359,17 @@ public with sharing class OrderService {
   }
 
   /**
-   * @description Creates the Order record with shipping information.
+   * @description Creates the Order record with shipping information and payment details.
    *
    * @param cart The cart record containing account information
    * @param shippingAddress The selected shipping address
+   * @param paymentTransactionId The Pay.gov transaction ID
    * @return Order record ready for insertion
    */
   private static Order createOrderRecord(
     Cart__c cart,
-    Shipping_Address__c shippingAddress
+    Shipping_Address__c shippingAddress,
+    String paymentTransactionId
   ) {
     // Security check - ensure user can create Order records
     SecurityUtils.checkObjectCreateable('Order');
@@ -373,20 +384,22 @@ public with sharing class OrderService {
         'ShippingCity',
         'ShippingState',
         'ShippingPostalCode',
-        'ShippingCountry'
+        'ShippingCountry',
+        'Description'
       }
     );
 
     return new Order(
       AccountId = cart.Contact__r.AccountId,
       EffectiveDate = Date.today(),
-      Status = 'Draft', // Can be changed to 'Activated' based on business requirements
+      Status = 'Activated', // Order is activated after successful payment
       Pricebook2Id = getStandardPricebookId(),
       ShippingStreet = shippingAddress.Street__c,
       ShippingCity = shippingAddress.City__c,
       ShippingState = shippingAddress.State__c,
       ShippingPostalCode = shippingAddress.Postal_Code__c,
-      ShippingCountry = shippingAddress.Country__c
+      ShippingCountry = shippingAddress.Country__c,
+      Description = 'Pay.gov Transaction ID: ' + paymentTransactionId
     );
   }
 
@@ -515,6 +528,129 @@ public with sharing class OrderService {
     ];
 
     return users.isEmpty() ? null : users[0].Contact?.AccountId;
+  }
+
+  /**
+   * @description Processes payment through Pay.gov federal payment gateway.
+   * This method handles secure payment processing for government transactions.
+   *
+   * @param cart The cart containing customer information
+   * @param totalAmount The total amount to charge
+   * @param paymentToken The secure payment token
+   * @return PayGovService.PayGovResponse containing payment processing results
+   * @throws PayGovService.PayGovException if payment processing fails
+   */
+  private static PayGovService.PayGovResponse processPayGovPayment(
+    Cart__c cart,
+    Decimal totalAmount,
+    String paymentToken
+  ) {
+    try {
+      // Get customer information for payment processing
+      Contact customer = [
+        SELECT Email, FirstName, LastName, AccountId
+        FROM Contact
+        WHERE Id = :cart.Contact__c
+        LIMIT 1
+      ];
+      
+      // Create Pay.gov payment request
+      PayGovService.PayGovRequest paymentRequest = new PayGovService.PayGovRequest(
+        getAgencyId(), // Federal agency ID from Custom Metadata
+        'ORDER-' + System.currentTimeMillis(), // Unique order ID
+        totalAmount,
+        customer.Email
+      );
+      
+      // Set payment request details
+      paymentRequest.description = 'StoreConnect Order Payment - ' + customer.FirstName + ' ' + customer.LastName;
+      paymentRequest.successUrl = getSuccessReturnUrl();
+      paymentRequest.cancelUrl = getCancelReturnUrl();
+      
+      // Process the payment through Pay.gov
+      PayGovService.PayGovResponse paymentResponse = PayGovService.initiatePayment(paymentRequest);
+      
+      // Log payment initiation for audit trail
+      System.debug(LoggingLevel.INFO, 'Pay.gov payment initiated for amount: ' + totalAmount + 
+                   ', Transaction ID: ' + paymentResponse.transactionId);
+      
+      return paymentResponse;
+      
+    } catch (Exception e) {
+      System.debug(LoggingLevel.ERROR, 'Pay.gov payment processing error: ' + e.getMessage());
+      throw new PayGovService.PayGovException('Payment processing failed: ' + e.getMessage());
+    }
+  }
+
+  /**
+   * @description Retrieves the federal agency ID from Custom Metadata Type.
+   * This ensures secure configuration management for Pay.gov integration.
+   *
+   * @return String containing the agency ID for Pay.gov
+   */
+  private static String getAgencyId() {
+    PayGov_Configuration__mdt config = getPayGovConfiguration();
+    return config?.Agency_ID__c ?? 'AGENCY_ID_NOT_CONFIGURED';
+  }
+
+  /**
+   * @description Gets the success return URL for Pay.gov redirects.
+   *
+   * @return String containing the success URL
+   */
+  private static String getSuccessReturnUrl() {
+    PayGov_Configuration__mdt config = getPayGovConfiguration();
+    if (config?.Success_URL__c != null) {
+      return config.Success_URL__c;
+    }
+    // Fallback to dynamic URL construction
+    return Site.getBaseUrl() + '/payment-success';
+  }
+
+  /**
+   * @description Gets the cancel return URL for Pay.gov redirects.
+   *
+   * @return String containing the cancel URL
+   */
+  private static String getCancelReturnUrl() {
+    PayGov_Configuration__mdt config = getPayGovConfiguration();
+    if (config?.Cancel_URL__c != null) {
+      return config.Cancel_URL__c;
+    }
+    // Fallback to dynamic URL construction
+    return Site.getBaseUrl() + '/payment-cancelled';
+  }
+
+  /**
+   * @description Retrieves Pay.gov configuration from Custom Metadata Type.
+   * This centralizes configuration management for the federal payment gateway.
+   *
+   * @return PayGov_Configuration__mdt record or null if not found
+   */
+  private static PayGov_Configuration__mdt getPayGovConfiguration() {
+    try {
+      List<PayGov_Configuration__mdt> configs = [
+        SELECT Agency_ID__c, Environment__c, Success_URL__c, Cancel_URL__c
+        FROM PayGov_Configuration__mdt
+        WHERE Environment__c = 'Production' // Use Production config, fallback to QA in sandbox
+        LIMIT 1
+      ];
+      
+      // If no production config found, try QA config
+      if (configs.isEmpty()) {
+        configs = [
+          SELECT Agency_ID__c, Environment__c, Success_URL__c, Cancel_URL__c
+          FROM PayGov_Configuration__mdt
+          WHERE Environment__c = 'QA'
+          LIMIT 1
+        ];
+      }
+      
+      return configs.isEmpty() ? null : configs[0];
+    } catch (Exception e) {
+      System.debug(LoggingLevel.ERROR, 'Error retrieving Pay.gov configuration: ' + e.getMessage());
+      return null;
+    }
   }
 
   /**

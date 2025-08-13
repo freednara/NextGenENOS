@@ -106,9 +106,8 @@
         <template if:true={products.length}>
           <div class="slds-grid slds-wrap slds-gutters">
             <template
-              for:each={products}
+              for:each={displayedProducts}
               for:item="product"
-              for:key="product.Id"
             >
               <div
                 key={product.Id}
@@ -165,6 +164,15 @@
                         Stock: {product.Stock_Quantity__c}
                       </span>
                     </div>
+
+                    <!-- Category Badge -->
+                    <template if:true={product.Category__c}>
+                      <div class="slds-m-bottom_small">
+                        <span class="slds-badge slds-theme_alt-inverse"
+                          >{product.Category__c}</span
+                        >
+                      </div>
+                    </template>
 
                     <!-- Top Seller Badge -->
                     <template if:true={product.Is_Top_Seller__c}>
