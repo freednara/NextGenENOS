@@ -24,7 +24,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
         
     - name: Install Salesforce CLI
@@ -34,23 +34,23 @@ jobs:
         
     - name: Install Salesforce Code Analyzer
       run: |
-        sfdx plugins:install @salesforce/sfdx-scanner
-        sfdx scanner:version
+        sf plugins install @salesforce/sfdx-scanner
+        sf scanner version
         
     - name: Run Security Scan
       run: |
         echo "🔍 Running Salesforce Code Analyzer Security Scan..."
-        sfdx scanner:run --target force-app/main/default/classes --format json --outfile security-scan-results.json
+        sf scanner run --target force-app/main/default/classes --format json --outfile security-scan-results.json
         
     - name: Run PMD Analysis
       run: |
         echo "🔍 Running PMD Code Analysis..."
-        sfdx scanner:run --target force-app/main/default/classes --engine pmd --format json --outfile pmd-results.json
+        sf scanner run --target force-app/main/default/classes --engine pmd --format json --outfile pmd-results.json
         
     - name: Run ESLint Analysis
       run: |
         echo "🔍 Running ESLint Analysis for LWC..."
-        sfdx scanner:run --target force-app/main/default/lwc --engine eslint --format json --outfile eslint-results.json
+        sf scanner run --target force-app/main/default/lwc --engine eslint --format json --outfile eslint-results.json
         
     - name: Upload Security Scan Results
       uses: actions/upload-artifact@v4
@@ -110,7 +110,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
         
     - name: Install dependencies
