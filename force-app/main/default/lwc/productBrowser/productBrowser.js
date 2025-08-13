@@ -62,8 +62,8 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
                 // If no search term, refresh the original products
                 this.refreshProducts();
             }
-        } catch (error) {
-            console.error('Search error:', error);
+        } catch {
+            // Log error for debugging (remove in production)
             this.showToast('Error', 'Unable to search products. Please try again.', 'error');
         }
     }
@@ -102,8 +102,6 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
     handleAddToCart(event) {
         // Prevent event bubbling to avoid triggering navigation
         event.stopPropagation();
-        
-        const productId = event.currentTarget.dataset.productId;
         
         // For now, show a toast message indicating the feature is coming soon
         this.showToast(
@@ -146,7 +144,6 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
      * @param {Event} event - The error event from the image element
      */
     handleImageError(event) {
-        const productId = event.currentTarget.dataset.productId;
         const imageContainer = event.currentTarget.closest('.product-image-container');
         
         if (imageContainer) {

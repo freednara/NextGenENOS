@@ -48,7 +48,7 @@ export default class ShoppingCart extends NavigationMixin(LightningElement) {
             this.cartItems = [];
             
             this.showToast('Info', 'Cart functionality coming soon!', 'info');
-        } catch (error) {
+        } catch {
             this.showToast('Error', 'Failed to load cart: Cart functionality not yet implemented', 'error');
         } finally {
             this.loading = false;
@@ -72,14 +72,13 @@ export default class ShoppingCart extends NavigationMixin(LightningElement) {
             if (this.shippingAddresses.length > 0) {
                 this.selectedShippingAddress = this.shippingAddresses[0].Id;
             }
-        } catch (error) {
+        } catch {
             this.showToast('Error', 'Failed to load shipping addresses: Feature not yet implemented', 'error');
         }
     }
     
     // Update cart item quantity - simplified version
     async handleQuantityChange(event) {
-        const cartItemId = event.currentTarget.dataset.itemId;
         const newQuantity = parseInt(event.target.value, 10);
         if (isNaN(newQuantity) || newQuantity < 1) {
             this.showToast('Error', 'Invalid quantity', 'error');
@@ -89,19 +88,17 @@ export default class ShoppingCart extends NavigationMixin(LightningElement) {
         try {
             // For now, just show a message
             this.showToast('Info', 'Cart update functionality coming soon!', 'info');
-        } catch (error) {
+        } catch {
             this.showToast('Error', 'Failed to update cart: Feature not yet implemented', 'error');
         }
     }
     
     // Remove item from cart - simplified version
-    async handleRemoveItem(event) {
-        const cartItemId = event.currentTarget.dataset.itemId;
-        
+    async handleRemoveItem() {
         try {
             // For now, just show a message
             this.showToast('Info', 'Remove item functionality coming soon!', 'info');
-        } catch (error) {
+        } catch {
             this.showToast('Error', 'Failed to remove item: Feature not yet implemented', 'error');
         }
     }
@@ -135,7 +132,7 @@ export default class ShoppingCart extends NavigationMixin(LightningElement) {
             // Close modal
             this.showCheckoutModal = false;
             
-        } catch (error) {
+        } catch {
             this.showToast('Error', 'Checkout failed: Feature not yet implemented', 'error');
         } finally {
             this.checkoutLoading = false;

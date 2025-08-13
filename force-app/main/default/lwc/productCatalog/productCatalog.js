@@ -86,8 +86,7 @@ export default class ProductCatalog extends NavigationMixin(LightningElement) {
             
             this.totalPages = Math.ceil(this.totalCount / this.pageSize);
             
-        } catch (error) {
-            console.error('Error loading products:', error);
+        } catch {
             this.products = [];
             this.totalCount = 0;
             this.totalPages = 0;
@@ -105,7 +104,6 @@ export default class ProductCatalog extends NavigationMixin(LightningElement) {
     
     // Add to cart - simplified version
     async handleAddToCart(event) {
-        const productId = event.currentTarget.dataset.productId;
         const quantity = parseInt(event.currentTarget.dataset.quantity, 10) || 1;
 
         if (isNaN(quantity) || quantity < 1) {
@@ -126,15 +124,11 @@ export default class ProductCatalog extends NavigationMixin(LightningElement) {
     }
     
     // Track product view - simplified version
-    async handleProductView(event) {
-        const productId = event.currentTarget.dataset.productId;
-        
+    async handleProductView() {
         try {
             // For now, just log the view
-            console.log('Product viewed:', productId);
-        } catch (error) {
+        } catch {
             // Don't show error for tracking - just log it
-            console.error('Error tracking product view:', error);
         }
     }
     
@@ -153,15 +147,13 @@ export default class ProductCatalog extends NavigationMixin(LightningElement) {
     }
     
     // Request back-in-stock notification
-    async handleBackInStock(event) {
-        const productId = event.currentTarget.dataset.productId;
-        
+    async handleBackInStock() {
         try {
             // This would call the notification request method
             // For now, just show a message
             this.showToast('Info', 'Back-in-stock notification requested', 'info');
-        } catch (error) {
-            this.showToast('Error', 'Failed to request notification: ' + (error.body?.message || error.message), 'error');
+        } catch {
+            this.showToast('Error', 'Failed to request notification', 'error');
         }
     }
     

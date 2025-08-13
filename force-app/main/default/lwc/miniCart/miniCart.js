@@ -36,7 +36,6 @@ export default class MiniCart extends LightningElement {
         
         // Handle any errors from the wire service
         if (result.error) {
-            console.error('Error loading cart count:', result.error);
             // Don't show error to user for mini cart - just log it
         }
     }
@@ -72,9 +71,7 @@ export default class MiniCart extends LightningElement {
      * 
      * @param {Object} message - The message received from the LMS channel
      */
-    handleCartUpdate(message) {
-        console.log('Cart update message received from:', message.source);
-        
+    handleCartUpdate() {
         // Refresh the Apex wire service to get updated cart count
         if (this.wiredCartResult) {
             refreshApex(this.wiredCartResult);

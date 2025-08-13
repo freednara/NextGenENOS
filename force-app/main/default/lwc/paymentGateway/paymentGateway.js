@@ -248,13 +248,10 @@ export default class PaymentGateway extends LightningElement {
             // Generate secure payment token (in real implementation, this comes from gateway)
             this.paymentToken = this.generateSecureToken();
             
-            console.log('Payment processed successfully. Token:', this.paymentToken);
-            
             // Navigate to next Flow screen
             this.navigateToNextScreen();
             
-        } catch (error) {
-            console.error('Payment processing error:', error);
+        } catch {
             this.showError('Payment processing failed. Please try again.');
         } finally {
             this.isProcessing = false;

@@ -1,4 +1,4 @@
-import { LightningElement, wire } from 'lwc';
+import { LightningElement } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 /**
@@ -61,7 +61,7 @@ export default class OrderHistory extends LightningElement {
      * 
      * @returns {boolean} False since we're not loading
      */
-    get isLoading() {
+    get isLoadingComputed() {
         return false;
     }
 
@@ -70,7 +70,7 @@ export default class OrderHistory extends LightningElement {
      * 
      * @returns {boolean} True since OrderService is not available
      */
-    get hasError() {
+    get hasErrorComputed() {
         return this.hasError;
     }
 
@@ -107,10 +107,7 @@ export default class OrderHistory extends LightningElement {
      * 
      * @param {Event} event - The row selection event
      */
-    handleRowSelection(event) {
-        const selectedRows = event.detail.selectedRows;
-        console.log('Selected orders:', selectedRows);
-        
+    handleRowSelection() {
         // TODO: Implement order detail view or actions
         // This could open a modal, navigate to order detail page, etc.
     }
@@ -121,10 +118,7 @@ export default class OrderHistory extends LightningElement {
      * 
      * @param {Event} event - The sorting event
      */
-    handleSort(event) {
-        const { fieldName, sortDirection } = event.detail;
-        console.log('Sorting by:', fieldName, 'Direction:', sortDirection);
-        
+    handleSort() {
         // TODO: Implement custom sorting logic if needed
         // The lightning-datatable handles basic sorting automatically
     }
