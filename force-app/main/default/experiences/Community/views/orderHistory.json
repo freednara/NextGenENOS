@@ -1,0 +1,14 @@
+{
+  "id": "orderHistory",
+  "label": "Order History",
+  "viewType": "custom",
+  "regions": [
+    {
+      "id": "content",
+      "regionType": "main",
+      "components": [
+        { "id": "orderHistoryComp", "componentName": "c__orderHistory", "type": "LWC" }
+      ]
+    }
+  ]
+}

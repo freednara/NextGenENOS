@@ -19,7 +19,7 @@ public with sharing class QuoteService {
             if (!StoreConnectSecurityUtil.hasReadPermission('Quote')) {
                 throw new StoreConnectSecurityUtil.SecurityException('User lacks read access to Quote.');
             }
-            for (String fieldName : new List<String>{'Name', 'Status', 'GrandTotal', 'CreatedDate', 'AccountId'}) {
+            for (String fieldName : new List<String>{'Name', 'Status', 'GrandTotal', 'TotalPrice', 'CreatedDate', 'AccountId'}) {
                 if (!StoreConnectSecurityUtil.hasFieldReadPermission('Quote', fieldName)) {
                     throw new StoreConnectSecurityUtil.SecurityException('No access to field Quote.' + fieldName);
                 }
@@ -31,15 +31,48 @@ public with sharing class QuoteService {
             }
 
             return [
-                SELECT Id, Name, Status, GrandTotal, CreatedDate
+                SELECT Id, Name, Status, GrandTotal, TotalPrice, CreatedDate
                 FROM Quote
                 WHERE AccountId = :accountId
                 ORDER BY CreatedDate DESC
                 LIMIT 100
             ];
+        } catch (StoreConnectSecurityUtil.SecurityException e) {
+            throw new AuraHandledException('Security violation: ' + e.getMessage());
         } catch (Exception e) {
             System.debug(LoggingLevel.ERROR, 'Error retrieving quotes: ' + e.getMessage());
             throw new AuraHandledException('Unable to retrieve quotes at this time. Please try again later.');
+        }
+    }
+
+    /**
+     * @description Retrieves quotes for a specific account (alternative method for flexibility).
+     *
+     * @param accountId The Account ID to retrieve quotes for
+     * @return List of Quote records
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<Quote> getQuotesForAccount(Id accountId) {
+        try {
+            if (!StoreConnectSecurityUtil.hasReadPermission('Quote')) {
+                throw new StoreConnectSecurityUtil.SecurityException('User lacks permission to read quotes');
+            }
+            if (accountId == null) {
+                throw new IllegalArgumentException('Account ID cannot be null');
+            }
+            
+            return [
+                SELECT Id, Name, Status, GrandTotal, TotalPrice, CreatedDate
+                FROM Quote
+                WHERE AccountId = :accountId
+                ORDER BY CreatedDate DESC
+                LIMIT 100
+            ];
+        } catch (StoreConnectSecurityUtil.SecurityException e) {
+            throw new AuraHandledException('Security violation: ' + e.getMessage());
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Error retrieving quotes for account: ' + e.getMessage());
+            throw new AuraHandledException('Error retrieving quotes: ' + e.getMessage());
         }
     }
 
@@ -49,7 +82,7 @@ public with sharing class QuoteService {
      * @return The newly created Quote record
      */
     @AuraEnabled
-    public static Quote createQuote() {
+    public static Quote createQuoteFromCart() {
         try {
             // Security checks
             if (!StoreConnectSecurityUtil.hasCreatePermission('Quote')) {
@@ -82,11 +115,49 @@ public with sharing class QuoteService {
                 Pricebook2Id = getStandardPricebookId(),
                 Status = 'Draft'
             );
+            
+            StoreConnectSecurityUtil.validateRecordAccess(new List<Quote>{q}, 'CREATE');
             insert q;
             return q;
+        } catch (StoreConnectSecurityUtil.SecurityException e) {
+            throw new AuraHandledException('Security violation: ' + e.getMessage());
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Error creating quote from cart: ' + e.getMessage());
+            throw new AuraHandledException('Unable to create quote at this time. Please try again later.');
+        }
+    }
+
+    /**
+     * @description Creates a new Quote for a specific account (alternative method).
+     *
+     * @param accountId The Account ID to create the quote for
+     * @return The newly created Quote record
+     */
+    @AuraEnabled
+    public static Quote createQuote(Id accountId) {
+        try {
+            if (!StoreConnectSecurityUtil.hasCreatePermission('Quote')) {
+                throw new StoreConnectSecurityUtil.SecurityException('User lacks permission to create quotes');
+            }
+            if (accountId == null) {
+                throw new IllegalArgumentException('Account ID cannot be null');
+            }
+            
+            Quote newQuote = new Quote(
+                Name = 'New Quote',
+                AccountId = accountId,
+                Status = 'Draft',
+                ExpirationDate = System.today().addDays(30)
+            );
+
+            StoreConnectSecurityUtil.validateRecordAccess(new List<Quote>{newQuote}, 'CREATE');
+            insert newQuote;
+            return newQuote;
+        } catch (StoreConnectSecurityUtil.SecurityException e) {
+            throw new AuraHandledException('Security violation: ' + e.getMessage());
         } catch (Exception e) {
             System.debug(LoggingLevel.ERROR, 'Error creating quote: ' + e.getMessage());
-            throw new AuraHandledException('Unable to create quote at this time. Please try again later.');
+            throw new AuraHandledException('Error creating quote: ' + e.getMessage());
         }
     }
 

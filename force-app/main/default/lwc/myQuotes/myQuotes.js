@@ -1,25 +1,60 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getQuotes from '@salesforce/apex/QuoteService.getQuotes';
+import getQuotesForAccount from '@salesforce/apex/QuoteService.getQuotesForAccount';
+import createQuoteFromCart from '@salesforce/apex/QuoteService.createQuoteFromCart';
 import createQuote from '@salesforce/apex/QuoteService.createQuote';
 
 /**
- * @description My Quotes component displays and manages quotes for the current user.
+ * @description My Quotes component displays and manages quotes for the current user or specified account.
  *
  * This component allows users to view a summary of their quotes, refresh the
- * list to get the latest data, and create new quotes from the active cart.
+ * list to get the latest data, and create new quotes. It can work in two modes:
+ * - Standalone mode: Automatically gets current user's quotes
+ * - Account mode: Gets quotes for a specific account (when recordId is provided)
  */
 export default class MyQuotes extends LightningElement {
-    // Component state
-    quotes = [];
-    isLoading = false;
-    hasError = false;
-    errorMessage = '';
+    // Public properties
+    @api recordId; // Account Id - when provided, component works in account mode
 
-    // Summary data
-    totalQuotes = 0;
-    totalValue = 0;
-    quotesByStatus = [];
+    // Component state
+    @track quotes = [];
+    @track isLoading = false;
+    @track hasError = false;
+    @track errorMessage = '';
+
+    // Summary data (computed getters)
+    get totalQuotes() {
+        return this.quotes.length;
+    }
+
+    get totalValue() {
+        return this.quotes.reduce((sum, q) => sum + (q.GrandTotal || q.TotalPrice || 0), 0);
+    }
+
+    get quotesByStatus() {
+        const statusMap = {};
+        this.quotes.forEach(q => {
+            const status = q.Status || 'Unknown';
+            statusMap[status] = (statusMap[status] || 0) + 1;
+        });
+        return Object.keys(statusMap).map(key => ({ 
+            key, 
+            value: statusMap[key] 
+        }));
+    }
+
+    get hasQuotes() {
+        return this.quotes && this.quotes.length > 0;
+    }
+
+    get isAccountMode() {
+        return !!this.recordId;
+    }
+
+    get createButtonLabel() {
+        return this.isAccountMode ? 'Create New Quote' : 'Create Quote from Cart';
+    }
 
     // Data table configuration
     columns = [
@@ -31,10 +66,20 @@ export default class MyQuotes extends LightningElement {
             type: 'currency',
             typeAttributes: { currencyCode: 'USD' }
         },
+        {
+            label: 'Total Price',
+            fieldName: 'TotalPrice', 
+            type: 'currency',
+            typeAttributes: { currencyCode: 'USD' }
+        },
         { label: 'Created Date', fieldName: 'CreatedDate', type: 'date' },
         {
             type: 'action',
-            typeAttributes: { rowActions: [{ label: 'View', name: 'view' }] }
+            typeAttributes: { 
+                rowActions: [
+                    { label: 'View', name: 'view' }
+                ] 
+            }
         }
     ];
 
@@ -42,24 +87,32 @@ export default class MyQuotes extends LightningElement {
      * @description Lifecycle hook to load quotes when component is inserted.
      */
     connectedCallback() {
-        this.refreshQuotes();
+        this.loadQuotes();
     }
 
     /**
-     * @description Loads the quotes from the server and calculates summary fields.
+     * @description Loads the quotes from the server based on the component mode.
      */
-    async refreshQuotes() {
+    async loadQuotes() {
         this.isLoading = true;
         this.hasError = false;
         this.errorMessage = '';
 
         try {
-            const data = await getQuotes();
+            let data;
+            if (this.isAccountMode) {
+                // Account mode: get quotes for specific account
+                data = await getQuotesForAccount({ accountId: this.recordId });
+            } else {
+                // Standalone mode: get quotes for current user
+                data = await getQuotes();
+            }
+            
             this.quotes = data || [];
-            this.calculateSummaries();
         } catch (error) {
             this.hasError = true;
             this.errorMessage = error?.body?.message || error.message || 'Unable to load quotes.';
+            this.quotes = [];
             console.error('Error loading quotes:', error);
         } finally {
             this.isLoading = false;
@@ -67,15 +120,30 @@ export default class MyQuotes extends LightningElement {
     }
 
     /**
-     * @description Creates a new quote from the active cart and refreshes the list.
+     * @description Refreshes the quotes list.
+     */
+    refreshQuotes() {
+        this.loadQuotes();
+    }
+
+    /**
+     * @description Creates a new quote based on the component mode.
      */
     async handleCreateNewQuote() {
         this.isLoading = true;
 
         try {
-            await createQuote();
-            this.showToast('Quote Created', 'Your cart has been converted to a quote.', 'success');
-            await this.refreshQuotes();
+            if (this.isAccountMode) {
+                // Account mode: create simple quote for account
+                await createQuote({ accountId: this.recordId });
+                this.showToast('Quote Created', 'New quote has been created successfully.', 'success');
+            } else {
+                // Standalone mode: create quote from active cart
+                await createQuoteFromCart();
+                this.showToast('Quote Created', 'Your cart has been converted to a quote.', 'success');
+            }
+            
+            await this.loadQuotes();
         } catch (error) {
             const message = error?.body?.message || error.message || 'Unable to create quote.';
             this.showToast('Error', message, 'error');
@@ -94,6 +162,7 @@ export default class MyQuotes extends LightningElement {
     handleRowSelection(event) {
         const selectedRows = event.detail.selectedRows;
         console.log('Selected quotes:', selectedRows);
+        // Future: Could dispatch custom event for parent components
     }
 
     /**
@@ -106,28 +175,11 @@ export default class MyQuotes extends LightningElement {
         const actionName = event.detail.action.name;
         const row = event.detail.row;
         console.log('Row action:', actionName, row);
-    }
-
-    /**
-     * @description Calculates summary information for the quotes list.
-     */
-    calculateSummaries() {
-        this.totalQuotes = this.quotes.length;
-        this.totalValue = this.quotes.reduce((sum, q) => sum + (q.GrandTotal || 0), 0);
-
-        const statusMap = {};
-        this.quotes.forEach(q => {
-            const status = q.Status || 'Unknown';
-            statusMap[status] = (statusMap[status] || 0) + 1;
-        });
-        this.quotesByStatus = Object.keys(statusMap).map(key => ({ key, value: statusMap[key] }));
-    }
-
-    /**
-     * @description Convenience getter to check if there are quotes.
-     */
-    get hasQuotes() {
-        return this.quotes && this.quotes.length > 0;
+        
+        if (actionName === 'view') {
+            // Future: Navigate to quote detail or dispatch event
+            this.showToast('View Quote', `Viewing quote: ${row.Name}`, 'info');
+        }
     }
 
     /**
@@ -135,7 +187,7 @@ export default class MyQuotes extends LightningElement {
      *
      * @param {string} title - Toast title
      * @param {string} message - Toast message
-     * @param {string} variant - Toast variant (success, error, etc.)
+     * @param {string} variant - Toast variant (success, error, info, warning)
      */
     showToast(title, message, variant) {
         this.dispatchEvent(

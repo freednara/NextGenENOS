@@ -59,9 +59,30 @@ else
     exit 1
 fi
 
-# Step 4: Deploy any remaining metadata
+# Step 4: Deploy Permission Sets
 echo ""
-echo "📋 Step 4: Deploying remaining metadata..."
+echo "🛡️ Step 4: Deploying permission sets..."
+sfdx force:source:deploy -p force-app/main/default/permissionsets -w 10
+
+if [ $? -eq 0 ]; then
+    echo "✅ Permission sets deployed successfully"
+else
+    echo "❌ Failed to deploy permission sets"
+    exit 1
+fi
+
+# Step 5: Assign Permission Set to Community Users
+echo ""
+echo "👥 Step 5: Assigning permission set to community users..."
+read -p "Enter comma-separated usernames to assign StoreConnectCommunity: " USER_LIST
+IFS=',' read -ra USERS <<< "$USER_LIST"
+for USERNAME in "${USERS[@]}"; do
+    sfdx force:user:permset:assign -n StoreConnectCommunity -o "$USERNAME"
+done
+
+# Step 6: Deploy any remaining metadata
+echo ""
+echo "📋 Step 6: Deploying remaining metadata..."
 sfdx force:source:deploy -p force-app/main/default -w 10
 
 if [ $? -eq 0 ]; then
@@ -71,9 +92,9 @@ else
     exit 1
 fi
 
-# Step 5: Run tests (optional)
+# Step 7: Run tests (optional)
 echo ""
-echo "🧪 Step 5: Running tests..."
+echo "🧪 Step 7: Running tests..."
 read -p "Do you want to run tests? (y/n): " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -85,9 +106,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     fi
 fi
 
-# Step 6: Validation
+# Step 8: Validation
 echo ""
-echo "🔍 Step 6: Validating deployment..."
+echo "🔍 Step 8: Validating deployment..."
 sfdx force:source:retrieve -m CustomObject:Cart__c,CustomObject:Cart_Item__c,CustomObject:Shipping_Address__c
 
 if [ $? -eq 0 ]; then
