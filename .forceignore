@@ -265,3 +265,6 @@ dev-settings/
 
 # Remember: .forceignore affects deployment, .gitignore affects version control
 # Both should be configured appropriately for your project needs
+**/jsconfig.json
+
+**/.eslintrc.json
