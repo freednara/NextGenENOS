@@ -40,69 +40,72 @@
                             large-device-size="3" 
                             padding="around-small">
                             
-                            <div class="slds-box slds-box_border product-card">
-                                <!-- Product Image -->
-                                <div class="product-image-container">
-                                    <template if:true={product.Image_URL__c}>
-                                        <img 
-                                            src={product.Image_URL__c} 
-                                            alt={product.Name}
-                                            class="product-image"
-                                            onerror={handleImageError}
-                                            data-product-id={product.Id}
-                                        />
-                                    </template>
-                                    <template if:false={product.Image_URL__c}>
-                                        <div class="slds-var-p-around_medium slds-text-align_center">
-                                            <lightning-icon 
-                                                icon-name="standard:products" 
-                                                size="large" 
-                                                alternative-text="No Image">
-                                            </lightning-icon>
+                            <!-- Product Card - Clickable Link -->
+                            <a href={productDetailUrl} data-product-id={product.Id} class="product-card-link" onclick={handleProductClick}>
+                                <div class="slds-box slds-box_border product-card">
+                                    <!-- Product Image -->
+                                    <div class="product-image-container">
+                                        <template if:true={product.Image_URL__c}>
+                                            <img 
+                                                src={product.Image_URL__c} 
+                                                alt={product.Name}
+                                                class="product-image"
+                                                onerror={handleImageError}
+                                                data-product-id={product.Id}
+                                            />
+                                        </template>
+                                        <template if:false={product.Image_URL__c}>
+                                            <div class="slds-var-p-around_medium slds-text-align_center">
+                                                <lightning-icon 
+                                                    icon-name="standard:products" 
+                                                    size="large" 
+                                                    alternative-text="No Image">
+                                                </lightning-icon>
+                                            </div>
+                                        </template>
+                                    </div>
+
+                                    <!-- Product Information -->
+                                    <div class="product-info">
+                                        <h2 class="slds-truncate slds-text-heading_medium" title={product.Name}>
+                                            {product.Name}
+                                        </h2>
+                                        
+                                        <!-- Product Description -->
+                                        <template if:true={product.Description}>
+                                            <p class="slds-text-body_small slds-var-p-top_x-small slds-var-p-bottom_small">
+                                                {product.Description}
+                                            </p>
+                                        </template>
+
+                                        <!-- Product Price -->
+                                        <div class="slds-text-title_bold slds-var-p-top_small">
+                                            <template if:true={product.UnitPrice}>
+                                                <lightning-formatted-number
+                                                    value={product.UnitPrice}
+                                                    format-style="currency"
+                                                    currency-code="USD">
+                                                </lightning-formatted-number>
+                                            </template>
+                                            <template if:false={product.UnitPrice}>
+                                                <span class="slds-text-color_weak">Price unavailable</span>
+                                            </template>
                                         </div>
-                                    </template>
-                                </div>
 
-                                <!-- Product Information -->
-                                <div class="product-info">
-                                    <h2 class="slds-truncate slds-text-heading_medium" title={product.Name}>
-                                        {product.Name}
-                                    </h2>
-                                    
-                                    <!-- Product Description -->
-                                    <template if:true={product.Description}>
-                                        <p class="slds-text-body_small slds-var-p-top_x-small slds-var-p-bottom_small">
-                                            {product.Description}
-                                        </p>
-                                    </template>
-
-                                    <!-- Product Price -->
-                                    <div class="slds-text-title_bold slds-var-p-top_small">
-                                        <template if:true={product.UnitPrice}>
-                                            <lightning-formatted-number
-                                                value={product.UnitPrice}
-                                                format-style="currency"
-                                                currency-code="USD">
-                                            </lightning-formatted-number>
-                                        </template>
-                                        <template if:false={product.UnitPrice}>
-                                            <span class="slds-text-color_weak">Price unavailable</span>
-                                        </template>
-                                    </div>
-
-                                    <!-- Add to Cart Button -->
-                                    <div class="slds-var-p-top_medium">
-                                        <lightning-button 
-                                            variant="brand" 
-                                            label="Add to Cart" 
-                                            onclick={handleAddToCart}
-                                            data-product-id={product.Id}
-                                            disabled={isAddingToCart}
-                                            class="add-to-cart-button">
-                                        </lightning-button>
+                                        <!-- Add to Cart Button -->
+                                        <div class="slds-var-p-top_medium">
+                                            <lightning-button 
+                                                variant="brand" 
+                                                label="Add to Cart" 
+                                                onclick={handleAddToCart}
+                                                data-product-id={product.Id}
+                                                disabled={isAddingToCart}
+                                                class="add-to-cart-button">
+                                            </lightning-button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
 
                         </lightning-layout-item>
                     </template>

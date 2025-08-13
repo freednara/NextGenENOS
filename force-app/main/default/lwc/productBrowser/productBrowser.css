@@ -10,6 +10,24 @@
  * @since 2024-12-01
  */
 
+/* Product Card Link Styling */
+.product-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+    transition: all 0.2s ease-in-out;
+}
+
+.product-card-link:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+.product-card-link:focus {
+    outline: none;
+}
+
 /* Product Card Styling */
 .product-card {
     height: 100%;
@@ -21,6 +39,7 @@
     background: #ffffff;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .product-card:hover {
@@ -88,6 +107,8 @@
     width: 100%;
     margin-top: auto;
     transition: all 0.2s ease;
+    position: relative;
+    z-index: 2;
 }
 
 .add-to-cart-button:hover {

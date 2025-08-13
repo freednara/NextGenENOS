@@ -1,7 +1,0 @@
-{
-  "id": "home",
-  "label": "Home",
-  "routeType": "Home",
-  "urlPrefix": "",
-  "activeViewId": "home"
-}

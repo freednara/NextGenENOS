@@ -1,0 +1,122 @@
+[
+  {
+    "attributes": {
+      "type": "Product2"
+    },
+    "Name": "Premium Wireless Headphones",
+    "ProductCode": "WH-001",
+    "Description": "High-quality wireless headphones with noise cancellation and premium sound quality. Perfect for music enthusiasts and professionals.",
+    "IsActive": true,
+    "Stock_Quantity__c": 50,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/300x300?text=Premium+Headphones"
+  },
+  {
+    "attributes": {
+      "type": "Product2"
+    },
+    "Name": "Smart Fitness Watch",
+    "ProductCode": "FW-002",
+    "Description": "Advanced fitness tracking with heart rate monitoring, GPS, and 7-day battery life. Ideal for athletes and health-conscious individuals.",
+    "IsActive": true,
+    "Stock_Quantity__c": 30,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/300x300?text=Smart+Watch"
+  },
+  {
+    "attributes": {
+      "type": "Product2"
+    },
+    "Name": "Portable Bluetooth Speaker",
+    "ProductCode": "BS-003",
+    "Description": "Waterproof portable speaker with 20-hour battery life and 360-degree sound. Perfect for outdoor activities and parties.",
+    "IsActive": true,
+    "Stock_Quantity__c": 75,
+    "Is_Top_Seller__c": false,
+    "Image_URL__c": "https://via.placeholder.com/300x300?text=Bluetooth+Speaker"
+  },
+  {
+    "attributes": {
+      "type": "Product2"
+    },
+    "Name": "Wireless Charging Pad",
+    "ProductCode": "WC-004",
+    "Description": "Fast wireless charging pad compatible with all devices. Sleek design with LED indicators and safety features.",
+    "IsActive": true,
+    "Stock_Quantity__c": 100,
+    "Is_Top_Seller__c": false,
+    "Image_URL__c": "https://via.placeholder.com/300x300?text=Charging+Pad"
+  },
+  {
+    "attributes": {
+      "type": "Product2"
+    },
+    "Name": "4K Action Camera",
+    "ProductCode": "AC-005",
+    "Description": "Ultra HD action camera with image stabilization and waterproof case. Perfect for sports, travel, and adventure photography.",
+    "IsActive": true,
+    "Stock_Quantity__c": 25,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/300x300?text=Action+Camera"
+  },
+  {
+    "attributes": {
+      "type": "Product2"
+    },
+    "Name": "Smart Home Hub",
+    "ProductCode": "SH-006",
+    "Description": "Central control hub for smart home devices. Compatible with Alexa, Google Home, and Apple HomeKit.",
+    "IsActive": true,
+    "Stock_Quantity__c": 40,
+    "Is_Top_Seller__c": false,
+    "Image_URL__c": "https://via.placeholder.com/300x300?text=Smart+Home+Hub"
+  },
+  {
+    "attributes": {
+      "type": "Product2"
+    },
+    "Name": "Gaming Mechanical Keyboard",
+    "ProductCode": "KB-007",
+    "Description": "RGB mechanical gaming keyboard with customizable switches and macro keys. Designed for competitive gaming.",
+    "IsActive": true,
+    "Stock_Quantity__c": 60,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/300x300?text=Gaming+Keyboard"
+  },
+  {
+    "attributes": {
+      "type": "Product2"
+    },
+    "Name": "Wireless Gaming Mouse",
+    "ProductCode": "GM-008",
+    "Description": "High-precision wireless gaming mouse with adjustable DPI and programmable buttons. Ultra-low latency for competitive play.",
+    "IsActive": true,
+    "Stock_Quantity__c": 45,
+    "Is_Top_Seller__c": false,
+    "Image_URL__c": "https://via.placeholder.com/300x300?text=Gaming+Mouse"
+  },
+  {
+    "attributes": {
+      "type": "Product2"
+    },
+    "Name": "Portable Power Bank",
+    "ProductCode": "PB-009",
+    "Description": "20,000mAh portable charger with fast charging and multiple USB ports. Compact design for travel and daily use.",
+    "IsActive": true,
+    "Stock_Quantity__c": 80,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/300x300?text=Power+Bank"
+  },
+  {
+    "attributes": {
+      "type": "Product2"
+    },
+    "Name": "Smart LED Light Bulbs",
+    "ProductCode": "LB-010",
+    "Description": "WiFi-enabled smart LED bulbs with 16 million colors and voice control. Compatible with all major smart home platforms.",
+    "IsActive": true,
+    "Stock_Quantity__c": 120,
+    "Is_Top_Seller__c": false,
+    "Image_URL__c": "https://via.placeholder.com/300x300?text=Smart+Bulbs"
+  }
+]

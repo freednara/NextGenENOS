@@ -268,3 +268,14 @@ dev-settings/
 **/jsconfig.json
 
 **/.eslintrc.json
+
+# ========================================
+# BACKUP AND TEMPORARY FILES
+# ========================================
+
+# Exclude backup directories
+**/classes_backup/
+**/flows_backup/
+**/permissionsets_backup/
+**/lwc_backup/
+**/apex_backup/

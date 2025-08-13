@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <label>Store Connect Community</label>
-    <description>Basic permissions for StoreConnect community users</description>
+    <description>Permissions for StoreConnect community users</description>
     
     <!-- Apex Class Access -->
     <classAccesses>
@@ -120,4 +120,77 @@
         <object>User</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
+
+    <!-- Field Permissions - Only for non-required fields -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Cart__c.Subtotal__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Cart__c.Total_Items__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Cart_Item__c.Line_Total__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Shipping_Address__c.Is_Default__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
+    <!-- Case Fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Case.AccountId</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Case.ContactId</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Case.Description</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Case.Origin</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Case.Status</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Case.Subject</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Case.Type</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
+    <!-- Product2 Fields -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Product2.Name</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
+    <!-- User Fields -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>User.AccountId</field>
+        <readable>true</readable>
+    </fieldPermissions>
 </PermissionSet>

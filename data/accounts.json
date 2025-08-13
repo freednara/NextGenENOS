@@ -1,0 +1,142 @@
+[
+  {
+    "attributes": {
+      "type": "Account"
+    },
+    "Name": "Demo Customer Corp",
+    "Type": "Customer",
+    "Industry": "Technology",
+    "BillingStreet": "123 Main Street",
+    "BillingCity": "San Francisco",
+    "BillingState": "CA",
+    "BillingPostalCode": "94105",
+    "BillingCountry": "USA",
+    "Phone": "(555) 123-4567"
+  },
+  {
+    "attributes": {
+      "type": "Account"
+    },
+    "Name": "Test Retail Store",
+    "Type": "Customer",
+    "Industry": "Retail",
+    "BillingStreet": "456 Commerce Ave",
+    "BillingCity": "Los Angeles",
+    "BillingState": "CA",
+    "BillingPostalCode": "90210",
+    "BillingCountry": "USA",
+    "Phone": "(555) 987-6543"
+  },
+  {
+    "attributes": {
+      "type": "Account"
+    },
+    "Name": "Global Tech Solutions",
+    "Type": "Customer",
+    "Industry": "Technology",
+    "BillingStreet": "789 Innovation Drive",
+    "BillingCity": "Austin",
+    "BillingState": "TX",
+    "BillingPostalCode": "73301",
+    "BillingCountry": "USA",
+    "Phone": "(555) 456-7890"
+  },
+  {
+    "attributes": {
+      "type": "Account"
+    },
+    "Name": "Premium Electronics Co",
+    "Type": "Customer",
+    "Industry": "Electronics",
+    "BillingStreet": "321 Tech Boulevard",
+    "BillingCity": "Seattle",
+    "BillingState": "WA",
+    "BillingPostalCode": "98101",
+    "BillingCountry": "USA",
+    "Phone": "(555) 234-5678"
+  },
+  {
+    "attributes": {
+      "type": "Account"
+    },
+    "Name": "Smart Home Innovations",
+    "Type": "Customer",
+    "Industry": "Technology",
+    "BillingStreet": "654 Smart Street",
+    "BillingCity": "Denver",
+    "BillingState": "CO",
+    "BillingPostalCode": "80201",
+    "BillingCountry": "USA",
+    "Phone": "(555) 345-6789"
+  },
+  {
+    "attributes": {
+      "type": "Account"
+    },
+    "Name": "Digital Marketing Agency",
+    "Type": "Customer",
+    "Industry": "Marketing",
+    "BillingStreet": "987 Digital Lane",
+    "BillingCity": "Miami",
+    "BillingState": "FL",
+    "BillingPostalCode": "33101",
+    "BillingCountry": "USA",
+    "Phone": "(555) 567-8901"
+  },
+  {
+    "attributes": {
+      "type": "Account"
+    },
+    "Name": "Healthcare Systems Inc",
+    "Type": "Customer",
+    "Industry": "Healthcare",
+    "BillingStreet": "147 Health Plaza",
+    "BillingCity": "Boston",
+    "BillingState": "MA",
+    "BillingPostalCode": "02101",
+    "BillingCountry": "USA",
+    "Phone": "(555) 678-9012"
+  },
+  {
+    "attributes": {
+      "type": "Account"
+    },
+    "Name": "Financial Services Group",
+    "Type": "Customer",
+    "Industry": "Financial Services",
+    "BillingStreet": "258 Finance Way",
+    "BillingCity": "New York",
+    "BillingState": "NY",
+    "BillingPostalCode": "10001",
+    "BillingCountry": "USA",
+    "Phone": "(555) 789-0123"
+  },
+  {
+    "attributes": {
+      "type": "Account"
+    },
+    "Name": "Educational Institute",
+    "Type": "Customer",
+    "Industry": "Education",
+    "BillingStreet": "369 Learning Circle",
+    "BillingCity": "Chicago",
+    "BillingState": "IL",
+    "BillingPostalCode": "60601",
+    "BillingCountry": "USA",
+    "Phone": "(555) 890-1234"
+  },
+  {
+    "attributes": {
+      "type": "Account"
+    },
+    "Name": "Manufacturing Solutions",
+    "Type": "Customer",
+    "Industry": "Manufacturing",
+    "BillingStreet": "741 Factory Road",
+    "BillingCity": "Detroit",
+    "BillingState": "MI",
+    "BillingPostalCode": "48201",
+    "BillingCountry": "USA",
+    "Phone": "(555) 901-2345"
+  }
+]

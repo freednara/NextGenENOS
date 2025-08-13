@@ -355,15 +355,15 @@ public with sharing class StoreConnectController {
 
     // Wrapper class for recently viewed products
     public class RecentlyViewedProduct {
-        @AuraEnabled public Id Id;
-        @AuraEnabled public String Name;
-        @AuraEnabled public String Image_URL__c;
+        @AuraEnabled public Id productId;
+        @AuraEnabled public String productName;
+        @AuraEnabled public String imageUrl;
         @AuraEnabled public Decimal UnitPrice;
 
         public RecentlyViewedProduct(Id id, String name, String imageUrl, Decimal unitPrice) {
-            this.Id = id;
-            this.Name = name;
-            this.Image_URL__c = imageUrl;
+            this.productId = id;
+            this.productName = name;
+            this.imageUrl = imageUrl;
             this.UnitPrice = unitPrice;
         }
     }

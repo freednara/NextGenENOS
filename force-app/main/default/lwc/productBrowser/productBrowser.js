@@ -100,6 +100,9 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
      * @param {Event} event - The click event from the Add to Cart button
      */
     handleAddToCart(event) {
+        // Prevent event bubbling to avoid triggering navigation
+        event.stopPropagation();
+        
         const productId = event.currentTarget.dataset.productId;
         
         // For now, show a toast message indicating the feature is coming soon
@@ -115,6 +118,25 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
         // 2. Updating the cart display
         // 3. Showing success/error messages
         // 4. Handling inventory validation
+    }
+    
+    /**
+     * @description Handles product card clicks for navigation to product detail page.
+     * 
+     * @param {Event} event - The click event from the product card
+     */
+    handleProductClick(event) {
+        const productId = event.currentTarget.dataset.productId;
+        
+        // Navigate to the product detail page
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: productId,
+                objectApiName: 'Product2',
+                actionName: 'view'
+            }
+        });
     }
     
     /**
@@ -156,27 +178,6 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
             variant: variant
         });
         this.dispatchEvent(evt);
-    }
-    
-    /**
-     * @description Navigates to a product detail page.
-     * This method will be implemented when product detail pages are created.
-     * 
-     * @param {string} productId - The ID of the product to navigate to
-     */
-    navigateToProductDetail(productId) {
-        // TODO: Implement navigation to product detail page
-        // This will be added in future sprints when the product detail component is created
-        
-        // Example implementation:
-        // this[NavigationMixin.Navigate]({
-        //     type: 'standard__recordPage',
-        //     attributes: {
-        //         recordId: productId,
-        //         objectApiName: 'Product2',
-        //         actionName: 'view'
-        //     }
-        // });
     }
     
     /**

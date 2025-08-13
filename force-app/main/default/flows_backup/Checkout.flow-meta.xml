@@ -30,9 +30,10 @@
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
         <fields>
-            <name>Thank_You_Message</name>
-            <fieldText>Thank you for your order!</fieldText>
-            <fieldType>DisplayText</fieldType>
+            <fieldText>
+                <fieldText>Thank you for your order!</fieldText>
+                <fieldType>DisplayText</fieldType>
+            </fieldText>
         </fields>
     </screens>
     <variables>

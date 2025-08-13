@@ -1,0 +1,41 @@
+<template>
+    <template if:true={product.data}>
+        <lightning-card icon-name="standard:products">
+            <h1 slot="title" class="slds-text-heading_large">{product.data.Name}</h1>
+            <div slot="actions">
+                <template if:true={product.data.UnitPrice}>
+                    <lightning-formatted-number
+                        value={product.data.UnitPrice}
+                        format-style="currency"
+                        currency-code="USD"
+                        class="slds-text-heading_large">
+                    </lightning-formatted-number>
+                </template>
+            </div>
+
+            <div class="slds-grid slds-var-p-around_medium">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_5-of-12">
+                    <img src={product.data.Image_URL__c} alt="Product Image" style="max-width:100%;"/>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_7-of-12 slds-var-p-left_medium">
+                    <h2 class="slds-text-heading_small">Product Description</h2>
+                    <p class="slds-var-p-top_small">{product.data.Description}</p>
+
+                    <div class="slds-var-p-top_large">
+                        <lightning-input onchange={handleQuantityChange} type="number" label="Quantity" value="1" min="1" step="1" class="slds-size_1-of-4"></lightning-input>
+                        <lightning-button
+                            onclick={handleAddToCart}
+                            label="Add to Cart"
+                            variant="brand"
+                            icon-name="utility:cart"
+                            class="slds-var-m-top_medium">
+                        </lightning-button>
+                    </div>
+                </div>
+            </div>
+        </lightning-card>
+    </template>
+    <template if:true={product.error}>
+        <p>There was an error loading the product.</p>
+    </template>
+</template>

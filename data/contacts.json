@@ -1,0 +1,112 @@
+[
+  {
+    "attributes": {
+      "type": "Contact"
+    },
+    "FirstName": "John",
+    "LastName": "Demo",
+    "Email": "john.demo@democustomer.com",
+    "Phone": "(555) 123-4567",
+    "Title": "Procurement Manager",
+    "AccountId": "@Demo_Customer_Corp"
+  },
+  {
+    "attributes": {
+      "type": "Contact"
+    },
+    "FirstName": "Jane",
+    "LastName": "Test",
+    "Email": "jane.test@testretail.com",
+    "Phone": "(555) 987-6543",
+    "Title": "Store Manager",
+    "AccountId": "@Test_Retail_Store"
+  },
+  {
+    "attributes": {
+      "type": "Contact"
+    },
+    "FirstName": "Michael",
+    "LastName": "Tech",
+    "Email": "michael.tech@globaltech.com",
+    "Phone": "(555) 456-7890",
+    "Title": "IT Director",
+    "AccountId": "@Global_Tech_Solutions"
+  },
+  {
+    "attributes": {
+      "type": "Contact"
+    },
+    "FirstName": "Sarah",
+    "LastName": "Electronics",
+    "Email": "sarah.electronics@premium.com",
+    "Phone": "(555) 234-5678",
+    "Title": "Purchasing Manager",
+    "AccountId": "@Premium_Electronics_Co"
+  },
+  {
+    "attributes": {
+      "type": "Contact"
+    },
+    "FirstName": "David",
+    "LastName": "Smart",
+    "Email": "david.smart@smarthome.com",
+    "Phone": "(555) 345-6789",
+    "Title": "Operations Manager",
+    "AccountId": "@Smart_Home_Innovations"
+  },
+  {
+    "attributes": {
+      "type": "Contact"
+    },
+    "FirstName": "Lisa",
+    "LastName": "Digital",
+    "Email": "lisa.digital@marketing.com",
+    "Phone": "(555) 567-8901",
+    "Title": "Marketing Director",
+    "AccountId": "@Digital_Marketing_Agency"
+  },
+  {
+    "attributes": {
+      "type": "Contact"
+    },
+    "FirstName": "Robert",
+    "LastName": "Health",
+    "Email": "robert.health@healthcare.com",
+    "Phone": "(555) 678-9012",
+    "Title": "IT Manager",
+    "AccountId": "@Healthcare_Systems_Inc"
+  },
+  {
+    "attributes": {
+      "type": "Contact"
+    },
+    "FirstName": "Amanda",
+    "LastName": "Finance",
+    "Email": "amanda.finance@financial.com",
+    "Phone": "(555) 789-0123",
+    "Title": "Procurement Specialist",
+    "AccountId": "@Financial_Services_Group"
+  },
+  {
+    "attributes": {
+      "type": "Contact"
+    },
+    "FirstName": "Christopher",
+    "LastName": "Education",
+    "Email": "christopher.education@edu.com",
+    "Phone": "(555) 890-1234",
+    "Title": "Technology Coordinator",
+    "AccountId": "@Educational_Institute"
+  },
+  {
+    "attributes": {
+      "type": "Contact"
+    },
+    "FirstName": "Jennifer",
+    "LastName": "Manufacturing",
+    "Email": "jennifer.manufacturing@mfg.com",
+    "Phone": "(555) 901-2345",
+    "Title": "Supply Chain Manager",
+    "AccountId": "@Manufacturing_Solutions"
+  }
+]

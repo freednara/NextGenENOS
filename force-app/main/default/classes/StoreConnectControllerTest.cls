@@ -20,7 +20,7 @@ private class StoreConnectControllerTest {
         List<StoreConnectController.RecentlyViewedProduct> results = StoreConnectController.getRecentlyViewed(c.Id);
         Test.stopTest();
         System.assertEquals(1, results.size());
-        System.assertEquals('Test Product', results[0].Name);
+        System.assertEquals('Test Product', results[0].productName);
     }
     
     private static User createUser(String profileName) {
