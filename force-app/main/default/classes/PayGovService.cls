@@ -139,11 +139,15 @@ public with sharing class PayGovService {
         if (String.isBlank(request.customerEmail)) {
             throw new PayGovException('Customer email is required');
         }
-        
+
+        if (String.isBlank(request.paymentToken)) {
+            throw new PayGovException('Payment token is required');
+        }
+
         if (String.isBlank(request.agencyId)) {
             throw new PayGovException('Agency ID is required for Pay.gov integration');
         }
-        
+
         // Validate amount limits (Pay.gov typically has transaction limits)
         if (request.amount > 999999.99) {
             throw new PayGovException('Payment amount exceeds maximum allowed limit');
@@ -184,6 +188,7 @@ public with sharing class PayGovService {
             '<pay:Amount>' + request.amount + '</pay:Amount>' +
             '<pay:Currency>USD</pay:Currency>' +
             '<pay:CustomerEmail>' + String.escapeSingleQuotes(request.customerEmail) + '</pay:CustomerEmail>' +
+            '<pay:PaymentToken>' + String.escapeSingleQuotes(request.paymentToken) + '</pay:PaymentToken>' +
             '<pay:Description>' + String.escapeSingleQuotes(request.description) + '</pay:Description>' +
             '<pay:SuccessUrl>' + String.escapeSingleQuotes(request.successUrl) + '</pay:SuccessUrl>' +
             '<pay:CancelUrl>' + String.escapeSingleQuotes(request.cancelUrl) + '</pay:CancelUrl>' +
@@ -381,15 +386,20 @@ public with sharing class PayGovService {
         public String orderId;
         public Decimal amount;
         public String customerEmail;
+        /**
+         * Secure token representing the payment method. Never log this value.
+         */
+        public String paymentToken;
         public String description;
         public String successUrl;
         public String cancelUrl;
-        
-        public PayGovRequest(String agencyId, String orderId, Decimal amount, String customerEmail) {
+
+        public PayGovRequest(String agencyId, String orderId, Decimal amount, String customerEmail, String paymentToken) {
             this.agencyId = agencyId;
             this.orderId = orderId;
             this.amount = amount;
             this.customerEmail = customerEmail;
+            this.paymentToken = paymentToken;
         }
     }
     

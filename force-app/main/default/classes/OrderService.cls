@@ -546,11 +546,18 @@ public with sharing class OrderService {
     String paymentToken
   ) {
     try {
-      // Get customer information for payment processing
+      // Get customer information for payment processing with security
+      SecurityUtils.checkObjectReadable('Contact');
+      SecurityUtils.checkFieldReadAccess(
+        'Contact',
+        new List<String>{ 'Email', 'FirstName', 'LastName', 'AccountId' }
+      );
+
       Contact customer = [
         SELECT Email, FirstName, LastName, AccountId
         FROM Contact
         WHERE Id = :cart.Contact__c
+        WITH SECURITY_ENFORCED
         LIMIT 1
       ];
       
@@ -559,7 +566,8 @@ public with sharing class OrderService {
         getAgencyId(), // Federal agency ID from Custom Metadata
         'ORDER-' + System.currentTimeMillis(), // Unique order ID
         totalAmount,
-        customer.Email
+        customer.Email,
+        paymentToken
       );
       
       // Set payment request details
