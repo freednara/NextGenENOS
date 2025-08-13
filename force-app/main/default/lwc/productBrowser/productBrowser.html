@@ -31,7 +31,7 @@
 
                 <!-- Products Display -->
                 <lightning-layout multiple-rows="true" pull-to-boundary="small">
-                    <template for:each={enhancedProducts} for:item="product">
+                    <template for:each={products.data} for:item="product">
                         <lightning-layout-item 
                             key={product.Id} 
                             size="12" 
@@ -74,10 +74,10 @@
 
                                         <!-- Product Price -->
                                         <div class="slds-text-title_bold slds-var-p-top_small">
-                                            <template if:true={product.hasPrice}>
-                                                <span>{product.displayPrice}</span>
+                                            <template if:true={product.PricebookEntries}>
+                                                <span class="slds-text-color_weak">Price available</span>
                                             </template>
-                                            <template if:false={product.hasPrice}>
+                                            <template if:false={product.PricebookEntries}>
                                                 <span class="slds-text-color_weak">Price unavailable</span>
                                             </template>
                                         </div>
@@ -102,11 +102,11 @@
                 </lightning-layout>
 
                 <!-- No Products Found -->
-                <template if:true={enhancedProducts}>
-                    <template if:true={enhancedProducts.length}>
+                <template if:true={products.data}>
+                    <template if:true={products.data.length}>
                         <!-- Products are displayed above -->
                     </template>
-                    <template if:false={enhancedProducts.length}>
+                    <template if:false={products.data.length}>
                         <div class="slds-var-p-around_medium slds-text-align_center">
                             <lightning-icon 
                                 icon-name="utility:search" 
