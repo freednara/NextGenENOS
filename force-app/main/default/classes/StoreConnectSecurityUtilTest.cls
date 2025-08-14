@@ -35,4 +35,38 @@ private class StoreConnectSecurityUtilTest {
         }
         System.assert(threwException, 'Method should throw exception when field does not exist');
     }
+
+    @IsTest
+    static void validateRecordAccess_allAccessible() {
+        Account a1 = new Account(Name = 'Accessible');
+        insert a1;
+
+        Test.startTest();
+        StoreConnectSecurityUtil.validateRecordAccess(new List<SObject>{ a1 }, 'READ');
+        Test.stopTest();
+
+        System.assert(true, 'Should not throw when all records are accessible');
+    }
+
+    @IsTest
+    static void validateRecordAccess_inaccessible() {
+        Account a1 = new Account(Name = 'A1');
+        Account a2 = new Account(Name = 'A2');
+        insert new List<Account>{ a1, a2 };
+        delete a2;
+
+        Boolean threw = false;
+        Test.startTest();
+        try {
+            StoreConnectSecurityUtil.validateRecordAccess(
+                new List<SObject>{ a1, new Account(Id = a2.Id) },
+                'READ'
+            );
+        } catch (StoreConnectSecurityUtil.SecurityException e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        System.assert(threw, 'Should throw when a record is not accessible');
+    }
 }

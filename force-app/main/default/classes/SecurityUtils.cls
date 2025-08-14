@@ -427,12 +427,30 @@ public with sharing class SecurityUtils {
       );
     }
 
-    // Check if the user has read access to the object first
-    checkObjectReadable(sObjectName);
+    Schema.DescribeSObjectResult describeResult = getDescribe(sObjectName);
+    if (describeResult == null) {
+      throw new AuraHandledException('Security Error: Unknown SObject ' + sObjectName);
+    }
 
-    // Additional record-level access validation can be added here
-    // For now, we rely on Salesforce sharing rules and the 'with sharing' keyword
-    // This method provides a hook for future custom access control logic
+    if (!describeResult.isAccessible()) {
+      throw new AuraHandledException(
+        'Security Error: You do not have permission to access ' +
+        describeResult.getLabel() +
+        ' records.'
+      );
+    }
+
+    // Query record with sharing and FLS enforcement
+    String query =
+      'SELECT Id FROM ' +
+      describeResult.getName() +
+      ' WHERE Id = :recordId WITH SECURITY_ENFORCED LIMIT 1';
+    List<SObject> records = Database.query(query);
+    if (records.isEmpty()) {
+      throw new AuraHandledException(
+        'Security Error: Record not found or insufficient access.'
+      );
+    }
   }
 
   // ============================================================================
