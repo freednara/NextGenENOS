@@ -16,7 +16,7 @@ permissions:
 
 env:
   # SFDX CLI version
-  SFDX_CLI_VERSION: '2.22.8'
+  SFDX_CLI_VERSION: 'latest'
   # Node.js version
   NODE_VERSION: '18'
 
