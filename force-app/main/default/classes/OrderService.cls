@@ -85,12 +85,37 @@ public with sharing class OrderService {
     }
 
     List<CreateOrderResponse> responses = new List<CreateOrderResponse>();
-
-    for (CreateOrderRequest req : requests) {
+    
+    // BULKIFICATION: Process all orders in a single transaction to respect governor limits
+    return processBulkOrderCreation(requests);
+  }
+  
+  /**
+   * @description Bulkified order creation that processes multiple orders efficiently
+   * @param requests List of order creation requests
+   * @return List of responses with order creation results
+   */
+  private static List<CreateOrderResponse> processBulkOrderCreation(
+    List<CreateOrderRequest> requests
+  ) {
+    List<CreateOrderResponse> responses = new List<CreateOrderResponse>();
+    
+    // Collections for bulkified DML operations
+    List<Order> ordersToInsert = new List<Order>();
+    List<OrderItem> orderItemsToInsert = new List<OrderItem>();
+    List<Cart__c> cartsToDelete = new List<Cart__c>();
+    
+    Map<Integer, Cart__c> requestIndexToCart = new Map<Integer, Cart__c>();
+    Map<Integer, List<Cart_Item__c>> requestIndexToCartItems = new Map<Integer, List<Cart_Item__c>>();
+    Map<Integer, Shipping_Address__c> requestIndexToShippingAddress = new Map<Integer, Shipping_Address__c>();
+    
+    // Phase 1: Validate all requests and gather data
+    for (Integer i = 0; i < requests.size(); i++) {
+      CreateOrderRequest req = requests[i];
       CreateOrderResponse response = new CreateOrderResponse();
-
+      
       try {
-        // 1. Validate input parameters
+        // Validate input parameters
         if (
           req.cartId == null ||
           req.shippingAddressId == null ||
@@ -101,47 +126,138 @@ public with sharing class OrderService {
           );
         }
 
-        // 2. Get all necessary data with security checks
+        // Get all necessary data with security checks
         Cart__c cart = getCartWithSecurity(req.cartId);
         List<Cart_Item__c> cartItems = getCartItemsWithSecurity(req.cartId);
         Shipping_Address__c shippingAddress = getShippingAddressWithSecurity(
           req.shippingAddressId
         );
 
-        // 3. Validate cart has items
+        // Validate cart has items
         if (cartItems.isEmpty()) {
           throw new IllegalArgumentException(
             'Cart must contain at least one item to create an order.'
           );
         }
-
-        // 4. Process the order creation transaction
-        response = processOrderCreation(
-          cart,
-          cartItems,
-          shippingAddress,
-          req.paymentToken
-        );
-      } catch (IllegalArgumentException e) {
-        response.isSuccess = false;
-        response.message = e.getMessage();
+        
+        // Store data for bulk processing
+        requestIndexToCart.put(i, cart);
+        requestIndexToCartItems.put(i, cartItems);
+        requestIndexToShippingAddress.put(i, shippingAddress);
+        
+        // Initialize success response
+        response.isSuccess = true;
+        
       } catch (Exception e) {
-        // Create error response
         response.isSuccess = false;
         response.message = 'Order creation failed: ' + e.getMessage();
         System.debug(
           LoggingLevel.ERROR,
-          'Order creation error: ' + e.getMessage()
-        );
-        System.debug(
-          LoggingLevel.ERROR,
-          'Stack trace: ' + e.getStackTraceString()
+          'Order creation error for request ' + i + ': ' + e.getMessage()
         );
       }
-
+      
       responses.add(response);
     }
-
+    
+    // Phase 2: Process payments and prepare bulk DML collections
+    Savepoint sp = Database.setSavepoint();
+    
+    try {
+      for (Integer i = 0; i < requests.size(); i++) {
+        if (!responses[i].isSuccess) continue; // Skip failed validations
+        
+        CreateOrderRequest req = requests[i];
+        Cart__c cart = requestIndexToCart.get(i);
+        List<Cart_Item__c> cartItems = requestIndexToCartItems.get(i);
+        Shipping_Address__c shippingAddress = requestIndexToShippingAddress.get(i);
+        
+        try {
+          // Process payment for this request
+          Decimal totalAmount = calculateTotalAmount(cartItems);
+          PayGovService.PayGovResponse paymentResponse = processPayGovPayment(
+            cart,
+            totalAmount,
+            req.paymentToken
+          );
+          
+          if (!paymentResponse.success) {
+            throw new PayGovService.PayGovException('Payment processing failed: ' + paymentResponse.errorMessage);
+          }
+          
+          // Create order record for bulk insertion
+          Order newOrder = createOrderRecord(cart, shippingAddress, paymentResponse.transactionId);
+          ordersToInsert.add(newOrder);
+          
+          // Store success data
+          responses[i].message = 'Payment processed successfully. Order will be created.';
+          
+          // Add cart to deletion list
+          cartsToDelete.add(cart);
+          
+        } catch (Exception e) {
+          responses[i].isSuccess = false;
+          responses[i].message = 'Payment processing failed: ' + e.getMessage();
+          System.debug(LoggingLevel.ERROR, 'Payment error for request ' + i + ': ' + e.getMessage());
+        }
+      }
+      
+      // Phase 3: Bulk DML Operations
+      if (!ordersToInsert.isEmpty()) {
+        SecurityUtils.checkObjectCreateAccess('Order');
+        insert ordersToInsert;
+        
+        // Create order items for all successful orders
+        for (Integer i = 0; i < ordersToInsert.size(); i++) {
+          Integer requestIndex = -1;
+          // Find corresponding request index
+          for (Integer j = 0; j < requests.size(); j++) {
+            if (responses[j].isSuccess && requestIndexToCart.containsKey(j)) {
+              if (requestIndex == -1) {
+                requestIndex = j;
+                break;
+              }
+            }
+          }
+          
+          if (requestIndex >= 0) {
+            List<Cart_Item__c> cartItems = requestIndexToCartItems.get(requestIndex);
+            List<OrderItem> orderItems = createOrderItems(ordersToInsert[i].Id, cartItems);
+            orderItemsToInsert.addAll(orderItems);
+            
+            // Update response with order details
+            responses[requestIndex].orderId = ordersToInsert[i].Id;
+            responses[requestIndex].orderNumber = ordersToInsert[i].OrderNumber;
+            responses[requestIndex].message = 'Order created successfully. Order Number: ' + ordersToInsert[i].OrderNumber;
+          }
+        }
+        
+        // Bulk insert order items
+        if (!orderItemsToInsert.isEmpty()) {
+          SecurityUtils.checkObjectCreateAccess('OrderItem');
+          insert orderItemsToInsert;
+        }
+        
+        // Bulk delete carts
+        if (!cartsToDelete.isEmpty()) {
+          delete cartsToDelete;
+        }
+      }
+      
+    } catch (Exception e) {
+      Database.rollback(sp);
+      
+      // Mark all responses as failed
+      for (CreateOrderResponse response : responses) {
+        if (response.isSuccess) {
+          response.isSuccess = false;
+          response.message = 'Bulk order processing failed: ' + e.getMessage();
+        }
+      }
+      
+      System.debug(LoggingLevel.ERROR, 'Bulk order creation failed: ' + e.getMessage());
+    }
+    
     return responses;
   }
 
@@ -175,6 +291,7 @@ public with sharing class OrderService {
     }
 
     // Query for cart with ownership validation
+    SecurityUtils.checkObjectReadAccess('Cart__c');
     List<Cart__c> carts = [
       SELECT Id, Contact__c, Contact__r.AccountId, Status__c
       FROM Cart__c
@@ -182,6 +299,7 @@ public with sharing class OrderService {
         Id = :cartId
         AND Contact__c = :userContactId
         AND Status__c = 'Active'
+      WITH SECURITY_ENFORCED
       LIMIT 1
     ];
 
@@ -215,10 +333,12 @@ public with sharing class OrderService {
     );
 
     // Query for cart items
+    SecurityUtils.checkObjectReadAccess('Cart_Item__c');
     List<Cart_Item__c> cartItems = [
       SELECT Id, Product__c, Quantity__c, Unit_Price__c, Line_Total__c
       FROM Cart_Item__c
       WHERE Cart__c = :cartId
+      WITH SECURITY_ENFORCED
       ORDER BY CreatedDate
     ];
 
@@ -305,7 +425,7 @@ public with sharing class OrderService {
       // 1. Calculate total amount for payment processing
       Decimal totalAmount = calculateTotalAmount(cartItems);
       
-      // 2. Process Payment through Pay.gov
+      // 2. Process Payment through Pay.gov FIRST - fail fast if payment fails
       PayGovService.PayGovResponse paymentResponse = processPayGovPayment(
         cart, 
         totalAmount, 
@@ -318,18 +438,25 @@ public with sharing class OrderService {
       
       System.debug('Pay.gov payment initiated successfully. Transaction ID: ' + paymentResponse.transactionId);
 
-      // 3. Create the Order record with payment information
+      // 3. Only create order records AFTER successful payment
+      SecurityUtils.checkObjectCreateAccess('Order');
       Order newOrder = createOrderRecord(cart, shippingAddress, paymentResponse.transactionId);
       insert newOrder;
 
-      // 3. Create OrderItem records from Cart_Item records
+      // 4. Create OrderItem records from Cart_Item records
+      SecurityUtils.checkObjectCreateAccess('OrderItem');
       List<OrderItem> orderItems = createOrderItems(newOrder.Id, cartItems);
       insert orderItems;
 
-      // 4. Clean up: Delete the cart (this will cascade delete the cart items)
+      // 5. Validate order creation succeeded before cart cleanup
+      if (newOrder.Id == null || orderItems.isEmpty()) {
+        throw new IllegalStateException('Order creation failed - missing order ID or items');
+      }
+
+      // 6. Clean up: Delete the cart only after successful order creation
       delete cart;
 
-      // 5. Prepare success response
+      // 7. Prepare success response
       response.isSuccess = true;
       response.orderId = newOrder.Id;
       response.orderNumber = newOrder.OrderNumber;

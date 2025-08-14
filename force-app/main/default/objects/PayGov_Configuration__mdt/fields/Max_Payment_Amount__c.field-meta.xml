@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Max_Payment_Amount__c</fullName>
+    <label>Max Payment Amount</label>
+    <precision>18</precision>
+    <scale>2</scale>
+    <type>Currency</type>
+    <required>false</required>
+    <externalId>false</externalId>
+    <description>Maximum payment amount allowed for Pay.gov transactions. Defaults to $999,999.99 if not set.</description>
+    <inlineHelpText>Set the maximum payment amount that can be processed through Pay.gov. Leave blank to use the default limit of $999,999.99.</inlineHelpText>
+</CustomField>

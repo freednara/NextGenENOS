@@ -57,47 +57,8 @@ public with sharing class ProductController {
       SecurityUtils.checkObjectReadable('Product2');
       SecurityUtils.checkObjectReadable('PricebookEntry');
 
-      // ** START: NEW LOGIC FOR CONTRACT PRICING **
-      Id pricebookIdToUse;
-      // Validate FLS for traversed field
-      SecurityUtils.checkFieldReadAccess('User', new List<String>{ 'AccountId' });
-      Id userAccountId = [
-        SELECT AccountId
-        FROM User
-        WHERE Id = :UserInfo.getUserId()
-        WITH SECURITY_ENFORCED
-        LIMIT 1
-      ]
-      .AccountId;
-
-      if (userAccountId != null) {
-        // Check the user's Account for an assigned price book ID.
-        SecurityUtils.checkFieldReadAccess('Account', new List<String>{ 'Assigned_Price_Book_ID__c' });
-        Account userAccount = [
-          SELECT Assigned_Price_Book_ID__c
-          FROM Account
-          WHERE Id = :userAccountId
-          WITH SECURITY_ENFORCED
-          LIMIT 1
-        ];
-        if (String.isNotBlank(userAccount.Assigned_Price_Book_ID__c)) {
-          pricebookIdToUse = userAccount.Assigned_Price_Book_ID__c;
-        }
-      }
-
-      // If no custom price book is assigned, default to the standard one.
-      if (pricebookIdToUse == null) {
-        SecurityUtils.checkFieldReadAccess('Pricebook2', new List<String>{ 'IsStandard', 'Id' });
-        pricebookIdToUse = [
-          SELECT Id
-          FROM Pricebook2
-          WHERE IsStandard = TRUE
-          WITH SECURITY_ENFORCED
-          LIMIT 1
-        ]
-        .Id;
-      }
-      // ** END: NEW LOGIC FOR CONTRACT PRICING **
+      // Get the appropriate price book for the current user
+      Id pricebookIdToUse = getUserPricebookId();
 
       // 3. ** MODIFIED QUERY ** - Now uses dynamic pricebookIdToUse variable.
       // The subquery dynamically selects the correct price book for contract pricing.
@@ -198,46 +159,8 @@ public with sharing class ProductController {
       SecurityUtils.checkObjectReadable('Product2');
       SecurityUtils.checkObjectReadable('PricebookEntry');
 
-      // ** START: NEW LOGIC FOR CONTRACT PRICING **
-      Id pricebookIdToUse;
-      SecurityUtils.checkFieldReadAccess('User', new List<String>{ 'AccountId' });
-      Id userAccountId = [
-        SELECT AccountId
-        FROM User
-        WHERE Id = :UserInfo.getUserId()
-        WITH SECURITY_ENFORCED
-        LIMIT 1
-      ]
-      .AccountId;
-
-      if (userAccountId != null) {
-        // Check the user's Account for an assigned price book ID.
-        SecurityUtils.checkFieldReadAccess('Account', new List<String>{ 'Assigned_Price_Book_ID__c' });
-        Account userAccount = [
-          SELECT Assigned_Price_Book_ID__c
-          FROM Account
-          WHERE Id = :userAccountId
-          WITH SECURITY_ENFORCED
-          LIMIT 1
-        ];
-        if (String.isNotBlank(userAccount.Assigned_Price_Book_ID__c)) {
-          pricebookIdToUse = userAccount.Assigned_Price_Book_ID__c;
-        }
-      }
-
-      // If no custom price book is assigned, default to the standard one.
-      if (pricebookIdToUse == null) {
-        SecurityUtils.checkFieldReadAccess('Pricebook2', new List<String>{ 'IsStandard', 'Id' });
-        pricebookIdToUse = [
-          SELECT Id
-          FROM Pricebook2
-          WHERE IsStandard = TRUE
-          WITH SECURITY_ENFORCED
-          LIMIT 1
-        ]
-        .Id;
-      }
-      // ** END: NEW LOGIC FOR CONTRACT PRICING **
+      // Get the appropriate price book for the current user
+      Id pricebookIdToUse = getUserPricebookId();
 
       // 4. ** MODIFIED QUERY ** - Now uses dynamic pricebookIdToUse variable.
       // The subquery dynamically selects the correct price book for contract pricing.
@@ -347,46 +270,8 @@ public with sharing class ProductController {
       SecurityUtils.checkObjectReadable('Product2');
       SecurityUtils.checkObjectReadable('PricebookEntry');
 
-      // ** START: NEW LOGIC FOR CONTRACT PRICING **
-      Id pricebookIdToUse;
-      SecurityUtils.checkFieldReadAccess('User', new List<String>{ 'AccountId' });
-      Id userAccountId = [
-        SELECT AccountId
-        FROM User
-        WHERE Id = :UserInfo.getUserId()
-        WITH SECURITY_ENFORCED
-        LIMIT 1
-      ]
-      .AccountId;
-
-      if (userAccountId != null) {
-        // Check the user's Account for an assigned price book ID.
-        SecurityUtils.checkFieldReadAccess('Account', new List<String>{ 'Assigned_Price_Book_ID__c' });
-        Account userAccount = [
-          SELECT Assigned_Price_Book_ID__c
-          FROM Account
-          WHERE Id = :userAccountId
-          WITH SECURITY_ENFORCED
-          LIMIT 1
-        ];
-        if (String.isNotBlank(userAccount.Assigned_Price_Book_ID__c)) {
-          pricebookIdToUse = userAccount.Assigned_Price_Book_ID__c;
-        }
-      }
-
-      // If no custom price book is assigned, default to the standard one.
-      if (pricebookIdToUse == null) {
-        SecurityUtils.checkFieldReadAccess('Pricebook2', new List<String>{ 'IsStandard', 'Id' });
-        pricebookIdToUse = [
-          SELECT Id
-          FROM Pricebook2
-          WHERE IsStandard = TRUE
-          WITH SECURITY_ENFORCED
-          LIMIT 1
-        ]
-        .Id;
-      }
-      // ** END: NEW LOGIC FOR CONTRACT PRICING **
+      // Get the appropriate price book for the current user
+      Id pricebookIdToUse = getUserPricebookId();
 
       // 5. ** MODIFIED QUERY ** - Now uses dynamic pricebookIdToUse variable.
       // The subquery dynamically selects the correct price book for contract pricing.
@@ -436,6 +321,59 @@ public with sharing class ProductController {
       throw new AuraHandledException(
         'Unable to search products at this time. Please try again later.'
       );
+    }
+  }
+
+  // ============================================================================
+  // PRIVATE HELPER METHODS
+  // ============================================================================
+
+  /**
+   * @description Gets the appropriate price book ID for the current user
+   * @return Price book ID to use for pricing queries
+   */
+  private static Id getUserPricebookId() {
+    try {
+      // Validate FLS for traversed field
+      SecurityUtils.checkFieldReadAccess('User', new List<String>{ 'AccountId' });
+      Id userAccountId = [
+        SELECT AccountId
+        FROM User
+        WHERE Id = :UserInfo.getUserId()
+        WITH SECURITY_ENFORCED
+        LIMIT 1
+      ]
+      .AccountId;
+
+      if (userAccountId != null) {
+        // Check the user's Account for an assigned price book ID
+        SecurityUtils.checkFieldReadAccess('Account', new List<String>{ 'Assigned_Price_Book_ID__c' });
+        Account userAccount = [
+          SELECT Assigned_Price_Book_ID__c
+          FROM Account
+          WHERE Id = :userAccountId
+          WITH SECURITY_ENFORCED
+          LIMIT 1
+        ];
+        if (String.isNotBlank(userAccount.Assigned_Price_Book_ID__c)) {
+          return userAccount.Assigned_Price_Book_ID__c;
+        }
+      }
+
+      // If no custom price book is assigned, default to the standard one
+      SecurityUtils.checkFieldReadAccess('Pricebook2', new List<String>{ 'IsStandard', 'Id' });
+      return [
+        SELECT Id
+        FROM Pricebook2
+        WHERE IsStandard = TRUE
+        WITH SECURITY_ENFORCED
+        LIMIT 1
+      ]
+      .Id;
+    } catch (Exception e) {
+      System.debug(LoggingLevel.ERROR, 'Error getting user price book: ' + e.getMessage());
+      // Return standard price book as fallback
+      return [SELECT Id FROM Pricebook2 WHERE IsStandard = TRUE LIMIT 1].Id;
     }
   }
 }

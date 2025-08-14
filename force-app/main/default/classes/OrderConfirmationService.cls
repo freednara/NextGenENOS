@@ -262,7 +262,7 @@ public with sharing class OrderConfirmationService {
             for (OrderItem item : orderRecord.OrderItems) {
                 emailBody += '<tr>';
                 emailBody += '<td>' + item.Product2.Name + '</td>';
-                emailBody += '<td>' + item.Quantity.intValue() + '</td>';
+                emailBody += '<td>' + (item.Quantity != null ? item.Quantity.intValue() : 0) + '</td>';
                 emailBody += '<td>$' + item.UnitPrice.setScale(2) + '</td>';
                 emailBody += '<td>$' + item.TotalPrice.setScale(2) + '</td>';
                 emailBody += '</tr>';
@@ -321,10 +321,16 @@ public with sharing class OrderConfirmationService {
             return null;
         }
         
-        String transactionId = description.substring(startIndex + prefix.length());
+        // Safely extract transaction ID with bounds checking
+        Integer extractStart = startIndex + prefix.length();
+        if (extractStart >= description.length()) {
+            return null; // Description too short
+        }
+        
+        String transactionId = description.substring(extractStart);
         // Clean up any extra text after the transaction ID
         Integer endIndex = transactionId.indexOf(' ');
-        if (endIndex != -1) {
+        if (endIndex != -1 && endIndex < transactionId.length()) {
             transactionId = transactionId.substring(0, endIndex);
         }
         

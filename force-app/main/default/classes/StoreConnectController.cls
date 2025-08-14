@@ -51,64 +51,103 @@ public with sharing class StoreConnectController {
         throw new IllegalArgumentException('Invalid pagination parameters');
       }
 
-      // Build static query with bind variables to prevent SOQL injection
-      String baseQuery =
-        'SELECT Id, Name, ProductCode, Description, IsActive, ' +
-        'Stock_Quantity__c, Image_URL__c, Is_Top_Seller__c, ' +
-        '(SELECT UnitPrice FROM PricebookEntries ' +
-        ' WHERE Pricebook2.IsStandard = true AND IsActive = true LIMIT 1) ' +
-        'FROM Product2 WITH SECURITY_ENFORCED ' +
-        'WHERE IsActive = true ';
-
-      List<String> conditions = new List<String>();
+      // Use static queries with bind variables to prevent SOQL injection
       String searchPattern;
       String categoryPattern;
-
-      if (String.isNotBlank(sanitizedSearchTerm)) {
+      List<Product2> products;
+      Integer totalCount;
+      
+      // Determine query type based on filters
+      Boolean hasSearch = String.isNotBlank(sanitizedSearchTerm);
+      Boolean hasCategory = String.isNotBlank(sanitizedCategory);
+      
+      if (hasSearch) {
         searchPattern = '%' + sanitizedSearchTerm + '%';
-        conditions.add(
-          '(Name LIKE :searchPattern OR Description LIKE :searchPattern)'
-        );
       }
-
-      if (String.isNotBlank(sanitizedCategory)) {
+      if (hasCategory) {
         categoryPattern = '%' + sanitizedCategory + '%';
-        conditions.add('ProductCode LIKE :categoryPattern');
       }
-
-      // Note: topSellersOnly filter removed since Is_Top_Seller__c field doesn't exist
-      // if (topSellersOnly) {
-      //     conditions.add('Is_Top_Seller__c = true');
-      // }
-
-      if (!conditions.isEmpty()) {
-        baseQuery += 'AND ' + String.join(conditions, ' AND ');
-      }
-
+      
       Integer offset = pageNumber * pageSize;
-      baseQuery += ' ORDER BY Name LIMIT :pageSize OFFSET :offset';
-
-      // Execute query with bind variables
-      List<Product2> products = Database.query(baseQuery);
-
-      // Get total count for pagination (also using bind variables)
-      String countQuery = 'SELECT COUNT() FROM Product2 WITH SECURITY_ENFORCED WHERE IsActive = true ';
-
-      if (String.isNotBlank(sanitizedSearchTerm)) {
-        countQuery += 'AND (Name LIKE :searchPattern OR Description LIKE :searchPattern) ';
+      
+      // Execute static query based on filter combination to avoid dynamic SOQL
+      if (hasSearch && hasCategory) {
+        products = [
+          SELECT Id, Name, ProductCode, Description, IsActive, Stock_Quantity__c, Image_URL__c, Is_Top_Seller__c,
+                 (SELECT UnitPrice FROM PricebookEntries WHERE Pricebook2.IsStandard = true AND IsActive = true LIMIT 1)
+          FROM Product2
+          WHERE IsActive = true 
+          AND (Name LIKE :searchPattern OR Description LIKE :searchPattern)
+          AND ProductCode LIKE :categoryPattern
+          WITH SECURITY_ENFORCED
+          ORDER BY Name
+          LIMIT :pageSize OFFSET :offset
+        ];
+        
+        totalCount = [
+          SELECT COUNT()
+          FROM Product2
+          WHERE IsActive = true 
+          AND (Name LIKE :searchPattern OR Description LIKE :searchPattern)
+          AND ProductCode LIKE :categoryPattern
+          WITH SECURITY_ENFORCED
+        ];
+      } else if (hasSearch) {
+        products = [
+          SELECT Id, Name, ProductCode, Description, IsActive, Stock_Quantity__c, Image_URL__c, Is_Top_Seller__c,
+                 (SELECT UnitPrice FROM PricebookEntries WHERE Pricebook2.IsStandard = true AND IsActive = true LIMIT 1)
+          FROM Product2
+          WHERE IsActive = true 
+          AND (Name LIKE :searchPattern OR Description LIKE :searchPattern)
+          WITH SECURITY_ENFORCED
+          ORDER BY Name
+          LIMIT :pageSize OFFSET :offset
+        ];
+        
+        totalCount = [
+          SELECT COUNT()
+          FROM Product2
+          WHERE IsActive = true 
+          AND (Name LIKE :searchPattern OR Description LIKE :searchPattern)
+          WITH SECURITY_ENFORCED
+        ];
+      } else if (hasCategory) {
+        products = [
+          SELECT Id, Name, ProductCode, Description, IsActive, Stock_Quantity__c, Image_URL__c, Is_Top_Seller__c,
+                 (SELECT UnitPrice FROM PricebookEntries WHERE Pricebook2.IsStandard = true AND IsActive = true LIMIT 1)
+          FROM Product2
+          WHERE IsActive = true 
+          AND ProductCode LIKE :categoryPattern
+          WITH SECURITY_ENFORCED
+          ORDER BY Name
+          LIMIT :pageSize OFFSET :offset
+        ];
+        
+        totalCount = [
+          SELECT COUNT()
+          FROM Product2
+          WHERE IsActive = true 
+          AND ProductCode LIKE :categoryPattern
+          WITH SECURITY_ENFORCED
+        ];
+      } else {
+        products = [
+          SELECT Id, Name, ProductCode, Description, IsActive, Stock_Quantity__c, Image_URL__c, Is_Top_Seller__c,
+                 (SELECT UnitPrice FROM PricebookEntries WHERE Pricebook2.IsStandard = true AND IsActive = true LIMIT 1)
+          FROM Product2
+          WHERE IsActive = true
+          WITH SECURITY_ENFORCED
+          ORDER BY Name
+          LIMIT :pageSize OFFSET :offset
+        ];
+        
+        totalCount = [
+          SELECT COUNT()
+          FROM Product2
+          WHERE IsActive = true
+          WITH SECURITY_ENFORCED
+        ];
       }
-
-      if (String.isNotBlank(sanitizedCategory)) {
-        countQuery += 'AND ProductCode LIKE :categoryPattern ';
-      }
-
-      // Note: topSellersOnly filter removed since Is_Top_Seller__c field doesn't exist
-      // if (topSellersOnly) {
-      //     countQuery += 'AND Is_Top_Seller__c = true';
-      // }
-
-      // security already enforced earlier in the query string
-      Integer totalCount = Database.countQuery(countQuery);
 
       return new ProductCatalogResult(
         products,
@@ -117,7 +156,7 @@ public with sharing class StoreConnectController {
         pageSize
       );
     } catch (Exception e) {
-      System.debug('Error in getProducts: ' + e.getMessage());
+      System.debug(LoggingLevel.ERROR, 'Error in getProducts: ' + e.getMessage());
       throw new AuraHandledException(
         'Error retrieving products: ' + e.getMessage()
       );
@@ -197,6 +236,7 @@ public with sharing class StoreConnectController {
         'CREATE'
       );
 
+      SecurityUtils.checkObjectCreateAccess('Cart__c');
       insert newCart;
 
       return newCart;
@@ -226,46 +266,67 @@ public with sharing class StoreConnectController {
       SecurityUtils.checkObjectUpdateable('Cart__c');
       SecurityUtils.checkObjectCreateable('Cart_Item__c');
 
-      // Validate product and get price
-      Product2 product = [
-        SELECT Id, Name, Stock_Quantity__c
-        FROM Product2
-        WHERE Id = :productId AND IsActive = TRUE
-        WITH SECURITY_ENFORCED
-      ];
+      // Atomic inventory check and cart update to prevent race conditions
+      Savepoint sp = Database.setSavepoint();
+      
+      try {
+        // Validate product and get price with FOR UPDATE to lock the record
+        Product2 product = [
+          SELECT Id, Name, Stock_Quantity__c
+          FROM Product2
+          WHERE Id = :productId AND IsActive = TRUE
+          WITH SECURITY_ENFORCED
+          FOR UPDATE
+        ];
 
-      if (product.Stock_Quantity__c < quantity) {
-        throw new AuraHandledException(
-          'Insufficient stock. Available: ' + product.Stock_Quantity__c
-        );
+        // Check if product already in cart
+        List<Cart_Item__c> existingItems = [
+          SELECT Id, Quantity__c
+          FROM Cart_Item__c
+          WHERE Cart__c = :cartId AND Product__c = :productId
+          WITH SECURITY_ENFORCED
+        ];
+
+        Integer totalRequestedQuantity = quantity;
+        if (!existingItems.isEmpty()) {
+          totalRequestedQuantity += Integer.valueOf(existingItems[0].Quantity__c);
+        }
+
+        // Validate total quantity against available stock
+        if (product.Stock_Quantity__c < totalRequestedQuantity) {
+          throw new AuraHandledException(
+            'Insufficient stock. Available: ' + product.Stock_Quantity__c + 
+            ', Requested: ' + totalRequestedQuantity
+          );
+        }
+
+        if (!existingItems.isEmpty()) {
+          // Update quantity
+          existingItems[0].Quantity__c = totalRequestedQuantity;
+          SecurityUtils.checkObjectUpdateable('Cart_Item__c');
+          update existingItems[0];
+          return existingItems[0];
+        } else {
+          // Create new cart item with proper price lookup
+          Decimal unitPrice = getProductPriceFromStandardPricebook(productId);
+          if (unitPrice == null) {
+            throw new AuraHandledException('Product pricing not available.');
+          }
+          
+          Cart_Item__c newItem = new Cart_Item__c(
+            Cart__c = cartId,
+            Product__c = productId,
+            Quantity__c = quantity,
+            Unit_Price__c = unitPrice
+          );
+          
+          insert newItem;
+          return newItem;
+        }
+      } catch (Exception e) {
+        Database.rollback(sp);
+        throw e;
       }
-
-      // Check if product already in cart
-      List<Cart_Item__c> existingItems = [
-        SELECT Id, Quantity__c
-        FROM Cart_Item__c
-        WHERE Cart__c = :cartId AND Product__c = :productId
-        WITH SECURITY_ENFORCED
-      ];
-
-      if (!existingItems.isEmpty()) {
-        // Update quantity
-        existingItems[0].Quantity__c += quantity;
-        SecurityUtils.checkObjectUpdateable('Cart_Item__c');
-        update existingItems[0];
-        return existingItems[0];
-      }
-
-      // Create new cart item
-      Cart_Item__c newItem = new Cart_Item__c(
-        Cart__c = cartId,
-        Product__c = productId,
-        Quantity__c = quantity,
-        Unit_Price__c = getProductPrice(productId) // This would call your pricing logic
-      );
-
-      insert newItem;
-      return newItem;
     } catch (Exception e) {
       throw new AuraHandledException('Error adding to cart: ' + e.getMessage());
     }
@@ -417,7 +478,7 @@ public with sharing class StoreConnectController {
       }
       return results;
     } catch (Exception e) {
-      System.debug('Error in getRecentlyViewed: ' + e.getMessage());
+      System.debug(LoggingLevel.ERROR, 'Error in getRecentlyViewed: ' + e.getMessage());
       throw new AuraHandledException(
         'Error retrieving recently viewed products: ' + e.getMessage()
       );
@@ -439,7 +500,7 @@ public with sharing class StoreConnectController {
       upsert viewTracking;
     } catch (Exception e) {
       // Don't throw error for tracking - just log it
-      System.debug('Error tracking product view: ' + e.getMessage());
+      System.debug(LoggingLevel.ERROR, 'Error tracking product view: ' + e.getMessage());
     }
   }
 
@@ -542,5 +603,29 @@ public with sharing class StoreConnectController {
    * @description Custom exception class for security violations
    */
   public class SecurityException extends Exception {
+  }
+  
+  /**
+   * @description Gets product price from standard pricebook
+   * @param productId Product ID to get price for
+   * @return Unit price or null if not found
+   */
+  private static Decimal getProductPriceFromStandardPricebook(Id productId) {
+    try {
+      List<PricebookEntry> entries = [
+        SELECT UnitPrice
+        FROM PricebookEntry
+        WHERE Product2Id = :productId
+        AND Pricebook2.IsStandard = true
+        AND IsActive = true
+        WITH SECURITY_ENFORCED
+        LIMIT 1
+      ];
+      
+      return entries.isEmpty() ? null : entries[0].UnitPrice;
+    } catch (Exception e) {
+      System.debug(LoggingLevel.ERROR, 'Error getting product price: ' + e.getMessage());
+      return null;
+    }
   }
 }

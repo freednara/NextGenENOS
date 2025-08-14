@@ -10,7 +10,7 @@
  * @version 1.0.0
  * @since 2024-12-01
  */
-global class CommunityRegistrationHandler implements Auth.RegistrationHandler {
+global with sharing class CommunityRegistrationHandler implements Auth.RegistrationHandler {
   /**
    * @description This method is called when a user registers for the first time.
    * It handles the standard user creation process and then triggers
@@ -21,12 +21,26 @@ global class CommunityRegistrationHandler implements Auth.RegistrationHandler {
    * @return User The newly created User record
    */
   global User createUser(Id portalId, Auth.UserData data) {
-    // For now, return null as Auth.AuthHandler is not available
-    // This method needs to be implemented based on your specific auth requirements
-    System.debug(
-      'CommunityRegistrationHandler.createUser() called but not fully implemented'
-    );
-    return null;
+    try {
+      // Create Account if it doesn't exist
+      Account userAccount = findOrCreateAccount(data);
+      
+      // Create Contact
+      Contact userContact = createContact(data, userAccount.Id);
+      
+      // Create User
+      User newUser = createCommunityUser(data, userContact.Id);
+      
+      // Schedule cart creation for after user creation completes
+      if (newUser != null && newUser.Id != null) {
+        createCartForNewUser(newUser.Id);
+      }
+      
+      return newUser;
+    } catch (Exception e) {
+      System.debug(LoggingLevel.ERROR, 'Error in createUser: ' + e.getMessage());
+      throw e;
+    }
   }
 
   /**
@@ -40,10 +54,32 @@ global class CommunityRegistrationHandler implements Auth.RegistrationHandler {
    * @param data The updated user data from the external provider
    */
   global void updateUser(Id userId, Id portalId, Auth.UserData data) {
-    // For now, just log the call as Auth.AuthHandler is not available
-    System.debug(
-      'CommunityRegistrationHandler.updateUser() called but not fully implemented'
-    );
+    try {
+      // Update user information if needed
+      User existingUser = [SELECT Id, Email, FirstName, LastName FROM User WHERE Id = :userId WITH SECURITY_ENFORCED LIMIT 1];
+      
+      Boolean needsUpdate = false;
+      if (data.email != null && data.email != existingUser.Email) {
+        existingUser.Email = data.email;
+        needsUpdate = true;
+      }
+      
+      if (data.firstName != null && data.firstName != existingUser.FirstName) {
+        existingUser.FirstName = data.firstName;
+        needsUpdate = true;
+      }
+      
+      if (data.lastName != null && data.lastName != existingUser.LastName) {
+        existingUser.LastName = data.lastName;
+        needsUpdate = true;
+      }
+      
+      if (needsUpdate) {
+        update existingUser;
+      }
+    } catch (Exception e) {
+      System.debug(LoggingLevel.ERROR, 'Error in updateUser: ' + e.getMessage());
+    }
   }
 
   /**
@@ -63,6 +99,7 @@ global class CommunityRegistrationHandler implements Auth.RegistrationHandler {
         SELECT Id, AccountId
         FROM Contact
         WHERE Id IN (SELECT ContactId FROM User WHERE Id = :userId)
+        WITH SECURITY_ENFORCED
         LIMIT 1
       ];
 
@@ -75,6 +112,7 @@ global class CommunityRegistrationHandler implements Auth.RegistrationHandler {
           SELECT Id
           FROM Cart__c
           WHERE Contact__c = :newUserContact.Id AND Status__c = 'Active'
+          WITH SECURITY_ENFORCED
           LIMIT 1
         ];
 
@@ -132,5 +170,98 @@ global class CommunityRegistrationHandler implements Auth.RegistrationHandler {
       // entire registration process due to cart creation issues.
       // The cart can be created manually later if needed.
     }
+  }
+
+  // ============================================================================
+  // PRIVATE HELPER METHODS
+  // ============================================================================
+
+  /**
+   * @description Finds or creates an Account for the user
+   */
+  private static Account findOrCreateAccount(Auth.UserData data) {
+    String accountName = data.lastName + ' Household';
+    
+    List<Account> existingAccounts = [SELECT Id FROM Account WHERE Name = :accountName WITH SECURITY_ENFORCED LIMIT 1];
+    
+    if (!existingAccounts.isEmpty()) {
+      return existingAccounts[0];
+    }
+    
+    Account newAccount = new Account(
+      Name = accountName
+    );
+    insert newAccount;
+    return newAccount;
+  }
+
+  /**
+   * @description Creates a Contact for the user
+   */
+  private static Contact createContact(Auth.UserData data, Id accountId) {
+    Contact newContact = new Contact(
+      FirstName = data.firstName,
+      LastName = data.lastName,
+      Email = data.email,
+      AccountId = accountId
+    );
+    insert newContact;
+    return newContact;
+  }
+
+  /**
+   * @description Creates a Community User
+   */
+  private static User createCommunityUser(Auth.UserData data, Id contactId) {
+    // Get community profile
+    Profile communityProfile = [SELECT Id FROM Profile WHERE Name LIKE '%Community%' AND Name LIKE '%User%' WITH SECURITY_ENFORCED LIMIT 1];
+    
+    User newUser = new User(
+      FirstName = data.firstName,
+      LastName = data.lastName,
+      Email = data.email,
+      Username = data.email + '.storeconnect',
+      Alias = getSafeAlias(data.firstName, data.lastName),
+      TimeZoneSidKey = 'America/New_York',
+      LocaleSidKey = 'en_US',
+      EmailEncodingKey = 'UTF-8',
+      LanguageLocaleKey = 'en_US',
+      ProfileId = communityProfile.Id,
+      ContactId = contactId
+    );
+    insert newUser;
+    return newUser;
+  }
+  
+  /**
+   * @description Safely generates user alias with proper bounds checking
+   * @param firstName User's first name
+   * @param lastName User's last name
+   * @return Safe alias string, max 8 characters
+   */
+  private static String getSafeAlias(String firstName, String lastName) {
+    String alias = '';
+    
+    // Safe first name handling
+    if (String.isNotBlank(firstName) && firstName.length() > 0) {
+      alias += firstName.substring(0, 1);
+    } else {
+      alias += 'U'; // Default first character
+    }
+    
+    // Safe last name handling with bounds checking
+    if (String.isNotBlank(lastName)) {
+      Integer lastNameLength = Math.min(4, lastName.length());
+      alias += lastName.substring(0, lastNameLength);
+    } else {
+      alias += 'ser'; // Default suffix
+    }
+    
+    // Ensure alias doesn't exceed 8 characters (Salesforce limit)
+    if (alias.length() > 8) {
+      alias = alias.substring(0, 8);
+    }
+    
+    return alias;
   }
 }

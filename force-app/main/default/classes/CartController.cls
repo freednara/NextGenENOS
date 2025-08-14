@@ -650,6 +650,97 @@ public with sharing class CartController {
   }
 
   /**
+   * @description Bulk adds multiple items to cart in one transaction
+   * @param cartItems List of items to add with productId and quantity
+   * @throws AuraHandledException if operation fails
+   */
+  @AuraEnabled
+  public static void addItemsToCartBulk(List<CartItemRequest> cartItems) {
+    try {
+      if (cartItems == null || cartItems.isEmpty()) {
+        throw new AuraHandledException('No items provided to add to cart.');
+      }
+
+      // Security checks
+      SecurityUtils.checkObjectCreateable('Cart__c');
+      SecurityUtils.checkObjectCreateable('Cart_Item__c');
+      SecurityUtils.checkObjectUpdateable('Cart_Item__c');
+
+      // Get current user's contact ID
+      Id userContactId = getCurrentUserContactId();
+      if (userContactId == null) {
+        throw new AuraHandledException('User is not associated with a Contact.');
+      }
+
+      // Find or create active cart
+      Cart__c activeCart = findOrCreateActiveCart(userContactId);
+
+      // Collect all product IDs for bulk price lookup
+      Set<Id> productIds = new Set<Id>();
+      for (CartItemRequest item : cartItems) {
+        if (item.productId != null) {
+          productIds.add(item.productId);
+        }
+      }
+
+      // Bulk get prices for all products
+      Map<Id, Decimal> productPrices = getBulkProductPrices(productIds);
+
+      // Get existing cart items for this cart
+      Map<Id, Cart_Item__c> existingItems = new Map<Id, Cart_Item__c>();
+      for (Cart_Item__c item : [
+        SELECT Id, Product__c, Quantity__c
+        FROM Cart_Item__c
+        WHERE Cart__c = :activeCart.Id AND Product__c IN :productIds
+      ]) {
+        existingItems.put(item.Product__c, item);
+      }
+
+      List<Cart_Item__c> itemsToInsert = new List<Cart_Item__c>();
+      List<Cart_Item__c> itemsToUpdate = new List<Cart_Item__c>();
+
+      // Process each request
+      for (CartItemRequest request : cartItems) {
+        if (request.productId == null || request.quantity == null || request.quantity <= 0) {
+          continue; // Skip invalid requests
+        }
+
+        Decimal price = productPrices.get(request.productId);
+        if (price == null) {
+          continue; // Skip products without pricing
+        }
+
+        if (existingItems.containsKey(request.productId)) {
+          // Update existing item
+          Cart_Item__c existing = existingItems.get(request.productId);
+          existing.Quantity__c += request.quantity;
+          itemsToUpdate.add(existing);
+        } else {
+          // Create new item
+          itemsToInsert.add(new Cart_Item__c(
+            Cart__c = activeCart.Id,
+            Product__c = request.productId,
+            Quantity__c = request.quantity,
+            Unit_Price__c = price
+          ));
+        }
+      }
+
+      // Perform bulk DML operations
+      if (!itemsToInsert.isEmpty()) {
+        insert itemsToInsert;
+      }
+      if (!itemsToUpdate.isEmpty()) {
+        update itemsToUpdate;
+      }
+
+    } catch (Exception e) {
+      System.debug(LoggingLevel.ERROR, 'Error in bulk cart operation: ' + e.getMessage());
+      throw new AuraHandledException('Unable to add items to cart: ' + e.getMessage());
+    }
+  }
+
+  /**
    * @description Removes an item from the cart.
    * This method allows users to delete items they no longer want.
    *
@@ -835,6 +926,38 @@ public with sharing class CartController {
   }
 
   /**
+   * @description Gets prices for multiple products in bulk
+   * @param productIds Set of product IDs to get prices for
+   * @return Map of product ID to unit price
+   */
+  private static Map<Id, Decimal> getBulkProductPrices(Set<Id> productIds) {
+    Map<Id, Decimal> priceMap = new Map<Id, Decimal>();
+    
+    if (productIds.isEmpty()) {
+      return priceMap;
+    }
+    
+    try {
+      List<PricebookEntry> priceEntries = [
+        SELECT Product2Id, UnitPrice
+        FROM PricebookEntry
+        WHERE
+          Product2Id IN :productIds
+          AND Pricebook2.IsStandard = TRUE
+          AND IsActive = TRUE
+      ];
+      
+      for (PricebookEntry entry : priceEntries) {
+        priceMap.put(entry.Product2Id, entry.UnitPrice);
+      }
+    } catch (Exception e) {
+      System.debug(LoggingLevel.ERROR, 'Error getting bulk product prices: ' + e.getMessage());
+    }
+    
+    return priceMap;
+  }
+
+  /**
    * @description Handles the addition of items to the cart.
    * This method either creates new cart items or updates existing ones.
    *
@@ -952,6 +1075,23 @@ public with sharing class CartController {
       this.quantity = quantity;
       this.unitPrice = unitPrice;
       this.lineTotal = lineTotal;
+    }
+  }
+
+  /**
+   * @description Wrapper class for bulk cart item requests
+   */
+  public class CartItemRequest {
+    @AuraEnabled
+    public Id productId;
+    @AuraEnabled
+    public Integer quantity;
+    
+    public CartItemRequest() {}
+    
+    public CartItemRequest(Id productId, Integer quantity) {
+      this.productId = productId;
+      this.quantity = quantity;
     }
   }
 }

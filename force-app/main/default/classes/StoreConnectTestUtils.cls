@@ -1,7 +1,7 @@
 /**
- * @description Test utility class for StoreConnect test setup
- * Provides common test data creation and permission assignment methods
- *
+ * @description Test utility class for creating test data for StoreConnect
+ * Provides standardized test data creation methods for all test classes
+ * 
  * @author StoreConnect Development Team
  * @version 1.0.0
  * @since 2024-12-01
@@ -10,143 +10,147 @@
 public class StoreConnectTestUtils {
     
     /**
-     * @description Creates a test user with System Administrator profile
-     * @param firstName First name of the test user
-     * @param lastName Last name of the test user
-     * @param email Email of the test user
-     * @param contactId Optional contact ID to associate with the user
-     * @return User The created test user
-     */
-    public static User createTestUser(String firstName, String lastName, String email, Id contactId) {
-        // Get System Administrator profile (always available in orgs)
-        Profile adminProfile = [SELECT Id FROM Profile WHERE Name = 'System Administrator' LIMIT 1];
-        
-        String uniqueName = email + '.' + DateTime.now().getTime();
-        
-        User testUser = new User(
-            FirstName = firstName,
-            LastName = lastName,
-            Email = email,
-            Username = uniqueName,
-            Alias = (firstName.substring(0,1) + lastName.substring(0,1) + String.valueOf(DateTime.now().getTime()).substring(8,13)).toLowerCase(),
-            TimeZoneSidKey = 'America/Los_Angeles',
-            LocaleSidKey = 'en_US',
-            EmailEncodingKey = 'UTF-8',
-            LanguageLocaleKey = 'en_US',
-            ProfileId = adminProfile.Id,
-            ContactId = contactId
-        );
-        
-        insert testUser;
-        return testUser;
-    }
-    
-    /**
-     * @description Creates a standard StoreConnect test user
-     * @param contactId Optional contact ID to associate with the user
-     * @return User Test user with admin permissions (for testing)
-     */
-    public static User createStoreConnectUser(Id contactId) {
-        return createTestUser('Store', 'User', 'storeuser@test.com', contactId);
-    }
-    
-    /**
-     * @description Creates a StoreConnect admin test user
-     * @param contactId Optional contact ID to associate with the user
-     * @return User Test user with admin permissions
-     */
-    public static User createStoreConnectAdmin(Id contactId) {
-        return createTestUser('Store', 'Admin', 'storeadmin@test.com', contactId);
-    }
-    
-    /**
-     * @description Creates a payment processor test user
-     * @param contactId Optional contact ID to associate with the user
-     * @return User Test user with admin permissions (for testing)
-     */
-    public static User createPaymentProcessor(Id contactId) {
-        return createTestUser('Payment', 'Processor', 'payment@test.com', contactId);
-    }
-    
-
-    
-    /**
-     * @description Creates test data for StoreConnect including Account, Contact, Products, etc.
-     * @return TestDataContainer containing all created test data
-     */
-    public static TestDataContainer createStoreConnectTestData() {
-        TestDataContainer data = new TestDataContainer();
-        
-        // Create test account
-        data.testAccount = new Account(Name = 'StoreConnect Test Account');
-        insert data.testAccount;
-        
-        // Create test contact
-        data.testContact = new Contact(
-            FirstName = 'Test',
-            LastName = 'Customer',
-            Email = 'testcustomer@storeconnect.test',
-            AccountId = data.testAccount.Id
-        );
-        insert data.testContact;
-        
-        // Create test products
-        data.testProducts = new List<Product2>{
-            new Product2(
-                Name = 'Test Product 1',
-                ProductCode = 'TEST001',
-                Description = 'Test Product 1 Description',
-                IsActive = true,
-                Stock_Quantity__c = 100
-            ),
-            new Product2(
-                Name = 'Test Product 2',
-                ProductCode = 'TEST002',
-                Description = 'Test Product 2 Description',
-                IsActive = true,
-                Stock_Quantity__c = 50
-            )
-        };
-        insert data.testProducts;
-        
-        // Create pricebook entries
-        data.pricebookEntries = new List<PricebookEntry>();
-        Id standardPricebookId = Test.getStandardPricebookId();
-        
-        for (Product2 product : data.testProducts) {
-            data.pricebookEntries.add(new PricebookEntry(
-                Pricebook2Id = standardPricebookId,
-                Product2Id = product.Id,
-                UnitPrice = 100.00,
-                IsActive = true
-            ));
-        }
-        insert data.pricebookEntries;
-        
-        // Create test cart
-        data.testCart = new Cart__c(
-            Contact__c = data.testContact.Id,
-            Status__c = 'Active',
-            Subtotal__c = 0.00,
-            Total_Items__c = 0
-        );
-        insert data.testCart;
-        
-        // Create test user associated with the contact
-        data.testUser = createStoreConnectUser(data.testContact.Id);
-        
-        return data;
-    }
-    
-    /**
-     * @description Container class for test data
+     * @description Container class for all test data
      */
     public class TestDataContainer {
         public Account testAccount;
         public Contact testContact;
+        public User testUser;
         public List<Product2> testProducts;
+        public Pricebook2 standardPricebook;
         public List<PricebookEntry> pricebookEntries;
         public Cart__c testCart;
-        public User testUser;
+        public List<Cart_Item__c> testCartItems;
+    }
+    
+    /**
+     * @description Creates comprehensive test data for StoreConnect functionality
+     * @return TestDataContainer with all necessary test records
+     */
+    public static TestDataContainer createStoreConnectTestData() {
+        TestDataContainer testData = new TestDataContainer();
+        
+        // Create test account
+        testData.testAccount = new Account(
+            Name = 'StoreConnect Test Account'
+        );
+        insert testData.testAccount;
+        
+        // Create test contact
+        testData.testContact = new Contact(
+            FirstName = 'John',
+            LastName = 'Doe',
+            Email = 'john.doe@test.com',
+            AccountId = testData.testAccount.Id
+        );
+        insert testData.testContact;
+        
+        // Create test user with fallback profile selection
+        Profile communityProfile;
+        try {
+            communityProfile = [SELECT Id FROM Profile WHERE Name = 'Customer Community User' OR Name = 'Customer Community Plus User' LIMIT 1];
+        } catch (Exception e) {
+            // Fallback to standard user if community profiles don't exist
+            communityProfile = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];
+        }
+        
+        testData.testUser = new User(
+            FirstName = 'John',
+            LastName = 'Doe',
+            Email = 'storeuser@test.com',
+            Username = 'john.doe.test@storeconnect.com.' + System.currentTimeMillis(),
+            Alias = 'jdoe',
+            TimeZoneSidKey = 'America/New_York',
+            LocaleSidKey = 'en_US',
+            EmailEncodingKey = 'UTF-8',
+            LanguageLocaleKey = 'en_US',
+            ProfileId = communityProfile.Id,
+            ContactId = testData.testContact.Id
+        );
+        insert testData.testUser;
+        
+        // Get standard pricebook
+        testData.standardPricebook = [SELECT Id FROM Pricebook2 WHERE IsStandard = true LIMIT 1];
+        
+        // Create test products with unique codes
+        String uniqueId = String.valueOf(System.currentTimeMillis()).substring(7);
+        testData.testProducts = new List<Product2>{
+            new Product2(
+                Name = 'Test Product 1',
+                ProductCode = 'TEST-001-' + uniqueId,
+                Description = 'Test product for unit testing',
+                IsActive = true
+            ),
+            new Product2(
+                Name = 'Test Product 2', 
+                ProductCode = 'TEST-002-' + uniqueId,
+                Description = 'Second test product',
+                IsActive = true
+            )
+        };
+        insert testData.testProducts;
+        
+        // Create pricebook entries
+        testData.pricebookEntries = new List<PricebookEntry>();
+        for (Product2 product : testData.testProducts) {
+            testData.pricebookEntries.add(new PricebookEntry(
+                Product2Id = product.Id,
+                Pricebook2Id = testData.standardPricebook.Id,
+                UnitPrice = 25.00,
+                IsActive = true
+            ));
+        }
+        insert testData.pricebookEntries;
+        
+        return testData;
+    }
+    
+    /**
+     * @description Creates a test cart with items for a given contact
+     * @param contactId The contact ID to create cart for
+     * @param products List of products to add to cart
+     * @return Cart__c The created cart
+     */
+    public static Cart__c createTestCart(Id contactId, List<Product2> products) {
+        Cart__c testCart = new Cart__c(
+            Contact__c = contactId,
+            Status__c = 'Active'
+        );
+        insert testCart;
+        
+        if (products != null && !products.isEmpty()) {
+            List<Cart_Item__c> cartItems = new List<Cart_Item__c>();
+            for (Product2 product : products) {
+                cartItems.add(new Cart_Item__c(
+                    Cart__c = testCart.Id,
+                    Product__c = product.Id,
+                    Quantity__c = 1,
+                    Unit_Price__c = 25.00
+                ));
+            }
+            insert cartItems;
+        }
+        
+        return testCart;
+    }
+    
+    /**
+     * @description Creates test shipping address
+     * @param accountId The account ID to associate with
+     * @return Shipping_Address__c The created shipping address
+     */
+    public static Shipping_Address__c createTestShippingAddress(Id accountId) {
+        Shipping_Address__c address = new Shipping_Address__c(
+            Account__c = accountId,
+            Address_Label__c = 'Test Address',
+            Street__c = '123 Test Street',
+            City__c = 'Test City',
+            State__c = 'TS',
+            Postal_Code__c = '12345',
+            Country__c = 'United States',
+            Is_Default__c = true
+        );
+        insert address;
+        return address;
     }
 }

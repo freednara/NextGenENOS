@@ -149,8 +149,9 @@ public with sharing class PayGovService {
         }
 
         // Validate amount limits (Pay.gov typically has transaction limits)
-        if (request.amount > 999999.99) {
-            throw new PayGovException('Payment amount exceeds maximum allowed limit');
+        Decimal maxPaymentAmount = getMaxPaymentAmount();
+        if (request.amount > maxPaymentAmount) {
+            throw new PayGovException('Payment amount exceeds maximum allowed limit of $' + maxPaymentAmount);
         }
     }
     
@@ -247,29 +248,38 @@ public with sharing class PayGovService {
     private static HttpResponse makePayGovCallout(String soapRequest, String action) {
         HttpRequest request = new HttpRequest();
         
-        // Configure request for Pay.gov SOAP API
-        request.setEndpoint('callout:PayGov_API'); // Uses Named Credential
-        request.setMethod('POST');
-        request.setHeader('Content-Type', 'text/xml; charset=utf-8');
-        request.setHeader('SOAPAction', '"http://www.pay.gov/paygov/' + action + '"');
-        request.setTimeout(TIMEOUT_MILLISECONDS);
-        request.setBody(soapRequest);
-        
-        // Add request tracking for audit purposes
-        System.debug(LoggingLevel.INFO, 'Making Pay.gov callout for action: ' + action);
-        
-        Http http = new Http();
-        HttpResponse response = http.send(request);
-        
-        // Log response status for monitoring
-        System.debug(LoggingLevel.INFO, 'Pay.gov response status: ' + response.getStatusCode());
-        
-        if (response.getStatusCode() != 200) {
-            throw new PayGovException('Pay.gov API returned error status: ' + 
-                response.getStatusCode() + ' - ' + response.getStatus());
+        try {
+            // Configure request for Pay.gov SOAP API
+            request.setEndpoint('callout:PayGov_API'); // Uses Named Credential
+            request.setMethod('POST');
+            request.setHeader('Content-Type', 'text/xml; charset=utf-8');
+            request.setHeader('SOAPAction', '"http://www.pay.gov/paygov/' + action + '"');
+            request.setTimeout(TIMEOUT_MILLISECONDS);
+            request.setBody(soapRequest);
+            
+            // Add request tracking for audit purposes
+            System.debug(LoggingLevel.INFO, 'Making Pay.gov callout for action: ' + action);
+            
+            Http http = new Http();
+            HttpResponse response = http.send(request);
+            
+            // Log response status for monitoring
+            System.debug(LoggingLevel.INFO, 'Pay.gov response status: ' + response.getStatusCode());
+            
+            if (response.getStatusCode() != 200) {
+                throw new PayGovException('Pay.gov API returned error status: ' + 
+                    response.getStatusCode() + ' - ' + response.getStatus());
+            }
+            
+            return response;
+            
+        } catch (CalloutException e) {
+            System.debug(LoggingLevel.ERROR, 'Pay.gov callout failed: ' + e.getMessage());
+            throw new PayGovException('Payment service unavailable. Named Credential may not be configured: ' + e.getMessage());
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Unexpected error in Pay.gov callout: ' + e.getMessage());
+            throw new PayGovException('Payment processing error: ' + e.getMessage());
         }
-        
-        return response;
     }
     
     /**
@@ -401,6 +411,31 @@ public with sharing class PayGovService {
             this.customerEmail = customerEmail;
             this.paymentToken = paymentToken;
         }
+    }
+    
+    /**
+     * @description Get the maximum payment amount allowed from configuration
+     * @return Maximum payment amount, defaults to $999,999.99 if not configured
+     */
+    private static Decimal getMaxPaymentAmount() {
+        try {
+            List<PayGov_Configuration__mdt> configs = [
+                SELECT Max_Payment_Amount__c
+                FROM PayGov_Configuration__mdt
+                WHERE DeveloperName = 'Default'
+                WITH SECURITY_ENFORCED
+                LIMIT 1
+            ];
+            
+            if (!configs.isEmpty() && configs[0].Max_Payment_Amount__c != null) {
+                return configs[0].Max_Payment_Amount__c;
+            }
+        } catch (Exception e) {
+            System.debug(LoggingLevel.WARN, 'Unable to retrieve max payment amount from configuration: ' + e.getMessage());
+        }
+        
+        // Default to standard Pay.gov limit if configuration not available
+        return 999999.99;
     }
     
     /**
