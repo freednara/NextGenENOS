@@ -200,7 +200,7 @@ public class SecurityUtilsTest {
     @isTest
     static void testInvalidFieldName() {
         List<String> invalidFields = new List<String>{'InvalidField__c'};
-        
+
         Test.startTest();
         try {
             SecurityUtils.checkFieldReadAccess('Product2', invalidFields);
@@ -209,6 +209,26 @@ public class SecurityUtilsTest {
             System.assert(true, 'Should handle invalid field name gracefully');
         }
         Test.stopTest();
+    }
+
+    @isTest
+    static void testValidateRecordAccess() {
+        Account acc1 = new Account(Name = 'Access OK');
+        Account acc2 = new Account(Name = 'Access Denied');
+        insert new List<Account>{ acc1, acc2 };
+        delete acc2;
+
+        Test.startTest();
+        SecurityUtils.validateRecordAccess(acc1.Id, 'Account');
+        Boolean threw = false;
+        try {
+            SecurityUtils.validateRecordAccess(acc2.Id, 'Account');
+        } catch (Exception e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        System.assert(threw, 'Should throw for inaccessible record');
     }
     
     @isTest
