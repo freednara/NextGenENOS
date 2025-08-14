@@ -12,42 +12,8 @@ private class PayGovServiceTest {
      */
     @TestSetup
     static void setupTestData() {
-        // Create test account
-        Account testAccount = new Account(Name = 'Test Account');
-        insert testAccount;
-    
-        // Create test contact
-        Contact testContact = new Contact(
-            FirstName = 'John',
-            LastName = 'Doe',
-            Email = 'john.doe.test@storeconnect.com',
-            AccountId = testAccount.Id
-        );
-        insert testContact;
-    
-        // Get the Customer Community Plus Login User profile for testing
-        Profile communityProfile = [
-            SELECT Id
-            FROM Profile
-            WHERE Name = 'Customer Community Plus Login User'
-            LIMIT 1
-        ];
-    
-        // Create test user with StoreConnect Community profile
-        User testUser = new User(
-            Username = 'john.doe.test@storeconnect.com',
-            FirstName = 'John',
-            LastName = 'Doe',
-            Email = 'john.doe.test@storeconnect.com',
-            Alias = 'jdoe',
-            TimeZoneSidKey = 'America/Los_Angeles',
-            LocaleSidKey = 'en_US',
-            EmailEncodingKey = 'UTF-8',
-            LanguageLocaleKey = 'en_US',
-            ProfileId = communityProfile.Id,
-            ContactId = testContact.Id
-        );
-        insert testUser;
+        // Create test data using utility class (includes test user)
+        StoreConnectTestUtils.TestDataContainer testData = StoreConnectTestUtils.createStoreConnectTestData();
     }
 
     /**

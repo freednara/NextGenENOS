@@ -143,25 +143,214 @@ jobs:
     steps:
       - name: 📥 Checkout source code
         uses: actions/checkout@v4
-
-      - name: 🛡️ Run PMD Analysis
-        uses: pmd/pmd-github-action@v1
         with:
-          rulesets: 'config/pmd-ruleset.xml'
-          sourcePath: 'force-app/main/default/classes'
-          analyzeModifiedFilesOnly: false
+          fetch-depth: 0
 
-      - name: 📊 Upload PMD Results
+      - name: 🏗️ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: 📦 Install PMD
+        run: |
+          wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.0.0/pmd-dist-7.0.0-bin.zip
+          unzip pmd-dist-7.0.0-bin.zip
+          sudo mv pmd-bin-7.0.0 /opt/pmd
+          sudo ln -s /opt/pmd/bin/pmd /usr/local/bin/pmd
+          pmd --version
+
+      - name: 🛡️ Run PMD Security Analysis
+        run: |
+          mkdir -p security-reports
+          pmd check \
+            --dir force-app/main/default/classes \
+            --rulesets config/pmd-ruleset.xml \
+            --format sarif \
+            --report-file security-reports/pmd-security-report.sarif \
+            --no-cache \
+            --fail-on-violation false
+        continue-on-error: true
+
+      - name: 🛡️ Run PMD Text Report
+        run: |
+          pmd check \
+            --dir force-app/main/default/classes \
+            --rulesets config/pmd-ruleset.xml \
+            --format text \
+            --report-file security-reports/pmd-security-report.txt \
+            --no-cache \
+            --fail-on-violation false
+        continue-on-error: true
+
+      - name: 📊 Upload PMD Security Results to GitHub
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: pmd-report.sarif
+          sarif_file: security-reports/pmd-security-report.sarif
+          category: pmd-security
+
+      - name: 📁 Upload Security Reports as Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-scan-reports
+          path: security-reports/
+          retention-days: 30
+
+      - name: 🔍 SFDX Security Scanner (Optional)
+        run: |
+          npm install -g @salesforce/sfdx-scanner
+          sfdx scanner:run \
+            --target force-app/main/default/classes \
+            --engine pmd \
+            --format sarif \
+            --outfile security-reports/sfdx-scanner-report.sarif \
+            || echo "SFDX Scanner not available or failed"
+        continue-on-error: true
+
+      - name: 🕵️ Secrets Detection
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: main
+          head: HEAD
+          extra_args: --debug --only-verified --json --output security-reports/secrets-scan.json
+        continue-on-error: true
+
+      - name: 🔍 Security Scan Summary
+        if: always()
+        run: |
+          echo "## 🛡️ Security Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "### Scan Status:" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f security-reports/pmd-security-report.txt ]; then
+            echo "✅ PMD Security Analysis completed" >> $GITHUB_STEP_SUMMARY
+            echo "### PMD Analysis Results:" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            head -50 security-reports/pmd-security-report.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ PMD Security Analysis failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ -f security-reports/secrets-scan.json ]; then
+            echo "✅ Secrets Detection completed" >> $GITHUB_STEP_SUMMARY
+            SECRETS_FOUND=$(cat security-reports/secrets-scan.json | wc -l)
+            if [ "$SECRETS_FOUND" -gt 0 ]; then
+              echo "⚠️ **WARNING: $SECRETS_FOUND potential secrets detected**" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "✅ No secrets detected" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "ℹ️ Secrets Detection skipped" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ -f security-reports/sfdx-scanner-report.sarif ]; then
+            echo "✅ SFDX Scanner completed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ SFDX Scanner skipped" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "### 📊 Report Artifacts:" >> $GITHUB_STEP_SUMMARY
+          echo "- PMD Security Report (SARIF & Text)" >> $GITHUB_STEP_SUMMARY
+          echo "- Secrets Detection Report" >> $GITHUB_STEP_SUMMARY
+          echo "- SFDX Scanner Report (if available)" >> $GITHUB_STEP_SUMMARY
+
+  # Advanced Security Analysis
+  advanced-security:
+    name: 🔒 Advanced Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: 📥 Checkout source code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+          config-file: ./.github/codeql/codeql-config.yml
+        continue-on-error: true
+
+      - name: 🏗️ Autobuild
+        uses: github/codeql-action/autobuild@v3
+        continue-on-error: true
+
+      - name: 🔍 Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript"
+        continue-on-error: true
+
+      - name: 🔐 Dependency Security Scan
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: moderate
+          comment-summary-in-pr: true
+        continue-on-error: true
+
+      - name: 🏗️ Setup Node.js for Security Tools
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Advanced Security Audit
+        run: |
+          mkdir -p advanced-security-reports
+          
+          # Enhanced npm audit with detailed output
+          npm audit --audit-level=low --json > advanced-security-reports/npm-audit.json || true
+          npm audit --audit-level=low > advanced-security-reports/npm-audit.txt || true
+          
+          # License compliance check
+          npx license-checker --json > advanced-security-reports/license-check.json || true
+          
+          # Bundle analysis for potential issues
+          npx webpack-bundle-analyzer node_modules/@salesforce/lwc-jest/lib/ --report json --mode static --report advanced-security-reports/bundle-analysis.json || true
+
+      - name: 📁 Upload Advanced Security Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: advanced-security-reports
+          path: advanced-security-reports/
+          retention-days: 30
+
+      - name: 📊 Advanced Security Summary
+        if: always()
+        run: |
+          echo "## 🔒 Advanced Security Analysis Results" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f advanced-security-reports/npm-audit.json ]; then
+            VULNERABILITIES=$(jq '.metadata.vulnerabilities | to_entries | map(select(.value > 0)) | length' advanced-security-reports/npm-audit.json 2>/dev/null || echo "0")
+            if [ "$VULNERABILITIES" -gt 0 ]; then
+              echo "⚠️ **$VULNERABILITIES types of vulnerabilities found in dependencies**" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "✅ No vulnerabilities found in dependencies" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+          
+          echo "### 🔍 Security Scans Completed:" >> $GITHUB_STEP_SUMMARY
+          echo "- CodeQL Analysis (JavaScript/TypeScript)" >> $GITHUB_STEP_SUMMARY
+          echo "- Dependency Security Review" >> $GITHUB_STEP_SUMMARY
+          echo "- NPM Security Audit" >> $GITHUB_STEP_SUMMARY
+          echo "- License Compliance Check" >> $GITHUB_STEP_SUMMARY
 
   # Production Deployment (only on main branch)
   production-deployment:
     name: 🚀 Production Deployment
     runs-on: ubuntu-latest
-    needs: [salesforce-validation, security-scan]
+    needs: [salesforce-validation, security-scan, advanced-security]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment: 
       name: production

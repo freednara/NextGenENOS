@@ -19,6 +19,59 @@ public with sharing class SecurityUtils {
   }
 
   /**
+   * @description Checks if the current user has a specific custom permission
+   * @param permissionName The API name of the custom permission
+   * @return Boolean indicating if the user has the permission
+   */
+  public static Boolean hasCustomPermission(String permissionName) {
+    return FeatureManagement.checkPermission(permissionName);
+  }
+
+  /**
+   * @description Checks StoreConnect User permission for basic e-commerce operations
+   * @return Boolean indicating if user has StoreConnect User permission
+   */
+  public static Boolean hasStoreConnectUserAccess() {
+    return hasCustomPermission('StoreConnect_User');
+  }
+
+  /**
+   * @description Checks StoreConnect Admin permission for administrative operations
+   * @return Boolean indicating if user has StoreConnect Admin permission
+   */
+  public static Boolean hasStoreConnectAdminAccess() {
+    return hasCustomPermission('StoreConnect_Admin');
+  }
+
+  /**
+   * @description Checks StoreConnect Payment Processor permission for payment operations
+   * @return Boolean indicating if user has StoreConnect Payment Processor permission
+   */
+  public static Boolean hasPaymentProcessorAccess() {
+    return hasCustomPermission('StoreConnect_PaymentProcessor');
+  }
+
+  /**
+   * @description Validates that user has required StoreConnect permissions
+   * @param requireAdmin Whether admin access is required
+   * @param requirePayment Whether payment processor access is required
+   * @throws AuraHandledException if user lacks required permissions
+   */
+  public static void validateStoreConnectAccess(Boolean requireAdmin, Boolean requirePayment) {
+    if (!hasStoreConnectUserAccess()) {
+      throw new AuraHandledException('Access denied: StoreConnect User permission required');
+    }
+    
+    if (requireAdmin && !hasStoreConnectAdminAccess()) {
+      throw new AuraHandledException('Access denied: StoreConnect Admin permission required');
+    }
+    
+    if (requirePayment && !hasPaymentProcessorAccess()) {
+      throw new AuraHandledException('Access denied: StoreConnect Payment Processor permission required');
+    }
+  }
+
+  /**
    * Retrieves and caches the DescribeSObjectResult for an SObject.
    *
    * @param sObjectName API name of the SObject

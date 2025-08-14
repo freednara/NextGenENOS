@@ -1,0 +1,21 @@
+name: "NextGenENOS CodeQL Config"
+
+disable-default-queries: false
+
+queries:
+  - uses: security-and-quality
+  - uses: security-extended
+
+paths-ignore:
+  - node_modules/**
+  - coverage/**
+  - test-results/**
+  - hardis-report/**
+  - scripts/**
+  - docs/**
+
+paths:
+  - force-app/main/default/lwc/**/*.js
+  - force-app/main/default/aura/**/*.js
+  - jest.config.js
+  - eslint.config.js

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Grants access to payment processing functionality including Pay.gov integration and transaction management.</description>
+    <label>StoreConnect Payment Processor</label>
+    <requiredFeature>none</requiredFeature>
+</CustomPermission>

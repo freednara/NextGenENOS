@@ -11,77 +11,8 @@ private class CartControllerTest {
    */
   @TestSetup
   static void setupTestData() {
-    // Create test account
-    Account testAccount = new Account(Name = 'Test Account');
-    insert testAccount;
-
-    // Create test contact
-    Contact testContact = new Contact(
-      FirstName = 'John',
-      LastName = 'Doe',
-      Email = 'john.doe.test@storeconnect.com',
-      AccountId = testAccount.Id
-    );
-    insert testContact;
-
-    // Get the Standard User profile for testing
-    Profile standardProfile = [
-        SELECT Id
-        FROM Profile
-        WHERE Name = 'Standard User'
-        LIMIT 1
-    ];
-
-    // Create test user with StoreConnect Community profile
-    User testUser = new User(
-      Username = 'john.doe.test@storeconnect.com',
-      FirstName = 'John',
-      LastName = 'Doe',
-      Email = 'john.doe.test@storeconnect.com',
-      Alias = 'jdoe',
-      TimeZoneSidKey = 'America/Los_Angeles',
-      LocaleSidKey = 'en_US',
-      EmailEncodingKey = 'UTF-8',
-      LanguageLocaleKey = 'en_US',
-      ProfileId = standardProfile.Id,
-      ContactId = testContact.Id
-    );
-    insert testUser;
-
-    // Create test products
-    List<Product2> testProducts = new List<Product2>{
-      new Product2(
-        Name = 'Test Product 1',
-        ProductCode = 'TEST-001',
-        IsActive = true,
-        Description = 'Test product for cart testing'
-      ),
-      new Product2(
-        Name = 'Test Product 2',
-        ProductCode = 'TEST-002',
-        IsActive = true,
-        Description = 'Second test product for cart testing'
-      )
-    };
-    insert testProducts;
-
-    // Create standard pricebook entries
-    Id standardPricebookId = Test.getStandardPricebookId();
-    List<PricebookEntry> pricebookEntries = new List<PricebookEntry>{
-      new PricebookEntry(
-        Product2Id = testProducts[0].Id,
-        Pricebook2Id = standardPricebookId,
-        UnitPrice = 25.00,
-        IsActive = true
-      ),
-      new PricebookEntry(
-        Product2Id = testProducts[1].Id,
-        Pricebook2Id = standardPricebookId,
-        UnitPrice = 15.50,
-        IsActive = true
-      )
-    };
-    insert pricebookEntries;
+    // Create test data using utility class (includes test user)
+    StoreConnectTestUtils.TestDataContainer testData = StoreConnectTestUtils.createStoreConnectTestData();
   }
 
   /**
@@ -93,13 +24,13 @@ private class CartControllerTest {
     User testUser = [
       SELECT Id, ContactId
       FROM User
-      WHERE Username = 'john.doe.test@storeconnect.com'
+      WHERE Email = 'storeuser@test.com'
       LIMIT 1
     ];
     Product2 testProduct = [
       SELECT Id
       FROM Product2
-      WHERE ProductCode = 'TEST-001'
+      WHERE ProductCode = 'TEST001'
       LIMIT 1
     ];
 

@@ -28,10 +28,10 @@ public with sharing class StoreConnectController {
     Boolean topSellersOnly
   ) {
     try {
+      // Security: Check StoreConnect permissions
+      SecurityUtils.validateStoreConnectAccess(false, false);
+      
       // Security: Check object-level permissions
-      if (!StoreConnectSecurityUtil.hasReadPermission('Product2')) {
-        throw new SecurityException('User lacks permission to read products');
-      }
       SecurityUtils.checkObjectReadable('Product2');
       SecurityUtils.checkObjectReadable('Pricebook2');
       SecurityUtils.checkObjectReadable('PricebookEntry');
@@ -116,9 +116,8 @@ public with sharing class StoreConnectController {
         pageNumber,
         pageSize
       );
-    } catch (StoreConnectSecurityUtil.SecurityException e) {
-      throw new AuraHandledException('Security violation: ' + e.getMessage());
     } catch (Exception e) {
+      System.debug('Error in getProducts: ' + e.getMessage());
       throw new AuraHandledException(
         'Error retrieving products: ' + e.getMessage()
       );
@@ -134,6 +133,9 @@ public with sharing class StoreConnectController {
   @AuraEnabled
   public static Cart__c getOrCreateCart(Id contactId) {
     try {
+      // Security: Check StoreConnect permissions
+      SecurityUtils.validateStoreConnectAccess(false, false);
+      
       // CRUD checks
       SecurityUtils.checkObjectReadable('Cart__c');
       SecurityUtils.checkObjectCreateable('Cart__c');
@@ -215,6 +217,9 @@ public with sharing class StoreConnectController {
     Integer quantity
   ) {
     try {
+      // Security: Check StoreConnect permissions
+      SecurityUtils.validateStoreConnectAccess(false, false);
+      
       // CRUD checks
       SecurityUtils.checkObjectReadable('Product2');
       SecurityUtils.checkObjectReadable('Cart_Item__c');
@@ -411,9 +416,8 @@ public with sharing class StoreConnectController {
         }
       }
       return results;
-    } catch (StoreConnectSecurityUtil.SecurityException e) {
-      throw new AuraHandledException('Security violation: ' + e.getMessage());
     } catch (Exception e) {
+      System.debug('Error in getRecentlyViewed: ' + e.getMessage());
       throw new AuraHandledException(
         'Error retrieving recently viewed products: ' + e.getMessage()
       );
