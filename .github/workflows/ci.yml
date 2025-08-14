@@ -121,19 +121,32 @@ jobs:
 
       - name: 🔑 Authorize DevHub
         run: |
+          if [[ -z "${{ secrets.DEVHUB_CONSUMER_KEY }}" || -z "${{ secrets.DEVHUB_USERNAME }}" || -z "${{ secrets.DEVHUB_JWT_KEY }}" ]]; then
+            echo "⚠️ Salesforce DevHub credentials not configured - skipping validation"
+            echo "To enable Salesforce validation, configure these repository secrets:"
+            echo "- DEVHUB_CONSUMER_KEY"
+            echo "- DEVHUB_USERNAME" 
+            echo "- DEVHUB_JWT_KEY"
+            echo "DEVHUB_CONFIGURED=false" >> $GITHUB_ENV
+            exit 0
+          fi
+          echo "DEVHUB_CONFIGURED=true" >> $GITHUB_ENV
           echo "${{ secrets.DEVHUB_JWT_KEY }}" > devhub.key
           sf org login jwt --client-id ${{ secrets.DEVHUB_CONSUMER_KEY }} --jwt-key-file devhub.key --username ${{ secrets.DEVHUB_USERNAME }} --alias devhub --set-default-dev-hub
           rm devhub.key
 
       - name: 🏗️ Create Scratch Org
+        if: env.DEVHUB_CONFIGURED == 'true'
         run: |
           sf org create scratch --definition-file config/project-scratch-def.json --alias scratch-org --duration-days 1 --set-default --wait 10
 
       - name: 📦 Deploy Source to Scratch Org
+        if: env.DEVHUB_CONFIGURED == 'true'
         run: |
           sf project deploy start --source-dir force-app --wait 20
 
       - name: 🧪 Run Apex Tests
+        if: env.DEVHUB_CONFIGURED == 'true'
         run: |
           sf apex run test --test-level RunLocalTests --output-dir ./test-results --result-format human --code-coverage
 
@@ -145,7 +158,7 @@ jobs:
           path: ./test-results
 
       - name: 🧹 Cleanup Scratch Org
-        if: always()
+        if: always() && env.DEVHUB_CONFIGURED == 'true'
         run: |
           sf org delete scratch --no-prompt --target-org scratch-org || true
 
