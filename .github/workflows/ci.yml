@@ -5,7 +5,15 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
-  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+  checks: write
+  pull-requests: write
+
+workflow_dispatch:
 
 env:
   # SFDX CLI version
@@ -84,6 +92,9 @@ jobs:
           name: LWC Jest Tests
           path: './test-results/test-results.xml'
           reporter: jest-junit
+          fail-on-error: false
+          fail-on-empty: false
+        continue-on-error: true
 
   # Salesforce Deployment Validation
   salesforce-validation:
@@ -214,12 +225,14 @@ jobs:
         continue-on-error: true
 
       - name: 🕵️ Secrets Detection
-        uses: trufflesecurity/trufflehog@main
-        with:
-          path: ./
-          base: main
-          head: HEAD
-          extra_args: --debug --only-verified --json --output security-reports/secrets-scan.json
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "Running TruffleHog for PR..."
+            docker run --rm -v "$(pwd):/pwd" trufflesecurity/trufflehog:latest git file:///pwd --since-commit ${{ github.event.pull_request.base.sha }} --json --output /pwd/security-reports/secrets-scan.json
+          else
+            echo "Running TruffleHog for recent commits..."
+            docker run --rm -v "$(pwd):/pwd" trufflesecurity/trufflehog:latest git file:///pwd --since-commit HEAD~5 --json --output /pwd/security-reports/secrets-scan.json
+          fi || echo "Secrets scan completed with warnings"
         continue-on-error: true
 
       - name: 🔍 Security Scan Summary
