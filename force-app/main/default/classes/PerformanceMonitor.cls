@@ -133,7 +133,7 @@ public with sharing class PerformanceMonitor {
         
         // Test product search response time
         try {
-            List<Product2> products = [SELECT Id, Name FROM Product2 LIMIT 10 WITH SECURITY_ENFORCED];
+            List<Product2> products = [SELECT Id, Name FROM Product2 WITH SECURITY_ENFORCED LIMIT 10];
             Long productSearchTime = System.currentTimeMillis() - startTime;
             metrics.add(new PerformanceMetric('PRODUCT_SEARCH_TIME', productSearchTime, 'ms', 'RESPONSE_TIME'));
         } catch (Exception e) {
@@ -143,7 +143,7 @@ public with sharing class PerformanceMonitor {
         // Test cart operations response time
         startTime = System.currentTimeMillis();
         try {
-            List<Cart__c> carts = [SELECT Id FROM Cart__c LIMIT 5 WITH SECURITY_ENFORCED];
+            List<Cart__c> carts = [SELECT Id FROM Cart__c WITH SECURITY_ENFORCED LIMIT 5];
             Long cartTime = System.currentTimeMillis() - startTime;
             metrics.add(new PerformanceMetric('CART_OPERATION_TIME', cartTime, 'ms', 'RESPONSE_TIME'));
         } catch (Exception e) {

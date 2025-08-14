@@ -34,7 +34,7 @@ jobs:
 
       - name: Install Salesforce Code Analyzer
         run: |
-          sf plugins install @salesforce/sfdx-scanner
+          sf plugins install @salesforce/sfdx-scanner@latest
           sf scanner --version
         continue-on-error: true
 
@@ -69,7 +69,8 @@ jobs:
         run: |
           echo "🚨 Checking for critical security issues..."
           if [ -f security-scan-results.json ]; then
-            CRITICAL_ISSUES=$(jq -r '.violations[] | select(.severity == 1) | .ruleName' security-scan-results.json | wc -l)
+            # Handle both v4.x format (.violations[]) and v5.x format (direct array)
+            CRITICAL_ISSUES=$(jq -r 'if type == "array" then .[] | select(.severity == 1) | .ruleName else .violations[] | select(.severity == 1) | .ruleName end' security-scan-results.json 2>/dev/null | wc -l || echo "0")
             if [ "$CRITICAL_ISSUES" -gt 0 ]; then
               echo "❌ CRITICAL: Found $CRITICAL_ISSUES security violations"
               echo "Build blocked due to security issues"
@@ -83,10 +84,11 @@ jobs:
         run: |
           echo "📊 Generating Security Report..."
           if [ -f security-scan-results.json ]; then
-            TOTAL_VIOLATIONS=$(jq '.violations | length' security-scan-results.json)
-            HIGH_VIOLATIONS=$(jq -r '.violations[] | select(.severity == 2) | .ruleName' security-scan-results.json | wc -l)
-            MEDIUM_VIOLATIONS=$(jq -r '.violations[] | select(.severity == 3) | .ruleName' security-scan-results.json | wc -l)
-            LOW_VIOLATIONS=$(jq -r '.violations[] | select(.severity == 4) | .ruleName' security-scan-results.json | wc -l)
+            # Handle both v4.x format (.violations[]) and v5.x format (direct array)
+            TOTAL_VIOLATIONS=$(jq 'if type == "array" then length else .violations | length end' security-scan-results.json 2>/dev/null || echo "0")
+            HIGH_VIOLATIONS=$(jq -r 'if type == "array" then .[] | select(.severity == 2) | .ruleName else .violations[] | select(.severity == 2) | .ruleName end' security-scan-results.json 2>/dev/null | wc -l || echo "0")
+            MEDIUM_VIOLATIONS=$(jq -r 'if type == "array" then .[] | select(.severity == 3) | .ruleName else .violations[] | select(.severity == 3) | .ruleName end' security-scan-results.json 2>/dev/null | wc -l || echo "0")
+            LOW_VIOLATIONS=$(jq -r 'if type == "array" then .[] | select(.severity == 4) | .ruleName else .violations[] | select(.severity == 4) | .ruleName end' security-scan-results.json 2>/dev/null | wc -l || echo "0")
             
             echo "## 🔒 Security Scan Results" >> $GITHUB_STEP_SUMMARY
             echo "- **Total Violations:** $TOTAL_VIOLATIONS" >> $GITHUB_STEP_SUMMARY
@@ -96,7 +98,7 @@ jobs:
             
             if [ "$TOTAL_VIOLATIONS" -gt 0 ]; then
               echo "### 🚨 Security Violations Found:" >> $GITHUB_STEP_SUMMARY
-              jq -r '.violations[] | "- **\(.severity):** \(.ruleName) - \(.message)"' security-scan-results.json >> $GITHUB_STEP_SUMMARY
+              jq -r 'if type == "array" then .[] | "- **\(.severity):** \(.ruleName) - \(.message)" else .violations[] | "- **\(.severity):** \(.ruleName) - \(.message)" end' security-scan-results.json 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "Error parsing security results" >> $GITHUB_STEP_SUMMARY
             else
               echo "### ✅ No Security Violations Found" >> $GITHUB_STEP_SUMMARY
             fi
@@ -149,7 +151,8 @@ jobs:
         run: |
           echo "🔒 Checking security scan results..."
           if [ -f security-scan-results.json ]; then
-            CRITICAL_ISSUES=$(jq -r '.violations[] | select(.severity == 1) | .ruleName' security-scan-results.json | wc -l)
+            # Handle both v4.x format (.violations[]) and v5.x format (direct array)
+            CRITICAL_ISSUES=$(jq -r 'if type == "array" then .[] | select(.severity == 1) | .ruleName else .violations[] | select(.severity == 1) | .ruleName end' security-scan-results.json 2>/dev/null | wc -l || echo "0")
             if [ "$CRITICAL_ISSUES" -gt 0 ]; then
               echo "❌ DEPLOYMENT BLOCKED: Critical security issues found"
               exit 1

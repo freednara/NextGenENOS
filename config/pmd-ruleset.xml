@@ -50,6 +50,5 @@
     <exclude-pattern>.*Test\.cls</exclude-pattern>
     <exclude-pattern>.*TestUtil\.cls</exclude-pattern>
     <exclude-pattern>.*Mock.*\.cls</exclude-pattern>
-    <exclude-pattern>PerformanceMonitor\.cls</exclude-pattern>
     
 </ruleset>
