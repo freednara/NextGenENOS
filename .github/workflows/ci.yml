@@ -428,7 +428,7 @@ jobs:
           sf project deploy start --source-dir force-app --wait 33 --test-level RunLocalTests
 
       - name: 📧 Notify Slack on Success
-        if: success() && env.PROD_CONFIGURED == 'true' && secrets.SLACK_WEBHOOK_URL
+        if: success() && env.PROD_CONFIGURED == 'true' && secrets.SLACK_WEBHOOK_URL != ''
         uses: 8398a7/action-slack@v3
         with:
           status: success
@@ -438,7 +438,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: 📧 Notify Slack on Failure
-        if: failure() && env.PROD_CONFIGURED == 'true' && secrets.SLACK_WEBHOOK_URL
+        if: failure() && env.PROD_CONFIGURED == 'true' && secrets.SLACK_WEBHOOK_URL != ''
         uses: 8398a7/action-slack@v3
         with:
           status: failure
