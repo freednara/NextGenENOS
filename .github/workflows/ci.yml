@@ -408,16 +408,27 @@ jobs:
 
       - name: 🔑 Authorize Production Org
         run: |
+          if [[ -z "${{ secrets.PROD_CONSUMER_KEY }}" || -z "${{ secrets.PROD_USERNAME }}" || -z "${{ secrets.PROD_JWT_KEY }}" ]]; then
+            echo "⚠️ Production Salesforce credentials not configured - skipping deployment"
+            echo "To enable production deployment, configure these repository secrets:"
+            echo "- PROD_CONSUMER_KEY"
+            echo "- PROD_USERNAME" 
+            echo "- PROD_JWT_KEY"
+            echo "PROD_CONFIGURED=false" >> $GITHUB_ENV
+            exit 0
+          fi
+          echo "PROD_CONFIGURED=true" >> $GITHUB_ENV
           echo "${{ secrets.PROD_JWT_KEY }}" > prod.key
           sf org login jwt --client-id ${{ secrets.PROD_CONSUMER_KEY }} --jwt-key-file prod.key --username ${{ secrets.PROD_USERNAME }} --alias production
           rm prod.key
 
       - name: 🚀 Deploy to Production
+        if: env.PROD_CONFIGURED == 'true'
         run: |
           sf project deploy start --source-dir force-app --wait 33 --test-level RunLocalTests
 
       - name: 📧 Notify Slack on Success
-        if: success()
+        if: success() && env.PROD_CONFIGURED == 'true' && secrets.SLACK_WEBHOOK_URL
         uses: 8398a7/action-slack@v3
         with:
           status: success
@@ -427,7 +438,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: 📧 Notify Slack on Failure
-        if: failure()
+        if: failure() && env.PROD_CONFIGURED == 'true' && secrets.SLACK_WEBHOOK_URL
         uses: 8398a7/action-slack@v3
         with:
           status: failure
