@@ -68,9 +68,7 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
         const searchResults = await searchProducts({
           searchTerm: searchTerm.trim()
         });
-        this.manualProducts = Array.isArray(searchResults)
-          ? searchResults
-          : [];
+        this.manualProducts = Array.isArray(searchResults) ? searchResults : [];
         this.manualError = null;
       } else {
         // If no search term, refresh the original products
@@ -80,7 +78,11 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
       // Log error for debugging (remove in production)
       this.manualProducts = null;
       this.manualError = e;
-      this.showToast("Error", "Unable to search products. Please try again.", "error");
+      this.showToast(
+        "Error",
+        "Unable to search products. Please try again.",
+        "error"
+      );
     }
   }
 
@@ -255,7 +257,7 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
     if (this.manualProducts !== null || this.manualError !== null) {
       return false;
     }
-    return !this.wiredProducts || (!this.wiredProducts.data && !this.wiredProducts.error);
+    return !(this.wiredProducts?.data || this.wiredProducts?.error);
   }
 
   /**
@@ -272,10 +274,7 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
    * Used to show error messages when API calls fail.
    */
   get hasError() {
-    if (this.manualProducts !== null) {
-      return false;
-    }
-    return this.wiredProducts && this.wiredProducts.error;
+    return this.manualProducts === null && !!this.wiredProducts?.error;
   }
 
   /**
@@ -283,12 +282,11 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
    * Provides user-friendly error information.
    */
   get errorMessage() {
-    if (this.manualError) {
-      return this.manualError.body?.message || "";
-    }
-    return this.wiredProducts && this.wiredProducts.error
-      ? this.wiredProducts.error.body.message
-      : "";
+    return (
+      this.manualError?.body?.message ||
+      this.wiredProducts?.error?.body?.message ||
+      ""
+    );
   }
 
   /**
@@ -296,10 +294,7 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
    * Adds computed properties like price and formatted data.
    */
   get currentProductsRaw() {
-    if (this.manualProducts !== null) {
-      return this.manualProducts;
-    }
-    return (this.wiredProducts && this.wiredProducts.data) || [];
+    return this.manualProducts ?? this.wiredProducts?.data ?? [];
   }
 
   get enhancedProducts() {
@@ -320,18 +315,13 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
    * @returns {string} Formatted price or null
    */
   getProductPrice(product) {
-    if (
-      product.PricebookEntries &&
-      product.PricebookEntries.records &&
-      product.PricebookEntries.records.length > 0
-    ) {
-      const price = product.PricebookEntries.records[0].UnitPrice;
-      return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD"
-      }).format(price);
-    }
-    return null;
+    const price = product?.PricebookEntries?.records?.[0]?.UnitPrice;
+    return price != null
+      ? new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD"
+        }).format(price)
+      : null;
   }
 
   /**
@@ -340,10 +330,6 @@ export default class ProductBrowser extends NavigationMixin(LightningElement) {
    * @returns {boolean} True if product has a price
    */
   hasProductPrice(product) {
-    return (
-      product.PricebookEntries &&
-      product.PricebookEntries.records &&
-      product.PricebookEntries.records.length > 0
-    );
+    return !!product?.PricebookEntries?.records?.length;
   }
 }
