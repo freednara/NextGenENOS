@@ -1,8 +1,8 @@
-# CommunityRegistrationHandler Setup Guide
+# ENOS_CommunityRegistrationHandler Setup Guide
 
 ## **Configuring Automatic Cart Creation for New Community Users**
 
-**Purpose**: This guide walks the admin through configuring the `CommunityRegistrationHandler` class to automatically create shopping carts for new community users upon registration.
+**Purpose**: This guide walks the admin through configuring the `ENOS_CommunityRegistrationHandler` class to automatically create shopping carts for new community users upon registration.
 
 ---
 
@@ -16,7 +16,7 @@
 ### **Registration Process Flow**
 1. **User registers** on the community site
 2. **Salesforce creates** User and Contact records
-3. **CommunityRegistrationHandler** is called automatically
+3. **ENOS_CommunityRegistrationHandler** is called automatically
 4. **Cart__c record** is created in the background
 5. **User can immediately** start adding products to cart
 
@@ -25,7 +25,7 @@
 ## ⚙️ **Prerequisites**
 
 ### **Before Configuration**
-- [ ] **CommunityRegistrationHandler.cls** deployed to your org
+- [ ] **ENOS_CommunityRegistrationHandler.cls** deployed to your org
 - [ ] **Experience Cloud site** created and configured
 - **Custom objects** deployed (`Cart__c`, `Cart_Item__c`, etc.)
 - **Permission sets** configured for community users
@@ -48,12 +48,12 @@
 1. **Scroll down** to "Registration Handler" section
 2. **Click "Edit"** button
 3. **Select "Apex Class"** from the dropdown
-4. **Enter**: `CommunityRegistrationHandler`
+4. **Enter**: `ENOS_CommunityRegistrationHandler`
 5. **Click "Save"**
 
 ### **Step 3: Verify Configuration**
 1. **Refresh the page**
-2. **Confirm** "Registration Handler" shows `CommunityRegistrationHandler`
+2. **Confirm** "Registration Handler" shows `ENOS_CommunityRegistrationHandler`
 3. **Note the timestamp** of when it was last updated
 
 ---
@@ -68,7 +68,7 @@ Setup → Experience Cloud → All Sites → [Your Site] → Administration → 
 ### **Registration Handler Field**
 - **Field Name**: Registration Handler
 - **Type**: Apex Class
-- **Value**: CommunityRegistrationHandler
+- **Value**: ENOS_CommunityRegistrationHandler
 - **Status**: Active
 
 ### **Expected Result**
@@ -154,7 +154,7 @@ WHERE Contact__c IN (
 ## 📊 **Monitoring & Maintenance**
 
 ### **Debug Logs to Monitor**
-- **CommunityRegistrationHandler** execution logs
+- **ENOS_CommunityRegistrationHandler** execution logs
 - **Cart creation success/failure** messages
 - **Error stack traces** for troubleshooting
 
@@ -218,7 +218,7 @@ WHERE Contact__c IN (
 ## ✅ **Configuration Checklist**
 
 **Before Going Live**:
-- [ ] **CommunityRegistrationHandler.cls** deployed and active
+- [ ] **ENOS_CommunityRegistrationHandler.cls** deployed and active
 - [ ] **Registration handler** configured in site settings
 - [ ] **Test registration** completed successfully
 - [ ] **Cart creation** verified for test user

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <description>Cart abandonment recovery flow for ENOS</description>
+    <environments>Default</environments>
+    <interviewLabel>ENOS Cart Recovery {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>ENOS Cart Recovery</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    
+    <!-- Start -->
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Abandoned_Carts</targetReference>
+        </connector>
+    </start>
+    
+    <!-- Check for Abandoned Carts -->
+    <recordLookups>
+        <name>Check_Abandoned_Carts</name>
+        <label>Check for Abandoned Carts</label>
+        <locationX>176</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Send_Recovery_Email</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Active</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>LastModifiedDate</field>
+            <operator>LessThan</operator>
+            <value>
+                <dateTimeValue>2024-11-30T00:00:00.000Z</dateTimeValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Cart__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    
+    <!-- Send Recovery Email -->
+    <actionCalls>
+        <name>Send_Recovery_Email</name>
+        <label>Send Recovery Email</label>
+        <locationX>352</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Cart_Status</targetReference>
+        </connector>
+        <inputAssignments>
+            <name>toAddress</name>
+            <value>
+                <elementReference>cartContactEmail</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>subject</name>
+            <value>
+                <stringValue>Complete Your ENOS Order</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>body</name>
+            <value>
+                <stringValue>Hi! We noticed you left some items in your cart. Complete your order now!</stringValue>
+            </value>
+        </inputAssignments>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    
+    <!-- Update Cart Status -->
+    <recordUpdates>
+        <name>Update_Cart_Status</name>
+        <label>Update Cart Status</label>
+        <locationX>528</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Success_Message</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value>
+                <stringValue>Abandoned</stringValue>
+            </value>
+        </inputAssignments>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>cartId</elementReference>
+            </value>
+        </filters>
+        <object>Cart__c</object>
+    </recordUpdates>
+    
+    <!-- Success Message -->
+    <screens>
+        <name>Success_Message</name>
+        <label>Recovery Process Complete</label>
+        <locationX>704</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+        <fields>
+            <name>Recovery_Complete</name>
+            <fieldText>Cart recovery process completed successfully!</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+    </screens>
+    
+    <!-- Flow Variables -->
+    <variables>
+        <name>cartId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>cartContactEmail</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

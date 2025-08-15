@@ -1,4 +1,4 @@
-// Insert test data for StoreConnect application
+// Insert test data for ENOS application
 // Run this in Developer Console or via anonymous apex
 
 // Create test categories

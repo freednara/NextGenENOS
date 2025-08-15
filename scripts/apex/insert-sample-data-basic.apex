@@ -1,4 +1,4 @@
-// Insert Comprehensive Sample Data for StoreConnect (Basic Version)
+// Insert Comprehensive Sample Data for ENOS (Basic Version)
 // Run this in Developer Console or via SF CLI
 // This version uses only standard Product2 fields to avoid custom field access issues
 

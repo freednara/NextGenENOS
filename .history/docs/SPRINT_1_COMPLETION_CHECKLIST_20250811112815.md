@@ -158,7 +158,7 @@
 - [ ] **Data model foundation** must be complete before LWC development
 - [ ] **Permission set** must be configured before authentication setup
 - [ ] **Security validation** must pass before any Apex development
-- [ ] **SecurityUtils.cls** must be deployed before controller development
+- [ ] **ENOS_SecurityUtils.cls** must be deployed before controller development
 - [ ] **Field descriptions** must be complete before AppExchange review
 - [ ] **CI/CD pipeline** must be operational before production deployment
 

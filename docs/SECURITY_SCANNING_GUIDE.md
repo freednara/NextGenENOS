@@ -7,6 +7,7 @@ NextGenENOS implements comprehensive security scanning through multiple layers o
 ## Security Scanning Pipeline
 
 ### 1. **PMD Static Analysis**
+
 - **Purpose**: Apex code security and quality analysis
 - **Engine**: PMD 7.0.0
 - **Focus Areas**:
@@ -20,6 +21,7 @@ NextGenENOS implements comprehensive security scanning through multiple layers o
 **Configuration**: `config/pmd-ruleset.xml`
 
 ### 2. **CodeQL Analysis**
+
 - **Purpose**: Advanced security vulnerability detection
 - **Languages**: JavaScript, TypeScript (LWC components)
 - **Features**:
@@ -30,6 +32,7 @@ NextGenENOS implements comprehensive security scanning through multiple layers o
 **Configuration**: `.github/codeql/codeql-config.yml`
 
 ### 3. **Secrets Detection**
+
 - **Tool**: TruffleHog
 - **Purpose**: Detect hardcoded secrets, keys, and credentials
 - **Scope**: Entire repository
@@ -39,7 +42,8 @@ NextGenENOS implements comprehensive security scanning through multiple layers o
   - JSON output for analysis
 
 ### 4. **Dependency Security**
-- **Tools**: 
+
+- **Tools**:
   - npm audit (dependency vulnerabilities)
   - GitHub Dependency Review
   - License compliance checking
@@ -47,6 +51,7 @@ NextGenENOS implements comprehensive security scanning through multiple layers o
 - **Thresholds**: Moderate and above
 
 ### 5. **SFDX Scanner** (Optional)
+
 - **Purpose**: Salesforce-specific security analysis
 - **Engine**: PMD with Salesforce rules
 - **Format**: SARIF for integration
@@ -56,6 +61,7 @@ NextGenENOS implements comprehensive security scanning through multiple layers o
 ### GitHub Actions Integration
 
 The security scanning runs automatically on:
+
 - **Push to main/develop branches**
 - **Pull requests**
 - **Manual workflow dispatch**
@@ -68,8 +74,8 @@ security-scan:
   - PMD Security Analysis
   - Secrets Detection
   - SFDX Scanner (optional)
-  
-# Advanced Security Analysis  
+
+# Advanced Security Analysis
 advanced-security:
   - CodeQL Analysis
   - Dependency Security Review
@@ -80,6 +86,7 @@ advanced-security:
 ### Reports and Artifacts
 
 All security scan results are:
+
 1. **Uploaded to GitHub Security tab** (SARIF format)
 2. **Stored as workflow artifacts** (30-day retention)
 3. **Summarized in workflow summaries**
@@ -90,18 +97,21 @@ All security scan results are:
 ### Viewing Results
 
 #### GitHub Security Tab
+
 1. Navigate to repository **Security** tab
 2. Select **Code scanning alerts**
 3. Filter by tool (PMD, CodeQL, etc.)
 4. Review findings and remediation advice
 
 #### Workflow Artifacts
+
 1. Go to **Actions** → Recent workflow run
 2. Scroll to **Artifacts** section
 3. Download security reports
 4. Review detailed findings
 
 #### Workflow Summary
+
 - Real-time scan status
 - High-level metrics
 - Quick issue identification
@@ -110,18 +120,21 @@ All security scan results are:
 ### Understanding Results
 
 #### PMD Security Findings
+
 - **Priority 1**: Critical security issues (SOQL injection, CRUD violations)
 - **Priority 2**: Performance and best practices
 - **Priority 3**: Design improvements
 - **Priority 4**: Code style and documentation
 
 #### CodeQL Findings
+
 - **Critical**: Remote code execution, SQL injection
 - **High**: XSS, authentication bypass
 - **Medium**: Information disclosure, CSRF
 - **Low**: Minor security improvements
 
 #### Dependency Findings
+
 - **Critical**: Immediate update required
 - **High**: Update recommended
 - **Moderate**: Monitor and plan update
@@ -139,7 +152,7 @@ All security scan results are:
 
 <!-- Custom exclusions for utility classes -->
 <exclude-pattern>.*Test\.cls</exclude-pattern>
-<exclude-pattern>PerformanceMonitor\.cls</exclude-pattern>
+<exclude-pattern>ENOS_PerformanceMonitor\.cls</exclude-pattern>
 ```
 
 ### CodeQL Configuration
@@ -159,13 +172,14 @@ paths:
 ### For Developers
 
 1. **Run Local Scans**
+
    ```bash
    # PMD analysis
    npm run lint:apex
-   
-   # JavaScript analysis  
+
+   # JavaScript analysis
    npm run lint
-   
+
    # Security audit
    npm audit
    ```
@@ -202,14 +216,17 @@ paths:
 ### Common Issues
 
 #### PMD Parsing Errors
+
 - **Cause**: New Salesforce syntax not recognized
 - **Solution**: Add exclusion pattern or update PMD version
 
 #### CodeQL Build Failures
+
 - **Cause**: JavaScript build issues
 - **Solution**: Verify package.json and dependencies
 
 #### Secrets False Positives
+
 - **Cause**: Test data or examples detected as secrets
 - **Solution**: Use .trufflehogignore file
 
@@ -222,12 +239,14 @@ paths:
 ## Compliance and Reporting
 
 ### Regulatory Requirements
+
 - **SOC 2**: Automated security testing
 - **GDPR**: Data protection validation
 - **PCI DSS**: Secure coding practices
 - **Salesforce Security Review**: AppExchange compliance
 
 ### Audit Trail
+
 - All scan results stored and versioned
 - Historical trend analysis available
 - Compliance reporting automated
@@ -246,6 +265,7 @@ paths:
 ### Monthly Security Report
 
 Generated automatically including:
+
 - Vulnerability trend analysis
 - Top security issues
 - Remediation progress
@@ -256,12 +276,12 @@ Generated automatically including:
 
 ## Quick Reference
 
-| Scan Type | Tool | Output | Priority |
-|-----------|------|--------|----------|
-| Apex Security | PMD | SARIF + Text | High |
-| JS/TS Security | CodeQL | SARIF | High |
-| Secrets | TruffleHog | JSON | Critical |
-| Dependencies | npm audit | JSON | Medium |
-| SFDX | Scanner | SARIF | Medium |
+| Scan Type      | Tool       | Output       | Priority |
+| -------------- | ---------- | ------------ | -------- |
+| Apex Security  | PMD        | SARIF + Text | High     |
+| JS/TS Security | CodeQL     | SARIF        | High     |
+| Secrets        | TruffleHog | JSON         | Critical |
+| Dependencies   | npm audit  | JSON         | Medium   |
+| SFDX           | Scanner    | SARIF        | Medium   |
 
 **Need Help?** Check the [Security Policy](../.github/SECURITY.md) or contact the security team.

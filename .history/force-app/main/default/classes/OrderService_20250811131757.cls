@@ -8,7 +8,7 @@
  * @version 1.0.0
  * @since 2024-12-01
  */
-public with sharing class OrderService {
+public with sharing class ENOS_OrderService {
 
     /**
      * @description Inner class to define the inputs for the Invocable Method.
@@ -100,8 +100,8 @@ public with sharing class OrderService {
      */
     private static Cart__c getCartWithSecurity(Id cartId) {
         // Security check - ensure user can read Cart__c
-        SecurityUtils.checkObjectReadable('Cart__c');
-        SecurityUtils.checkFieldReadAccess('Cart__c', new List<String>{
+        ENOS_SecurityUtils.checkObjectReadable('Cart__c');
+        ENOS_SecurityUtils.checkFieldReadAccess('Cart__c', new List<String>{
             'Id', 'Contact__c', 'Contact__r.AccountId', 'Status__c'
         });
 
@@ -138,8 +138,8 @@ public with sharing class OrderService {
      */
     private static List<Cart_Item__c> getCartItemsWithSecurity(Id cartId) {
         // Security check - ensure user can read Cart_Item__c
-        SecurityUtils.checkObjectReadable('Cart_Item__c');
-        SecurityUtils.checkFieldReadAccess('Cart_Item__c', new List<String>{
+        ENOS_SecurityUtils.checkObjectReadable('Cart_Item__c');
+        ENOS_SecurityUtils.checkFieldReadAccess('Cart_Item__c', new List<String>{
             'Id', 'Product__c', 'Quantity__c', 'Unit_Price__c', 'Line_Total__c'
         });
 
@@ -168,8 +168,8 @@ public with sharing class OrderService {
      */
     private static Shipping_Address__c getShippingAddressWithSecurity(Id shippingAddressId) {
         // Security check - ensure user can read Shipping_Address__c
-        SecurityUtils.checkObjectReadable('Shipping_Address__c');
-        SecurityUtils.checkFieldReadAccess('Shipping_Address__c', new List<String>{
+        ENOS_SecurityUtils.checkObjectReadable('Shipping_Address__c');
+        ENOS_SecurityUtils.checkFieldReadAccess('Shipping_Address__c', new List<String>{
             'Id', 'Street__c', 'City__c', 'State__c', 'Postal_Code__c', 'Country__c', 'Account__c'
         });
 
@@ -263,8 +263,8 @@ public with sharing class OrderService {
      */
     private static Order createOrderRecord(Cart__c cart, Shipping_Address__c shippingAddress) {
         // Security check - ensure user can create Order records
-        SecurityUtils.checkObjectCreateable('Order');
-        SecurityUtils.checkFieldEditAccess('Order', new List<String>{
+        ENOS_SecurityUtils.checkObjectCreateable('Order');
+        ENOS_SecurityUtils.checkFieldEditAccess('Order', new List<String>{
             'AccountId', 'EffectiveDate', 'Status', 'Pricebook2Id',
             'ShippingStreet', 'ShippingCity', 'ShippingState', 'ShippingPostalCode', 'ShippingCountry'
         });
@@ -291,8 +291,8 @@ public with sharing class OrderService {
      */
     private static List<OrderItem> createOrderItems(Id orderId, List<Cart_Item__c> cartItems) {
         // Security check - ensure user can create OrderItem records
-        SecurityUtils.checkObjectCreateable('OrderItem');
-        SecurityUtils.checkFieldEditAccess('OrderItem', new List<String>{
+        ENOS_SecurityUtils.checkObjectCreateable('OrderItem');
+        ENOS_SecurityUtils.checkFieldEditAccess('OrderItem', new List<String>{
             'OrderId', 'Product2Id', 'Quantity', 'UnitPrice', 'PricebookEntryId'
         });
 
@@ -402,8 +402,8 @@ public with sharing class OrderService {
     public static List<Order> getOrders() {
         try {
             // Security check - ensure user can read Order records
-            SecurityUtils.checkObjectReadable('Order');
-            SecurityUtils.checkFieldReadAccess('Order', new List<String>{
+            ENOS_SecurityUtils.checkObjectReadable('Order');
+            ENOS_SecurityUtils.checkFieldReadAccess('Order', new List<String>{
                 'Id', 'OrderNumber', 'EffectiveDate', 'Status', 'TotalAmount'
             });
 

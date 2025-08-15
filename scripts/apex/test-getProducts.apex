@@ -1,11 +1,11 @@
-// Test the getProducts method from ProductController
+// Test the getProducts method from ENOS_ProductController
 // Run this in Developer Console or via SF CLI
 
 try {
-    System.debug('=== Testing ProductController.getProducts() ===');
+    System.debug('=== Testing ENOS_ProductController.getProducts() ===');
     
     // Test the method
-    List<Product2> products = ProductController.getProducts();
+    List<Product2> products = ENOS_ProductController.getProducts();
     
     System.debug('Method executed successfully');
     System.debug('Number of products returned: ' + (products != null ? String.valueOf(products.size()) : 'null'));

@@ -4,7 +4,7 @@
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
     <description
-  >Back-in-stock notification requests from community users. When a product is out of stock, users can request to be notified when it becomes available again. Used by the StoreConnect e-commerce platform to manage customer communication and inventory alerts.</description>
+  >Back-in-stock notification system for customers. Records are created when users request to be notified when a product becomes available again. Used by the ENOS e-commerce platform to manage customer communication and inventory alerts.</description>
     <enableActivities>true</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableFeeds>false</enableFeeds>

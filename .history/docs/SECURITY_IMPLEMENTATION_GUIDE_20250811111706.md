@@ -1,8 +1,8 @@
 # StoreConnect Security Implementation Guide
 
-## **CRITICAL: Every Apex Controller MUST Use SecurityUtils**
+## **CRITICAL: Every Apex Controller MUST Use ENOS_SecurityUtils**
 
-**Purpose**: This guide ensures that **every single Apex method** in StoreConnect follows the security-first pattern. By calling `SecurityUtils` methods at the beginning of every method, we guarantee that Field-Level Security (FLS) and CRUD permissions are respected **100% of the time**.
+**Purpose**: This guide ensures that **every single Apex method** in StoreConnect follows the security-first pattern. By calling `ENOS_SecurityUtils` methods at the beginning of every method, we guarantee that Field-Level Security (FLS) and CRUD permissions are respected **100% of the time**.
 
 ---
 
@@ -15,9 +15,9 @@
 ```apex
 @AuraEnabled
 public static ReturnType methodName(Parameters params) {
-    // 1. SECURITY CHECK FIRST - Always call SecurityUtils methods here
-    SecurityUtils.checkFieldReadAccess('ObjectName__c', fieldsToSecure);
-    SecurityUtils.checkObjectCreateable('ObjectName__c');
+    // 1. SECURITY CHECK FIRST - Always call ENOS_SecurityUtils methods here
+    ENOS_SecurityUtils.checkFieldReadAccess('ObjectName__c', fieldsToSecure);
+    ENOS_SecurityUtils.checkObjectCreateable('ObjectName__c');
     
     // 2. BUSINESS LOGIC SECOND - Only execute after security validation
     // Your actual method logic goes here
@@ -35,7 +35,7 @@ public static ReturnType methodName(Parameters params) {
 List<String> fieldsToSecure = new List<String>{
     'Id', 'Name', 'Quantity__c', 'Unit_Price__c'
 };
-SecurityUtils.checkFieldReadAccess('Cart_Item__c', fieldsToSecure);
+ENOS_SecurityUtils.checkFieldReadAccess('Cart_Item__c', fieldsToSecure);
 
 // Then proceed with your query
 return [SELECT Id, Name, Quantity__c, Unit_Price__c FROM Cart_Item__c];
@@ -44,13 +44,13 @@ return [SELECT Id, Name, Quantity__c, Unit_Price__c FROM Cart_Item__c];
 ### **For CREATE Operations (INSERT)**
 ```apex
 // ALWAYS check object create permissions before INSERT
-SecurityUtils.checkObjectCreateable('Cart_Item__c');
+ENOS_SecurityUtils.checkObjectCreateable('Cart_Item__c');
 
 // ALWAYS check field edit access for fields being set
 List<String> fieldsToEdit = new List<String>{
     'Quantity__c', 'Unit_Price__c', 'Product__c'
 };
-SecurityUtils.checkFieldEditAccess('Cart_Item__c', fieldsToEdit);
+ENOS_SecurityUtils.checkFieldEditAccess('Cart_Item__c', fieldsToEdit);
 
 // Then proceed with your DML operation
 insert newCartItem;
@@ -59,13 +59,13 @@ insert newCartItem;
 ### **For UPDATE Operations**
 ```apex
 // ALWAYS check object update permissions before UPDATE
-SecurityUtils.checkObjectUpdateable('Cart_Item__c');
+ENOS_SecurityUtils.checkObjectUpdateable('Cart_Item__c');
 
 // ALWAYS check field edit access for fields being modified
 List<String> fieldsToEdit = new List<String>{
     'Quantity__c', 'Unit_Price__c'
 };
-SecurityUtils.checkFieldEditAccess('Cart_Item__c', fieldsToEdit);
+ENOS_SecurityUtils.checkFieldEditAccess('Cart_Item__c', fieldsToEdit);
 
 // Then proceed with your DML operation
 update cartItemToUpdate;
@@ -74,7 +74,7 @@ update cartItemToUpdate;
 ### **For DELETE Operations**
 ```apex
 // ALWAYS check object delete permissions before DELETE
-SecurityUtils.checkObjectDeletable('Cart_Item__c');
+ENOS_SecurityUtils.checkObjectDeletable('Cart_Item__c');
 
 // Then proceed with your DML operation
 delete cartItemToDelete;
@@ -93,7 +93,7 @@ public static List<Cart_Item__c> getCartItems() {
         'Id', 'Quantity__c', 'Unit_Price__c', 'Line_Total__c',
         'Product__r.Name', 'Product__r.Image_URL__c'
     };
-    SecurityUtils.checkFieldReadAccess('Cart_Item__c', fieldsToSecure);
+    ENOS_SecurityUtils.checkFieldReadAccess('Cart_Item__c', fieldsToSecure);
     
     // 2. BUSINESS LOGIC SECOND
     return [
@@ -112,12 +112,12 @@ public static List<Cart_Item__c> getCartItems() {
 @AuraEnabled
 public static Cart_Item__c addToCart(Id productId, Integer quantity) {
     // 1. SECURITY CHECK FIRST
-    SecurityUtils.checkObjectCreateable('Cart_Item__c');
+    ENOS_SecurityUtils.checkObjectCreateable('Cart_Item__c');
     
     List<String> fieldsToEdit = new List<String>{
         'Quantity__c', 'Unit_Price__c', 'Product__c'
     };
-    SecurityUtils.checkFieldEditAccess('Cart_Item__c', fieldsToEdit);
+    ENOS_SecurityUtils.checkFieldEditAccess('Cart_Item__c', fieldsToEdit);
     
     // 2. BUSINESS LOGIC SECOND
     Cart_Item__c newItem = new Cart_Item__c(
@@ -136,12 +136,12 @@ public static Cart_Item__c addToCart(Id productId, Integer quantity) {
 @AuraEnabled
 public static void updateCartItem(Id cartItemId, Integer newQuantity) {
     // 1. SECURITY CHECK FIRST
-    SecurityUtils.checkObjectUpdateable('Cart_Item__c');
+    ENOS_SecurityUtils.checkObjectUpdateable('Cart_Item__c');
     
     List<String> fieldsToEdit = new List<String>{
         'Quantity__c'
     };
-    SecurityUtils.checkFieldEditAccess('Cart_Item__c', fieldsToEdit);
+    ENOS_SecurityUtils.checkFieldEditAccess('Cart_Item__c', fieldsToEdit);
     
     // 2. BUSINESS LOGIC SECOND
     Cart_Item__c itemToUpdate = [SELECT Id, Quantity__c FROM Cart_Item__c WHERE Id = :cartItemId];
@@ -173,7 +173,7 @@ public static void updateCartItem(Id cartItemId, Integer newQuantity) {
     update itemToUpdate;
     
     // Too late! Security check should be first
-    SecurityUtils.checkObjectUpdateable('Cart_Item__c');
+    ENOS_SecurityUtils.checkObjectUpdateable('Cart_Item__c');
 }
 ```
 
@@ -182,9 +182,9 @@ public static void updateCartItem(Id cartItemId, Integer newQuantity) {
 @AuraEnabled
 public static void addToCart(Id productId, Integer quantity) {
     // DANGEROUS: Only checking object permissions, not field permissions
-    SecurityUtils.checkObjectCreateable('Cart_Item__c');
+    ENOS_SecurityUtils.checkObjectCreateable('Cart_Item__c');
     
-    // Missing: SecurityUtils.checkFieldEditAccess() for fields being set
+    // Missing: ENOS_SecurityUtils.checkFieldEditAccess() for fields being set
     
     Cart_Item__c newItem = new Cart_Item__c(
         Product__c = productId,        // Field not checked for edit access
@@ -227,7 +227,7 @@ static void testSecurityEnforcement() {
     // Test that security checks prevent unauthorized access
     try {
         // This should fail if user doesn't have permissions
-        SecurityUtils.checkFieldReadAccess('Cart_Item__c', new List<String>{'Id', 'Quantity__c'});
+        ENOS_SecurityUtils.checkFieldReadAccess('Cart_Item__c', new List<String>{'Id', 'Quantity__c'});
         System.assert(false, 'Security check should have failed');
     } catch (AuraHandledException e) {
         System.assert(e.getMessage().contains('Security Error'), 'Should throw security error');

@@ -4,7 +4,7 @@
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
     <description
-  >Customer address book for storing multiple shipping addresses. Each address is linked to an Account and includes complete shipping information with a default address flag. Used in StoreConnect e-commerce platform for checkout and order fulfillment processes.</description>
+  >Stores customer shipping addresses with address validation and a default address flag. Used in ENOS e-commerce platform for checkout and order fulfillment processes.</description>
     <enableActivities>true</enableActivities>
     <enableReports>true</enableReports>
     <enableBulkApi>true</enableBulkApi>

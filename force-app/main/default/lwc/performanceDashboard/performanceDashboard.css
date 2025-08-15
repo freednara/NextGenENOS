@@ -1,0 +1,169 @@
+.slds-box {
+    transition: all 0.2s ease;
+    border: 1px solid #dddbda;
+}
+
+.slds-box:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.slds-text-heading_large {
+    font-weight: 300;
+    line-height: 1.25;
+}
+
+.slds-text-body_small {
+    color: #706e6b;
+    font-size: 0.75rem;
+}
+
+.slds-table_header {
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+.slds-table {
+    background: white;
+}
+
+.slds-table th {
+    background: #f3f2f2;
+    font-weight: 600;
+}
+
+.slds-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.slds-button-group {
+    margin-bottom: 1rem;
+}
+
+.slds-notify {
+    margin: 1rem 0;
+}
+
+.slds-icon {
+    margin-right: 0.5rem;
+}
+
+/* Performance indicator colors */
+.slds-text-color_success {
+    color: #04844b;
+}
+
+.slds-text-color_warning {
+    color: #fe9339;
+}
+
+.slds-text-color_error {
+    color: #ea001e;
+}
+
+.slds-text-color_info {
+    color: #0176d3;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .slds-col.slds-size_1-of-4 {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .slds-grid.slds-wrap {
+        flex-direction: column;
+    }
+    
+    .slds-button-group {
+        flex-direction: column;
+    }
+    
+    .slds-button-group .slds-button {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Animation for loading states */
+.slds-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Table responsiveness */
+@media (max-width: 600px) {
+    .slds-table {
+        font-size: 0.875rem;
+    }
+    
+    .slds-table th,
+    .slds-table td {
+        padding: 0.5rem 0.25rem;
+    }
+}
+
+/* Performance badge styling */
+.lightning-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+/* Hover effects for interactive elements */
+a[data-query] {
+    color: #0176d3;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a[data-query]:hover {
+    color: #014486;
+    text-decoration: underline;
+}
+
+/* Summary metrics enhancement */
+.slds-box.slds-text-align_center {
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.slds-text-heading_large {
+    margin-bottom: 0.5rem;
+}
+
+/* Action buttons enhancement */
+.lightning-button-group {
+    gap: 0.5rem;
+}
+
+.lightning-button {
+    min-width: 120px;
+}
+
+/* Loading overlay */
+.slds-is-relative {
+    min-height: 200px;
+}
+
+/* Error state enhancement */
+.slds-notify.slds-theme_error {
+    border-left: 4px solid #ea001e;
+}
+
+/* Info state enhancement */
+.slds-text-align_center.slds-p-around_large {
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

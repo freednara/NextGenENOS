@@ -1,0 +1,182 @@
+[
+  {
+    "attributes": {
+      "type": "Account",
+      "referenceId": "TechCorpRef"
+    },
+    "Name": "TechCorp Solutions Inc",
+    "Type": "Customer - Direct",
+    "Industry": "Technology",
+    "BillingStreet": "100 Innovation Drive",
+    "BillingCity": "San Francisco",
+    "BillingState": "CA",
+    "BillingPostalCode": "94105",
+    "BillingCountry": "USA",
+    "Phone": "(415) 555-0101",
+    "Website": "www.techcorp.com",
+    "AnnualRevenue": 50000000,
+    "NumberOfEmployees": 500
+  },
+  {
+    "attributes": {
+      "type": "Account",
+      "referenceId": "GlobalSystemsRef"
+    },
+    "Name": "Global Systems Enterprise",
+    "Type": "Customer - Channel",
+    "Industry": "Technology",
+    "BillingStreet": "250 Tech Plaza",
+    "BillingCity": "Austin",
+    "BillingState": "TX",
+    "BillingPostalCode": "78701",
+    "BillingCountry": "USA",
+    "Phone": "(512) 555-0102",
+    "Website": "www.globalsystems.com",
+    "AnnualRevenue": 75000000,
+    "NumberOfEmployees": 750
+  },
+  {
+    "attributes": {
+      "type": "Account",
+      "referenceId": "MetroHospitalRef"
+    },
+    "Name": "Metro General Hospital",
+    "Type": "Customer - Direct",
+    "Industry": "Healthcare",
+    "BillingStreet": "500 Medical Center Drive",
+    "BillingCity": "Chicago",
+    "BillingState": "IL",
+    "BillingPostalCode": "60601",
+    "BillingCountry": "USA",
+    "Phone": "(312) 555-0103",
+    "Website": "www.metrohealth.org",
+    "AnnualRevenue": 200000000,
+    "NumberOfEmployees": 2500
+  },
+  {
+    "attributes": {
+      "type": "Account",
+      "referenceId": "RegionalHealthRef"
+    },
+    "Name": "Regional Healthcare Network",
+    "Type": "Customer - Channel",
+    "Industry": "Healthcare",
+    "BillingStreet": "750 Wellness Way",
+    "BillingCity": "Denver",
+    "BillingState": "CO",
+    "BillingPostalCode": "80202",
+    "BillingCountry": "USA",
+    "Phone": "(303) 555-0104",
+    "Website": "www.regionalhealthcare.net",
+    "AnnualRevenue": 150000000,
+    "NumberOfEmployees": 1800
+  },
+  {
+    "attributes": {
+      "type": "Account",
+      "referenceId": "PremierFinancialRef"
+    },
+    "Name": "Premier Financial Group",
+    "Type": "Customer - Direct",
+    "Industry": "Financial Services",
+    "BillingStreet": "1000 Wall Street",
+    "BillingCity": "New York",
+    "BillingState": "NY",
+    "BillingPostalCode": "10005",
+    "BillingCountry": "USA",
+    "Phone": "(212) 555-0105",
+    "Website": "www.premierfinancial.com",
+    "AnnualRevenue": 500000000,
+    "NumberOfEmployees": 5000
+  },
+  {
+    "attributes": {
+      "type": "Account",
+      "referenceId": "StateUniversityRef"
+    },
+    "Name": "State University System",
+    "Type": "Customer - Direct",
+    "Industry": "Education",
+    "BillingStreet": "300 University Circle",
+    "BillingCity": "Boston",
+    "BillingState": "MA",
+    "BillingPostalCode": "02115",
+    "BillingCountry": "USA",
+    "Phone": "(617) 555-0106",
+    "Website": "www.stateuniversity.edu",
+    "AnnualRevenue": 100000000,
+    "NumberOfEmployees": 3000
+  },
+  {
+    "attributes": {
+      "type": "Account",
+      "referenceId": "AdvancedMfgRef"
+    },
+    "Name": "Advanced Manufacturing Corp",
+    "Type": "Customer - Channel",
+    "Industry": "Manufacturing",
+    "BillingStreet": "1500 Industrial Boulevard",
+    "BillingCity": "Detroit",
+    "BillingState": "MI",
+    "BillingPostalCode": "48201",
+    "BillingCountry": "USA",
+    "Phone": "(313) 555-0107",
+    "Website": "www.advancedmfg.com",
+    "AnnualRevenue": 300000000,
+    "NumberOfEmployees": 2000
+  },
+  {
+    "attributes": {
+      "type": "Account",
+      "referenceId": "NationalRetailRef"
+    },
+    "Name": "National Retail Chain",
+    "Type": "Customer - Direct",
+    "Industry": "Retail",
+    "BillingStreet": "2000 Commerce Street",
+    "BillingCity": "Los Angeles",
+    "BillingState": "CA",
+    "BillingPostalCode": "90012",
+    "BillingCountry": "USA",
+    "Phone": "(213) 555-0108",
+    "Website": "www.nationalretail.com",
+    "AnnualRevenue": 1000000000,
+    "NumberOfEmployees": 10000
+  },
+  {
+    "attributes": {
+      "type": "Account",
+      "referenceId": "FederalAgencyRef"
+    },
+    "Name": "Federal Agency Division",
+    "Type": "Customer - Direct",
+    "Industry": "Government",
+    "BillingStreet": "1600 Government Way",
+    "BillingCity": "Washington",
+    "BillingState": "DC",
+    "BillingPostalCode": "20001",
+    "BillingCountry": "USA",
+    "Phone": "(202) 555-0109",
+    "Website": "www.federalagency.gov",
+    "AnnualRevenue": 50000000,
+    "NumberOfEmployees": 1000
+  },
+  {
+    "attributes": {
+      "type": "Account",
+      "referenceId": "ManufacturingSolRef"
+    },
+    "Name": "Manufacturing Solutions",
+    "Type": "Customer - Channel",
+    "Industry": "Manufacturing",
+    "BillingStreet": "741 Factory Road",
+    "BillingCity": "Detroit",
+    "BillingState": "MI",
+    "BillingPostalCode": "48201",
+    "BillingCountry": "USA",
+    "Phone": "(555) 901-2345",
+    "Website": "www.mfgsolutions.com",
+    "AnnualRevenue": 25000000,
+    "NumberOfEmployees": 350
+  }
+]

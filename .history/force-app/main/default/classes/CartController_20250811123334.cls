@@ -40,24 +40,24 @@ public with sharing class CartController {
 
             // 2. Security Checks for all objects we will touch
             // Check create permissions for Cart__c (in case we need to create a new cart)
-            SecurityUtils.checkObjectCreateable('Cart__c');
+            ENOS_SecurityUtils.checkObjectCreateable('Cart__c');
             
             // Check create permissions for Cart_Item__c (for new line items)
-            SecurityUtils.checkObjectCreateable('Cart_Item__c');
+            ENOS_SecurityUtils.checkObjectCreateable('Cart_Item__c');
             
             // Check update permissions for Cart_Item__c (for quantity updates)
-            SecurityUtils.checkObjectUpdateable('Cart_Item__c');
+            ENOS_SecurityUtils.checkObjectUpdateable('Cart_Item__c');
             
             // Check read permissions for the objects we'll query
-            SecurityUtils.checkFieldReadAccess('Cart__c', new List<String>{
+            ENOS_SecurityUtils.checkFieldReadAccess('Cart__c', new List<String>{
                 'Id', 'Contact__c', 'Status__c'
             });
             
-            SecurityUtils.checkFieldReadAccess('Cart_Item__c', new List<String>{
+            ENOS_SecurityUtils.checkFieldReadAccess('Cart_Item__c', new List<String>{
                 'Id', 'Quantity__c', 'Cart__c', 'Product__c'
             });
             
-            SecurityUtils.checkFieldReadAccess('PricebookEntry', new List<String>{
+            ENOS_SecurityUtils.checkFieldReadAccess('PricebookEntry', new List<String>{
                 'UnitPrice', 'Product2Id', 'IsActive'
             });
 
@@ -117,19 +117,19 @@ public with sharing class CartController {
     public static CartWrapper getCurrentUserCart() {
         try {
             // 1. Security checks for read operations
-            SecurityUtils.checkObjectReadable('Cart__c');
-            SecurityUtils.checkObjectReadable('Cart_Item__c');
-            SecurityUtils.checkObjectReadable('Product2');
+            ENOS_SecurityUtils.checkObjectReadable('Cart__c');
+            ENOS_SecurityUtils.checkObjectReadable('Cart_Item__c');
+            ENOS_SecurityUtils.checkObjectReadable('Product2');
             
-            SecurityUtils.checkFieldReadAccess('Cart__c', new List<String>{
+            ENOS_SecurityUtils.checkFieldReadAccess('Cart__c', new List<String>{
                 'Id', 'Contact__c', 'Status__c', 'Subtotal__c', 'Total_Items__c'
             });
             
-            SecurityUtils.checkFieldReadAccess('Cart_Item__c', new List<String>{
+            ENOS_SecurityUtils.checkFieldReadAccess('Cart_Item__c', new List<String>{
                 'Id', 'Quantity__c', 'Unit_Price__c', 'Line_Total__c', 'Product__c'
             });
             
-            SecurityUtils.checkFieldReadAccess('Product2', new List<String>{
+            ENOS_SecurityUtils.checkFieldReadAccess('Product2', new List<String>{
                 'Id', 'Name', 'Image_URL__c'
             });
 
@@ -209,8 +209,8 @@ public with sharing class CartController {
             }
 
             // 2. Security checks
-            SecurityUtils.checkObjectUpdateable('Cart_Item__c');
-            SecurityUtils.checkFieldReadAccess('Cart_Item__c', new List<String>{
+            ENOS_SecurityUtils.checkObjectUpdateable('Cart_Item__c');
+            ENOS_SecurityUtils.checkFieldReadAccess('Cart_Item__c', new List<String>{
                 'Id', 'Quantity__c', 'Cart__c', 'Contact__c'
             });
 
@@ -269,8 +269,8 @@ public with sharing class CartController {
             }
 
             // 2. Security checks
-            SecurityUtils.checkObjectDeletable('Cart_Item__c');
-            SecurityUtils.checkFieldReadAccess('Cart_Item__c', new List<String>{
+            ENOS_SecurityUtils.checkObjectDeletable('Cart_Item__c');
+            ENOS_SecurityUtils.checkFieldReadAccess('Cart_Item__c', new List<String>{
                 'Id', 'Cart__c', 'Contact__c'
             });
 
@@ -322,8 +322,8 @@ public with sharing class CartController {
     public static Decimal getCartItemCount() {
         try {
             // 1. Security checks for read operations
-            SecurityUtils.checkObjectReadable('Cart__c');
-            SecurityUtils.checkFieldReadAccess('Cart__c', new List<String>{
+            ENOS_SecurityUtils.checkObjectReadable('Cart__c');
+            ENOS_SecurityUtils.checkFieldReadAccess('Cart__c', new List<String>{
                 'Id', 'Contact__c', 'Status__c', 'Total_Items__c'
             });
 

@@ -1,6 +1,6 @@
 # Add to Cart Implementation Guide
 
-## **Complete Shopping Cart Functionality for StoreConnect**
+## **Complete Shopping Cart Functionality for ENOS**
 
 **Purpose**: This guide covers the implementation of the Add to Cart functionality, including the CartController Apex class and the updated Product Detail component.
 
@@ -30,7 +30,7 @@
 
 ### **Security Implementation**
 
-- **100% FLS/CRUD compliance** using SecurityUtils pattern
+- **100% FLS/CRUD compliance** using ENOS_SecurityUtils pattern
 - **User isolation** - Contact-based cart ownership
 - **Input validation** for all parameters
 - **Permission checks** before any data operations
@@ -49,8 +49,8 @@
 
 ### **New Apex Class**
 
-- **`CartController.cls`** - Complete cart management controller
-- **`CartController.cls-meta.xml`** - Class metadata
+- **`ENOS_CartController.cls`** - Complete cart management controller
+- **`ENOS_CartController.cls-meta.xml`** - Class metadata
 
 ### **Updated LWC Component**
 
@@ -59,8 +59,8 @@
 
 ### **Existing Integration**
 
-- **`SecurityUtils.cls`** - Security validation (already deployed)
-- **`ProductController.cls`** - Product data fetching (already deployed)
+- **`ENOS_SecurityUtils.cls`** - Security validation (already deployed)
+- **`ENOS_ProductController.cls`** - Product data fetching (already deployed)
 
 ---
 
@@ -68,15 +68,15 @@
 
 ### **Prerequisites**
 
-- [ ] **SecurityUtils.cls** deployed and active
-- [ ] **ProductController.cls** deployed and functional
+- [ ] **ENOS_SecurityUtils.cls** deployed and active
+- [ ] **ENOS_ProductController.cls** deployed and functional
 - [ ] **Custom objects** deployed (Cart**c, Cart_Item**c)
 - [ ] **Permission sets** configured for community users
 - [ ] **Experience Cloud site** configured
 
 ### **Deployment Steps**
 
-1. **Deploy CartController.cls** and metadata
+1. **Deploy ENOS_CartController.cls** and metadata
 2. **Update productDetail.lwc** with new functionality
 3. **Test cart creation** with new user registration
 4. **Verify security permissions** for all objects
@@ -157,7 +157,7 @@
 
 1. **User selects quantity** in product detail component
 2. **User clicks "Add to Cart"** button
-3. **Component calls** CartController.addItemToCart()
+3. **Component calls** ENOS_CartController.addItemToCart()
 4. **Controller validates** permissions and input
 5. **Controller manages** cart and cart items
 6. **Component receives** success/error response
@@ -256,13 +256,13 @@
 **Symptoms**: Users can't add items, "cart not found" errors
 **Possible Causes**:
 
-- CommunityRegistrationHandler not configured
+- ENOS_CommunityRegistrationHandler not configured
 - Permission set issues for Cart\_\_c creation
 - Contact record not linked to User
 
 **Solutions**:
 
-1. **Verify CommunityRegistrationHandler** is set as registration handler
+1. **Verify ENOS_CommunityRegistrationHandler** is set as registration handler
 2. **Check permission set** includes Cart\_\_c create permissions
 3. **Verify User-Contact relationship** is properly configured
 4. **Test user registration** process end-to-end
@@ -272,13 +272,13 @@
 **Symptoms**: Error messages when adding products
 **Possible Causes**:
 
-- SecurityUtils validation failures
+- ENOS_SecurityUtils validation failures
 - Product pricing not available
 - Database constraints or validation rules
 
 **Solutions**:
 
-1. **Check SecurityUtils deployment** and compilation
+1. **Check ENOS_SecurityUtils deployment** and compilation
 2. **Verify product pricing** in standard price book
 3. **Review validation rules** on Cart_Item\_\_c
 4. **Check debug logs** for specific error details
@@ -330,7 +330,7 @@
 
 ### **Compliance Requirements**
 
-- **AppExchange standards** met with SecurityUtils integration
+- **AppExchange standards** met with ENOS_SecurityUtils integration
 - **GDPR compliance** for user data handling
 - **Accessibility standards** for inclusive design
 - **Performance benchmarks** for user experience
@@ -359,7 +359,7 @@
 
 **Before Going Live**:
 
-- [ ] **CartController.cls** deployed and functional
+- [ ] **ENOS_CartController.cls** deployed and functional
 - [ ] **productDetail.lwc** updated with cart integration
 - [ ] **Permission sets** configured for cart access
 - [ ] **Security validation** tested with restricted users
@@ -382,7 +382,7 @@
 
 ### **Technical Quality**
 
-- **100% security compliance** with SecurityUtils
+- **100% security compliance** with ENOS_SecurityUtils
 - **Performance benchmarks** met consistently
 - **Error handling** provides clear user feedback
 - **Scalability** ready for future enhancements
@@ -393,9 +393,9 @@
 
 ### **Current Integration**
 
-- **SecurityUtils.cls** - Security validation
-- **ProductController.cls** - Product data fetching
-- **CommunityRegistrationHandler** - Cart creation on registration
+- **ENOS_SecurityUtils.cls** - Security validation
+- **ENOS_ProductController.cls** - Product data fetching
+- **ENOS_CommunityRegistrationHandler** - Cart creation on registration
 - **productDetail.lwc** - User interface for cart operations
 
 ### **Future Integration**
@@ -407,9 +407,9 @@
 
 ---
 
-**This Add to Cart functionality provides the core shopping experience for StoreConnect, implementing security-first development and production-ready quality standards while maintaining seamless integration with the existing product system.**
+**This Add to Cart functionality provides the core shopping experience for ENOS, implementing security-first development and production-ready quality standards while maintaining seamless integration with the existing product system.**
 
 **Version**: 1.0.0  
 **Last Updated**: December 2024  
 **Next Review**: After Sprint 1 completion  
-**Owner**: StoreConnect Development Team
+**Owner**: ENOS Development Team

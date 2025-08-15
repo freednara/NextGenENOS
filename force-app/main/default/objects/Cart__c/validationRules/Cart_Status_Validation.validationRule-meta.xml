@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Cart_Status_Validation</fullName>
+    <active>true</active>
+    <description>Validates cart status transitions and ensures data integrity</description>
+    <errorConditionFormula>AND(
+        ISCHANGED(Status__c),
+        OR(
+            AND(
+                PRIORVALUE(Status__c) = 'Converted',
+                NOT(ISPICKVAL(Status__c, 'Converted'))
+            ),
+            AND(
+                PRIORVALUE(Status__c) = 'Abandoned',
+                NOT(ISPICKVAL(Status__c, 'Abandoned'))
+            )
+        )
+    )</errorConditionFormula>
+    <errorDisplayField>Status__c</errorDisplayField>
+    <errorMessage>Cart status cannot be changed once it is Converted or Abandoned.</errorMessage>
+</ValidationRule>

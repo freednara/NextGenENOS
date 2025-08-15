@@ -1,13 +1,19 @@
 {
-  "orgName": "freed company",
-  "edition": "Developer",
-  "features": ["EnableSetPasswordInApi", "Communities"],
+  "orgName": "ENOS Development",
+  "sourceOrg": "3SRSJ000000RfLd4AK",
+  "features": ["EnableSetPasswordInApi", "Communities", "PersonAccounts"],
   "settings": {
     "lightningExperienceSettings": {
       "enableS1DesktopEnabled": true
     },
     "mobileSettings": {
       "enableS1EncryptedStoragePref2": false
+    },
+    "communitiesSettings": {
+      "enableNetworksEnabled": true
+    },
+    "experienceBundleSettings": {
+      "enableExperienceBundleMetadata": true
     }
   }
 }

@@ -1,6 +1,6 @@
 # Salesforce CLI .sfignore
 # This file specifies which files and directories should be ignored during CLI operations
-# Comprehensive ignore file for StoreConnect e-commerce application
+# Comprehensive ignore file for ENOS e-commerce application
 
 # ========================================
 # SALESFORCE CLI AND DX FILES
@@ -205,8 +205,8 @@ docs/build/
 # PROJECT SPECIFIC IGNORES
 # ========================================
 
-# StoreConnect specific ignores
-storeconnect-config/
+# ENOS specific ignores
+enos-config/
 deployment-config/
 local-settings/
 

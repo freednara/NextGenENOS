@@ -221,7 +221,7 @@
 **Solutions**:
 1. **Test getCartItemCount** method in Developer Console
 2. **Verify User-Contact relationship** is configured
-3. **Check cart creation** in CommunityRegistrationHandler
+3. **Check cart creation** in ENOS_CommunityRegistrationHandler
 4. **Review permission set** configuration for cart access
 
 ---
@@ -251,7 +251,7 @@
 - **Error handling** - no sensitive data exposed in error messages
 
 ### **Compliance Requirements**
-- **AppExchange standards** met with existing SecurityUtils
+- **AppExchange standards** met with existing ENOS_SecurityUtils
 - **GDPR compliance** for user data handling
 - **Accessibility standards** for inclusive design
 - **Performance benchmarks** for user experience

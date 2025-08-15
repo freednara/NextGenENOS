@@ -27,7 +27,7 @@
 ## 🏗️ **Architecture & Security**
 
 ### **Security Implementation**
-- **100% FLS/CRUD compliance** using SecurityUtils
+- **100% FLS/CRUD compliance** using ENOS_SecurityUtils
 - **Input sanitization** for search terms
 - **Permission validation** before data access
 - **Error logging** for security monitoring
@@ -57,7 +57,7 @@
 ## ⚙️ **Setup & Configuration**
 
 ### **Prerequisites**
-- [ ] **SecurityUtils.cls** deployed and active
+- [ ] **ENOS_SecurityUtils.cls** deployed and active
 - [ ] **Custom objects** deployed (Product2 enhancements)
 - **Permission sets** configured for community users
 - **Experience Cloud site** configured
@@ -144,13 +144,13 @@
 #### **Products Not Loading**
 **Symptoms**: Empty product grid, loading spinner continues
 **Possible Causes**:
-- SecurityUtils not deployed
+- ENOS_SecurityUtils not deployed
 - Permission set configuration issues
 - Product2 records not accessible
 - Apex compilation errors
 
 **Solutions**:
-1. **Verify SecurityUtils deployment**
+1. **Verify ENOS_SecurityUtils deployment**
 2. **Check permission set configuration**
 3. **Review debug logs for errors**
 4. **Test with system admin user**
@@ -210,7 +210,7 @@
 - **Permission checks** before any data access
 
 ### **Compliance Requirements**
-- **AppExchange standards** met with SecurityUtils
+- **AppExchange standards** met with ENOS_SecurityUtils
 - **GDPR compliance** for data handling
 - **Accessibility standards** for inclusive design
 - **Performance benchmarks** for user experience

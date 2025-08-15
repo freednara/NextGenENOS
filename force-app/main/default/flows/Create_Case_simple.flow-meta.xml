@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>64.0</apiVersion>
-    <description>Simple case creation flow for StoreConnect</description>
+    <description>Simple case creation flow for ENOS</description>
     <environments>Default</environments>
     <interviewLabel>Create Case {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Create Case</label>

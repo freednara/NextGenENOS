@@ -1,4 +1,4 @@
-// Script to insert sample data for StoreConnect project
+// Script to insert sample data for ENOS project
 // Creates products with pricing, a test contact, shipping address,
 // cart with items, and optional order, quote, and view tracking records.
 

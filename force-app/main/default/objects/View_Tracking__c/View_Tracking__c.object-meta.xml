@@ -4,7 +4,7 @@
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
     <description
-  >Tracks product views by community users for analytics and recently viewed functionality. Records when a user views a specific product to enable personalized product recommendations and recently viewed product displays in the StoreConnect e-commerce platform.</description>
+  >Records product views by community users for analytics and recently viewed product displays in the ENOS e-commerce platform.</description>
     <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableFeeds>false</enableFeeds>

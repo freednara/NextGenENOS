@@ -118,10 +118,9 @@
     "Stock_Quantity__c": 120,
     "Is_Top_Seller__c": false,
     "Image_URL__c": "https://via.placeholder.com/300x300?text=Smart+Bulbs"
-  }
-  ,
+  },
   {
-    "attributes": {"type": "Product2"},
+    "attributes": { "type": "Product2" },
     "Name": "Noise Cancelling Earbuds",
     "ProductCode": "EB-011",
     "Description": "Compact earbuds with active noise cancellation and wireless charging case.",
@@ -131,7 +130,7 @@
     "Image_URL__c": "https://via.placeholder.com/300x300?text=Earbuds"
   },
   {
-    "attributes": {"type": "Product2"},
+    "attributes": { "type": "Product2" },
     "Name": "Smart Thermostat",
     "ProductCode": "ST-012",
     "Description": "Energy-saving smart thermostat with remote control and schedules.",
@@ -141,7 +140,7 @@
     "Image_URL__c": "https://via.placeholder.com/300x300?text=Thermostat"
   },
   {
-    "attributes": {"type": "Product2"},
+    "attributes": { "type": "Product2" },
     "Name": "4K Monitor 27-inch",
     "ProductCode": "MN-013",
     "Description": "Ultra HD 27-inch monitor with HDR and USB-C connectivity.",
@@ -151,7 +150,7 @@
     "Image_URL__c": "https://via.placeholder.com/300x300?text=4K+Monitor"
   },
   {
-    "attributes": {"type": "Product2"},
+    "attributes": { "type": "Product2" },
     "Name": "USB-C Hub 8-in-1",
     "ProductCode": "HB-014",
     "Description": "Aluminum USB-C hub with HDMI, Ethernet, SD, and 100W PD.",
@@ -161,7 +160,7 @@
     "Image_URL__c": "https://via.placeholder.com/300x300?text=USB-C+Hub"
   },
   {
-    "attributes": {"type": "Product2"},
+    "attributes": { "type": "Product2" },
     "Name": "Ergonomic Office Chair",
     "ProductCode": "CH-015",
     "Description": "Adjustable lumbar support and breathable mesh back.",
@@ -171,7 +170,7 @@
     "Image_URL__c": "https://via.placeholder.com/300x300?text=Office+Chair"
   },
   {
-    "attributes": {"type": "Product2"},
+    "attributes": { "type": "Product2" },
     "Name": "Webcam 1080p",
     "ProductCode": "WC-016",
     "Description": "Full HD webcam with dual microphones and privacy shutter.",
@@ -181,7 +180,7 @@
     "Image_URL__c": "https://via.placeholder.com/300x300?text=Webcam"
   },
   {
-    "attributes": {"type": "Product2"},
+    "attributes": { "type": "Product2" },
     "Name": "Portable SSD 1TB",
     "ProductCode": "SD-017",
     "Description": "High-speed external SSD with USB 3.2 Gen 2 performance.",
@@ -191,7 +190,7 @@
     "Image_URL__c": "https://via.placeholder.com/300x300?text=Portable+SSD"
   },
   {
-    "attributes": {"type": "Product2"},
+    "attributes": { "type": "Product2" },
     "Name": "Laptop Stand Adjustable",
     "ProductCode": "LS-018",
     "Description": "Aluminum adjustable laptop stand for 10-17 inch laptops.",
@@ -201,7 +200,7 @@
     "Image_URL__c": "https://via.placeholder.com/300x300?text=Laptop+Stand"
   },
   {
-    "attributes": {"type": "Product2"},
+    "attributes": { "type": "Product2" },
     "Name": "Wireless Presenter",
     "ProductCode": "PR-019",
     "Description": "Wireless presenter with laser pointer and USB-C receiver.",
@@ -211,7 +210,7 @@
     "Image_URL__c": "https://via.placeholder.com/300x300?text=Presenter"
   },
   {
-    "attributes": {"type": "Product2"},
+    "attributes": { "type": "Product2" },
     "Name": "Gaming Headset",
     "ProductCode": "GH-020",
     "Description": "Surround sound gaming headset with detachable mic.",

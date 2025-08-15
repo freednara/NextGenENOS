@@ -2,7 +2,7 @@
 
 ## **Multi-Step Checkout Process with Screen Flow**
 
-**Purpose**: This guide covers the implementation of the Checkout Screen Flow that provides a guided, step-by-step checkout experience for StoreConnect customers, starting with shipping address selection.
+**Purpose**: This guide covers the implementation of the Checkout Screen Flow that provides a guided, step-by-step checkout experience for ENOS customers, starting with shipping address selection.
 
 ---
 
@@ -371,4 +371,4 @@
 **Version**: 1.0.0  
 **Last Updated**: December 2024  
 **Next Review**: After Sprint 1 completion  
-**Owner**: StoreConnect Development Team
+**Owner**: ENOS Development Team

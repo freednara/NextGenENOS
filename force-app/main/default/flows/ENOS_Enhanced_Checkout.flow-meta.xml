@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <description>Enhanced checkout flow for ENOS with cart review, shipping, payment, and order confirmation</description>
+    <environments>Default</environments>
+    <interviewLabel>ENOS Checkout {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>ENOS Enhanced Checkout</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    
+    <!-- Start -->
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Cart_Review_Screen</targetReference>
+        </connector>
+    </start>
+    
+    <!-- Cart Review Screen -->
+    <screens>
+        <name>Cart_Review_Screen</name>
+        <label>Cart Review</label>
+        <locationX>176</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+        <fields>
+            <name>Cart_Summary</name>
+            <fieldText>Review your cart items before proceeding to checkout</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Cart_Items_Display</name>
+            <fieldText>Cart items will be displayed here</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Subtotal_Display</name>
+            <fieldText>Subtotal: $0.00</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Tax_Display</name>
+            <fieldText>Tax: $0.00</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Total_Display</name>
+            <fieldText>Total: $0.00</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+    </screens>
+    
+    <!-- Shipping Information Screen -->
+    <screens>
+        <name>Shipping_Information_Screen</name>
+        <label>Shipping Information</label>
+        <locationX>352</locationX>
+        <locationY>0</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+        <fields>
+            <name>Shipping_Address_Header</name>
+            <fieldText>Please provide your shipping information</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Shipping_Street</name>
+            <fieldText>Street Address</fieldText>
+            <fieldType>InputField</fieldType>
+        </fields>
+        <fields>
+            <name>Shipping_City</name>
+            <fieldText>City</fieldText>
+            <fieldType>InputField</fieldType>
+        </fields>
+        <fields>
+            <name>Shipping_State</name>
+            <fieldText>State/Province</fieldText>
+            <fieldType>InputField</fieldType>
+        </fields>
+        <fields>
+            <name>Shipping_Zip</name>
+            <fieldText>ZIP/Postal Code</fieldText>
+            <fieldType>InputField</fieldType>
+        </fields>
+        <fields>
+            <name>Shipping_Country</name>
+            <fieldText>Country</fieldText>
+            <fieldType>InputField</fieldType>
+        </fields>
+    </screens>
+    
+    <!-- Payment Information Screen -->
+    <screens>
+        <name>Payment_Information_Screen</name>
+        <label>Payment Information</label>
+        <locationX>528</locationX>
+        <locationY>0</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+        <fields>
+            <name>Payment_Header</name>
+            <fieldText>Please provide your payment information</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Payment_Method</name>
+            <fieldText>Payment Method</fieldText>
+            <fieldType>InputField</fieldType>
+        </fields>
+        <fields>
+            <name>Card_Number</name>
+            <fieldText>Card Number (masked for security)</fieldText>
+            <fieldType>InputField</fieldType>
+        </fields>
+        <fields>
+            <name>Expiry_Date</name>
+            <fieldText>Expiry Date (MM/YY)</fieldText>
+            <fieldType>InputField</fieldType>
+        </fields>
+        <fields>
+            <name>CVV</name>
+            <fieldText>CVV</fieldText>
+            <fieldType>InputField</fieldType>
+        </fields>
+    </screens>
+    
+    <!-- Order Confirmation Screen -->
+    <screens>
+        <name>Order_Confirmation_Screen</name>
+        <label>Order Confirmation</label>
+        <locationX>704</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <showFooter>false</showFooter>
+        <showHeader>true</showHeader>
+        <fields>
+            <name>Confirmation_Header</name>
+            <fieldText>Thank you for your order!</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Order_Number</name>
+            <fieldText>Order Number: {!orderNumber}</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Order_Total</name>
+            <fieldText>Order Total: {!orderTotal}</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Estimated_Delivery</name>
+            <fieldText>Estimated Delivery: 5-7 business days</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Confirmation_Message</name>
+            <fieldText>You will receive an email confirmation shortly. Thank you for choosing ENOS!</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+    </screens>
+    
+    <!-- Variables -->
+    <variables>
+        <name>cartId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>shippingStreet</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>shippingCity</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>shippingState</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>shippingZip</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>shippingCountry</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>paymentMethod</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>cardNumber</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>expiryDate</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>cvv</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>orderNumber</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>orderTotal</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    
+    <!-- Connectors -->
+    <connectors>
+        <name>Cart_Review_to_Shipping</name>
+        <targetReference>Shipping_Information_Screen</targetReference>
+    </connectors>
+    <connectors>
+        <name>Shipping_to_Payment</name>
+        <targetReference>Payment_Information_Screen</targetReference>
+    </connectors>
+    <connectors>
+        <name>Payment_to_Confirmation</name>
+        <targetReference>Order_Confirmation_Screen</targetReference>
+    </connectors>
+</Flow>

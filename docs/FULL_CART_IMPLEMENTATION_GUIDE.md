@@ -50,7 +50,7 @@
 
 ### **Updated Apex Controller**
 
-- **`CartController.cls`** - Added getCartItems(), updateItemQuantity(), deleteCartItem() methods
+- **`ENOS_CartController.cls`** - Added getCartItems(), updateItemQuantity(), deleteCartItem() methods
 
 ### **New LWC Component**
 
@@ -65,7 +65,7 @@
 
 ### **Prerequisites**
 
-- [ ] **CartController.cls** deployed with new cart management methods
+- [ ] **ENOS_CartController.cls** deployed with new cart management methods
 - [ ] **CartUpdate.messageChannel** deployed and functional
 - **Custom objects** deployed (Cart**c, Cart_Item**c)
 - **Permission sets** configured for cart access
@@ -73,7 +73,7 @@
 
 ### **Deployment Steps**
 
-1. **Update CartController.cls** with new methods
+1. **Update ENOS_CartController.cls** with new methods
 2. **Deploy fullCart.lwc** component bundle
 3. **Test cart operations** end-to-end
 4. **Verify LMS integration** with Mini Cart
@@ -218,7 +218,7 @@
 
 1. **Test getCartItems** method in Developer Console
 2. **Verify User-Contact relationship** is configured
-3. **Check cart creation** in CommunityRegistrationHandler
+3. **Check cart creation** in ENOS_CommunityRegistrationHandler
 4. **Review permission set** configuration for cart access
 
 #### **Quantity Updates Not Working**
@@ -286,7 +286,7 @@
 
 ### **Compliance Requirements**
 
-- **AppExchange standards** met with existing SecurityUtils
+- **AppExchange standards** met with existing ENOS_SecurityUtils
 - **GDPR compliance** for user data handling
 - **Accessibility standards** for inclusive design
 - **Performance benchmarks** for user experience
@@ -383,4 +383,4 @@
 **Version**: 1.0.0  
 **Last Updated**: December 2024  
 **Next Review**: After Sprint 1 completion  
-**Owner**: StoreConnect Development Team
+**Owner**: ENOS Development Team

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <description>Order processing flow for ENOS - creates orders from cart data</description>
+    <environments>Default</environments>
+    <interviewLabel>ENOS Order Processing {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>ENOS Order Processing</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    
+    <!-- Start -->
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Cart_Data</targetReference>
+        </connector>
+    </start>
+    
+    <!-- Get Cart Data -->
+    <recordLookups>
+        <name>Get_Cart_Data</name>
+        <label>Get Cart Data</label>
+        <locationX>176</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Create_Order</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>cartId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Cart__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    
+    <!-- Create Order -->
+    <recordCreates>
+        <name>Create_Order</name>
+        <label>Create Order</label>
+        <locationX>352</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Create_Order_Items</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>AccountId</field>
+            <value>
+                <elementReference>cartAccountId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>EffectiveDate</field>
+            <value>
+                <dateTimeValue>2024-12-01T00:00:00.000Z</dateTimeValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Draft</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Type</field>
+            <value>
+                <stringValue>Standard Order</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Order</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    
+    <!-- Create Order Items -->
+    <recordCreates>
+        <name>Create_Order_Items</name>
+        <label>Create Order Items</label>
+        <locationX>528</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Cart_Status</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>OrderId</field>
+            <value>
+                <elementReference>createdOrderId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>PricebookEntryId</field>
+            <value>
+                <elementReference>cartItemPricebookEntryId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Quantity</field>
+            <value>
+                <elementReference>cartItemQuantity</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>UnitPrice</field>
+            <value>
+                <elementReference>cartItemUnitPrice</elementReference>
+            </value>
+        </inputAssignments>
+        <object>OrderItem</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    
+    <!-- Update Cart Status -->
+    <recordUpdates>
+        <name>Update_Cart_Status</name>
+        <label>Update Cart Status</label>
+        <locationX>704</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Success_Message</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value>
+                <stringValue>Converted</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Order__c</field>
+            <value>
+                <elementReference>createdOrderId</elementReference>
+            </value>
+        </inputAssignments>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>cartId</elementReference>
+            </value>
+        </filters>
+        <object>Cart__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordUpdates>
+    
+    <!-- Success Message -->
+    <screens>
+        <name>Success_Message</name>
+        <label>Order Created Successfully</label>
+        <locationX>880</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+        <fields>
+            <name>Success_Header</name>
+            <fieldText>Order Created Successfully!</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Order_Details</name>
+            <fieldText>Your order has been created and is being processed.</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Order_Number</name>
+            <fieldText>Order Number: {!createdOrderId}</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+    </screens>
+    
+    <!-- Flow Variables -->
+    <variables>
+        <name>cartId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>cartAccountId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>createdOrderId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>cartItemPricebookEntryId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>cartItemQuantity</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>cartItemUnitPrice</name>
+        <dataType>Currency</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

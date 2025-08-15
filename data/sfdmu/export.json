@@ -17,10 +17,7 @@
       "operation": "Upsert",
       "externalId": "Name",
       "deleteOldData": false,
-      "fieldsToExport": [
-        "Name",
-        "IsActive"
-      ]
+      "fieldsToExport": ["Name", "IsActive"]
     },
     {
       "name": "Product2",
@@ -50,12 +47,7 @@
       "name": "PricebookEntry",
       "operation": "Export",
       "deleteOldData": false,
-      "fieldsToExport": [
-        "UnitPrice",
-        "IsActive",
-        "Pricebook2Id",
-        "Product2Id"
-      ],
+      "fieldsToExport": ["UnitPrice", "IsActive", "Pricebook2Id", "Product2Id"],
       "lookups": [
         {
           "lookupField": "Pricebook2Id",
@@ -76,5 +68,3 @@
   "useFieldMapping": true,
   "csvReadFileCharset": "utf-8"
 }
-
-

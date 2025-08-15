@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description
+  >Grants administrative access to ENOS including product management, order processing, and system configuration.</description>
+    <label>ENOS Admin</label>
+    <!-- <connectedApp>ENOS</connectedApp> -->
+</CustomPermission>

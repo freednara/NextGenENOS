@@ -1,4 +1,4 @@
-// Insert Comprehensive Sample Data for StoreConnect
+// Insert Comprehensive Sample Data for ENOS
 // Run this in Developer Console or via SF CLI
 
 // Insert 10 Accounts

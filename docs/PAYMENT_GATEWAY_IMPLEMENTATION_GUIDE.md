@@ -396,4 +396,4 @@
 **Version**: 1.0.0  
 **Last Updated**: December 2024  
 **Next Review**: After Sprint 1 completion  
-**Owner**: StoreConnect Development Team
+**Owner**: ENOS Development Team

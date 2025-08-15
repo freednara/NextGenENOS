@@ -1,5 +1,5 @@
 # Salesforce DX Project .gitignore
-# Comprehensive ignore file for StoreConnect e-commerce application
+# Comprehensive ignore file for ENOS e-commerce application
 
 # ========================================
 # SALESFORCE SPECIFIC IGNORES
@@ -246,8 +246,8 @@ docs/build/
 # PROJECT SPECIFIC IGNORES
 # ========================================
 
-# StoreConnect specific ignores
-storeconnect-config/
+# ENOS specific ignores
+enos-config/
 deployment-config/
 local-settings/
 

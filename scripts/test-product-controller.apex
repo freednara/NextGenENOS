@@ -1,4 +1,4 @@
-// Simple test script to verify ProductController functionality
+// Simple test script to verify ENOS_ProductController functionality
 try {
     // Test getting products
     List<Product2> products = [SELECT Id, Name, ProductCode, IsActive FROM Product2 WHERE IsActive = true LIMIT 5];

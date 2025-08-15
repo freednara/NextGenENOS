@@ -335,7 +335,7 @@
         </inputAssignments>
         <storeOutputAutomatically>true</storeOutputAutomatically>
         <type>apex</type>
-        <apexClass>OrderService</apexClass>
+        <apexClass>ENOS_OrderService</apexClass>
         <methodName>createOrder</methodName>
     </actions>
     <screens>

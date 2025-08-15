@@ -1,8 +1,8 @@
-# StoreConnect Administrator Guide
+# ENOS Administrator Guide
 
 ## Overview
 
-This guide provides step-by-step instructions for configuring and managing the StoreConnect e-commerce application in Salesforce. StoreConnect enables external customers to browse products, manage shopping carts, and place orders through a secure Experience Cloud community.
+This guide provides step-by-step instructions for configuring and managing the ENOS e-commerce application in Salesforce. ENOS enables external customers to browse products, manage shopping carts, and place orders through a secure Experience Cloud community.
 
 ## Table of Contents
 
@@ -19,13 +19,13 @@ This guide provides step-by-step instructions for configuring and managing the S
 
 ## Prerequisites
 
-Before configuring StoreConnect, ensure you have:
+Before configuring ENOS, ensure you have:
 
 - **Salesforce Edition**: Enterprise, Performance, or Unlimited
 - **Experience Cloud License**: Customer Community Plus Login
 - **User Permissions**: System Administrator or equivalent
 - **API Access**: Enabled for your org
-- **Custom Objects**: All StoreConnect custom objects deployed
+- **Custom Objects**: All ENOS custom objects deployed
 
 ## Initial Setup
 
@@ -55,10 +55,10 @@ Check that these custom fields exist on standard objects:
 
 ## Permission Set Configuration
 
-### Step 1: Assign StoreConnect Community User Permission Set
+### Step 1: Assign ENOS Community User Permission Set
 
 1. Navigate to **Setup → Permission Sets**
-2. Find **"StoreConnect Community User"**
+2. Find **"ENOS Community User"**
 3. Click **Manage Assignments**
 4. Click **Add Assignments**
 5. Select the users who will access the community
@@ -92,16 +92,18 @@ The permission set includes:
 2. Click **New Site**
 3. Choose **"Customer Account Portal"** template
 4. Configure site settings:
-   - **Site Name**: StoreConnect
-   - **URL Path**: storeconnect
-   - **Admin User**: Your admin user
-   - **Default Language**: English
+   - **Site Name**: ENOS
+
+- **URL Path**: enos
+  - **Admin User**: Your admin user
+  - **Default Language**: English
+
 5. Click **Create**
 
 ### Step 2: Configure Site Settings
 
 1. **General Settings:**
-   - **Site Label**: StoreConnect
+   - **Site Label**: ENOS
    - **Site Description**: E-commerce community for customers
    - **Site Type**: Customer Community
 
@@ -147,7 +149,7 @@ The permission set includes:
 
 1. Navigate to **Administration → Members**
 2. **Profiles:**
-   - Assign **StoreConnect Community User** profile
+   - Assign **ENOS Community User** profile
    - Configure member visibility settings
    - Set up member approval process
 
@@ -198,7 +200,7 @@ The permission set includes:
 ### Step 1: Schedule Top Seller Calculation
 
 1. Navigate to **Setup → Apex Classes**
-2. Find **StoreConnectTopSellerBatch**
+2. Find **ENOSENOS_TopSellerBatch**
 3. Click **Schedule Apex**
 4. Configure schedule:
    - **Job Name**: Top Seller Calculation
@@ -209,12 +211,12 @@ The permission set includes:
 ### Step 2: Configure Data Cleanup Jobs
 
 1. **View Tracking Cleanup:**
-   - Schedule **StoreConnectViewTrackingCleanup**
+   - Schedule **ENOSViewTrackingCleanup**
    - Run weekly to remove old tracking data
    - Keep last 90 days of data
 
 2. **Cart Abandonment Cleanup:**
-   - Schedule **StoreConnectCartCleanup**
+   - Schedule **ENOSCartCleanup**
    - Run daily to clean abandoned carts
    - Set 30-day abandonment threshold
 
@@ -227,7 +229,7 @@ The permission set includes:
    - Click **New User**
    - Select **Customer Community User** profile
    - Fill in required information
-   - Assign **StoreConnect Community User** permission set
+   - Assign **ENOS Community User** permission set
 
 2. **Self-Registration:**
    - Users register through community
@@ -316,7 +318,7 @@ The permission set includes:
 ### Support Resources
 
 - **Salesforce Documentation**: [developer.salesforce.com](https://developer.salesforce.com)
-- **StoreConnect Technical Guide**: See `TECHNICAL_DOCUMENTATION.md`
+- **ENOS Technical Guide**: See `TECHNICAL_DOCUMENTATION.md`
 - **Salesforce Support**: Contact your Salesforce representative
 
 ## Security Best Practices
@@ -352,7 +354,7 @@ The permission set includes:
 
 ## Conclusion
 
-StoreConnect provides a secure, scalable e-commerce solution for Salesforce customers. By following this guide, administrators can ensure proper configuration, maintenance, and security of the application.
+ENOS provides a secure, scalable e-commerce solution for Salesforce customers. By following this guide, administrators can ensure proper configuration, maintenance, and security of the application.
 
 For technical questions or advanced configuration, refer to the Technical Documentation or contact the development team.
 
@@ -361,4 +363,4 @@ For technical questions or advanced configuration, refer to the Technical Docume
 **Version**: 1.0.0  
 **Last Updated**: December 2024  
 **Compatibility**: Salesforce API 58.0+  
-**Support**: Contact StoreConnect Development Team
+**Support**: Contact ENOS Development Team

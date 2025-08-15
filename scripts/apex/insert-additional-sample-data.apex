@@ -1,4 +1,4 @@
-// Insert Additional Sample Data for StoreConnect
+// Insert Additional Sample Data for ENOS
 // This script adds missing data without creating duplicates
 // Run this in Developer Console or via SF CLI
 

@@ -14,7 +14,7 @@ public with sharing class ProductController {
      * @description Fetches a list of active products for display in the store.
      * This method is cacheable to improve performance and reduce server calls.
      * 
-     * Security: Uses SecurityUtils.checkFieldReadAccess() to validate FLS permissions
+     * Security: Uses ENOS_SecurityUtils.checkFieldReadAccess() to validate FLS permissions
      * before executing any queries. This ensures compliance with AppExchange standards.
      * 
      * @return A list of Product2 records with their associated PricebookEntry data.
@@ -39,10 +39,10 @@ public with sharing class ProductController {
 
             // 2. Enforce FLS read access before executing the query.
             // This is our security-first approach - check permissions before any data access.
-            SecurityUtils.checkFieldReadAccess('Product2', fieldsToCheck);
+            ENOS_SecurityUtils.checkFieldReadAccess('Product2', fieldsToCheck);
             
             // We also need to check access on PricebookEntry since we're querying related records.
-            SecurityUtils.checkFieldReadAccess('PricebookEntry', new List<String>{
+            ENOS_SecurityUtils.checkFieldReadAccess('PricebookEntry', new List<String>{
                 'UnitPrice',
                 'IsActive',
                 'Pricebook2Id'
@@ -116,8 +116,8 @@ public with sharing class ProductController {
             };
 
             // 3. Enforce FLS read access.
-            SecurityUtils.checkFieldReadAccess('Product2', fieldsToCheck);
-            SecurityUtils.checkFieldReadAccess('PricebookEntry', new List<String>{
+            ENOS_SecurityUtils.checkFieldReadAccess('Product2', fieldsToCheck);
+            ENOS_SecurityUtils.checkFieldReadAccess('PricebookEntry', new List<String>{
                 'UnitPrice',
                 'IsActive',
                 'Pricebook2Id'
@@ -193,8 +193,8 @@ public with sharing class ProductController {
             };
 
             // 4. Enforce FLS read access.
-            SecurityUtils.checkFieldReadAccess('Product2', fieldsToCheck);
-            SecurityUtils.checkFieldReadAccess('PricebookEntry', new List<String>{
+            ENOS_SecurityUtils.checkFieldReadAccess('Product2', fieldsToCheck);
+            ENOS_SecurityUtils.checkFieldReadAccess('PricebookEntry', new List<String>{
                 'UnitPrice',
                 'IsActive',
                 'Pricebook2Id'

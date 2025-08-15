@@ -1,8 +1,8 @@
-# StoreConnect Field Descriptions Template
+# ENOS Field Descriptions Template
 
 ## **ADMIN TASK: Populate Description Fields for All Custom Objects and Fields**
 
-**Deadline: Wednesday, August 13th**
+**Deadline**: Wednesday, August 13th
 
 **Purpose**: This is the first layer of our documentation foundation. Every custom object and field MUST have a completed Description field before Sprint 1 is considered complete.
 
@@ -15,7 +15,7 @@
 **Object Description**:
 
 ```
-Shopping cart container for StoreConnect e-commerce functionality. Each logged-in community user has one active cart that persists across sessions. Carts are automatically created when users add their first product and are converted to orders upon checkout completion.
+Shopping cart container for ENOS e-commerce functionality. Each logged-in community user has one active cart that persists across sessions. Carts are automatically created when users add their first product and are converted to orders upon checkout completion.
 ```
 
 ### **Cart_Item\_\_c Object**
@@ -31,7 +31,7 @@ Individual product line items within a user's shopping cart. Each cart item repr
 **Object Description**:
 
 ```
-Customer shipping address book for StoreConnect orders. Users can save multiple addresses (e.g., "Home Office", "Main Warehouse") and mark one as default. Addresses are linked to customer accounts and used during checkout for order fulfillment.
+Customer shipping address book for ENOS orders. Users can save multiple addresses (e.g., "Home Office", "Main Warehouse") and mark one as default. Addresses are linked to customer accounts and used during checkout for order fulfillment.
 ```
 
 ### **View_Tracking\_\_c Object**
@@ -39,7 +39,7 @@ Customer shipping address book for StoreConnect orders. Users can save multiple 
 **Object Description**:
 
 ```
-Product view tracking system for StoreConnect recommendation engine. Records are created every time a user views a product detail page. This data powers the "Recently Viewed" component and personalized product recommendations. Records are automatically cleaned up after 90 days.
+Product view tracking system for ENOS recommendation engine. Records are created every time a user views a product detail page. This data powers the "Recently Viewed" component and personalized product recommendations. Records are automatically cleaned up after 90 days.
 ```
 
 ### **Notification_Request\_\_c Object**
@@ -47,7 +47,7 @@ Product view tracking system for StoreConnect recommendation engine. Records are
 **Object Description**:
 
 ```
-Back-in-stock notification system for StoreConnect customers. Users can request email notifications when out-of-stock products become available. Records track the status of notification requests and prevent duplicate requests from the same user for the same product.
+Back-in-stock notification system for ENOS customers. Users can request email notifications when out-of-stock products become available. Records track the status of notification requests and prevent duplicate requests from the same user for the same product.
 ```
 
 ---
@@ -255,7 +255,7 @@ Current status of the notification request. Values: Active (waiting for product 
 **Description**:
 
 ```
-URL link to the primary product image hosted on an external CDN or image hosting service. This field is used by the StoreConnect product catalog to display product images. Supports HTTPS URLs for secure image loading.
+URL link to the primary product image hosted on an external CDN or image hosting service. This field is used by the ENOS product catalog to display product images. Supports HTTPS URLs for secure image loading.
 ```
 
 #### **Product2.Stock_Quantity\_\_c**

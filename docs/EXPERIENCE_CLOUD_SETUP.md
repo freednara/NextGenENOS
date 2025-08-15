@@ -1,17 +1,20 @@
 # 🌐 Experience Cloud Configuration Guide
 
 ## Overview
-This guide provides comprehensive instructions for setting up and configuring Salesforce Experience Cloud for the NextGenENOS StoreConnect e-commerce platform.
+
+This guide provides comprehensive instructions for setting up and configuring Salesforce Experience Cloud for the NextGenENOS ENOS e-commerce platform.
 
 ## Prerequisites
 
 ### 1. Salesforce Org Requirements
+
 - [ ] Salesforce org with Experience Cloud licenses
 - [ ] Customer Community Plus or Partner Community licenses for users
 - [ ] Domain management permissions
 - [ ] System Administrator access
 
 ### 2. Technical Requirements
+
 - [ ] Custom domain configured (optional but recommended)
 - [ ] SSL certificate for custom domain
 - [ ] DNS configuration access
@@ -20,13 +23,15 @@ This guide provides comprehensive instructions for setting up and configuring Sa
 ## Step 1: Enable Experience Cloud
 
 ### 1.1 Enable Digital Experiences
+
 1. Go to **Setup** → **Digital Experiences** → **Settings**
 2. Click **Enable Digital Experiences**
-3. Select domain name (e.g., `storeconnect` for `storeconnect.force.com`)
+3. Select domain name (e.g., `enos` for `enos.force.com`)
 4. Agree to Terms of Service
 5. Click **Enable**
 
 ### 1.2 Configure Experience Cloud Settings
+
 ```
 Setup → Digital Experiences → Settings
 
@@ -41,21 +46,23 @@ Settings to Configure:
 ## Step 2: Create Experience Cloud Site
 
 ### 2.1 Create New Experience
+
 1. Go to **Setup** → **Digital Experiences** → **All Sites**
 2. Click **New**
 3. Select **Customer Service (Napili)** template
 4. Configure basic settings:
    ```
-   Name: StoreConnect Community
-   URL: storeconnect-community
+   Name: ENOS Community
+   URL: enos-community
    Description: NextGenENOS E-commerce Platform
    ```
 
 ### 2.2 Site Configuration
+
 ```yaml
 General Settings:
-  - Site Name: StoreConnect Community
-  - Site URL: /storeconnect
+  - Site Name: ENOS Community
+  - Site URL: /enos
   - Active: True
   - Allow Guest Users: True
   - Guest User Profile: ENOS Community Login
@@ -78,6 +85,7 @@ Navigation:
 ## Step 3: Configure User Management
 
 ### 3.1 Profile Configuration
+
 ```
 Profile: ENOS Community Login
 License Type: Customer Community Login
@@ -91,14 +99,14 @@ Permissions:
 ```
 
 ### 3.2 Permission Set Assignment
+
 ```
-Permission Set: StoreConnectCommunity
+Permission Set: ENOSCommunity
 
 Apex Classes Access:
-- CartController
-- ProductController
-- StoreConnectController
-- PerformanceMonitor (read-only)
+- ENOSController
+- ENOS_ProductController
+- ENOS_PerformanceMonitor (read-only)
 
 Object Permissions:
 - All required custom objects with appropriate CRUD
@@ -106,8 +114,9 @@ Object Permissions:
 ```
 
 ### 3.3 Sharing Rules
+
 ```
-Sharing Rule Name: StoreConnect Community Sharing
+Sharing Rule Name: ENOS Community Sharing
 
 Objects to Share:
 - Product2: Public Read Only
@@ -126,8 +135,9 @@ External Sharing:
 ### 4.1 Lightning Pages Setup
 
 #### Home Page
+
 ```
-Page Name: StoreConnect Home
+Page Name: ENOS Home
 Template: Header, Two Columns, Footer
 Components:
 - Header: Navigation and search
@@ -138,6 +148,7 @@ Components:
 ```
 
 #### Product Catalog Page
+
 ```
 Page Name: Product Catalog
 Template: Header, Full Width, Footer
@@ -148,6 +159,7 @@ Components:
 ```
 
 #### Shopping Cart Page
+
 ```
 Page Name: Shopping Cart
 Template: Header, Two Columns, Footer
@@ -158,6 +170,7 @@ Components:
 ```
 
 #### Order History Page
+
 ```
 Page Name: Order History
 Template: Header, Full Width, Footer
@@ -167,10 +180,11 @@ Components:
 ```
 
 ### 4.2 Page Assignments
+
 ```
 Profile: ENOS Community Login
 Pages:
-- Home: StoreConnect Home (default)
+- Home: ENOS Home (default)
 - Record Pages: Product Detail Page
 - App Pages: Product Catalog, Shopping Cart, Order History
 
@@ -184,29 +198,30 @@ URL Mappings:
 ## Step 5: Navigation Configuration
 
 ### 5.1 Primary Navigation
+
 ```yaml
-Navigation Menu: StoreConnect Main Menu
+Navigation Menu: ENOS Main Menu
 Items:
   - Home:
       Type: Salesforce Object
       Target: Home
       Label: Home
-      
+
   - Products:
       Type: App Page
       Target: Product Catalog
       Label: Products
-      
+
   - Cart:
-      Type: App Page  
+      Type: App Page
       Target: Shopping Cart
       Label: Cart
-      
+
   - Orders:
       Type: App Page
       Target: Order History
       Label: My Orders
-      
+
   - Profile:
       Type: Salesforce Object
       Target: Contact
@@ -214,8 +229,9 @@ Items:
 ```
 
 ### 5.2 Footer Navigation
+
 ```yaml
-Footer Menu: StoreConnect Footer
+Footer Menu: ENOS Footer
 Items:
   - About Us
   - Terms of Service
@@ -227,8 +243,9 @@ Items:
 ## Step 6: Branding and Styling
 
 ### 6.1 Theme Configuration
+
 ```css
-/* Custom CSS for StoreConnect branding */
+/* Custom CSS for ENOS branding */
 :root {
   --primary-color: #0176d3;
   --secondary-color: #16325c;
@@ -244,13 +261,13 @@ Items:
 
 .product-card {
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
 }
 
 .product-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .btn-primary {
@@ -260,6 +277,7 @@ Items:
 ```
 
 ### 6.2 Logo and Assets
+
 ```
 Logo Requirements:
 - Main Logo: 190x40px (PNG with transparent background)
@@ -275,6 +293,7 @@ Asset Locations:
 ## Step 7: Self-Registration Setup
 
 ### 7.1 Registration Page Configuration
+
 ```
 Self-Registration Settings:
 - Enable Self-Registration: True
@@ -286,7 +305,7 @@ Self-Registration Settings:
 
 Registration Fields:
 - First Name (required)
-- Last Name (required)  
+- Last Name (required)
 - Email (required)
 - Phone
 - Company
@@ -294,6 +313,7 @@ Registration Fields:
 ```
 
 ### 7.2 Email Templates
+
 ```
 Templates to Configure:
 - Welcome Email: Branded welcome message
@@ -312,6 +332,7 @@ Template Branding:
 ## Step 8: Security Configuration
 
 ### 8.1 Login & Security Settings
+
 ```
 Login Policies:
 - Session Timeout: 8 hours
@@ -328,8 +349,9 @@ Security Policies:
 ```
 
 ### 8.2 Guest User Security
+
 ```
-Guest User Profile: StoreConnect Guest
+Guest User Profile: ENOS Guest
 Permissions:
 - Read Product2, Category__c: Public catalog browsing
 - No access to user data
@@ -346,13 +368,14 @@ Guest User Restrictions:
 ## Step 9: Integration Configuration
 
 ### 9.1 Payment Gateway Integration
+
 ```yaml
 PayGov Integration:
   Endpoint: Configured in Named Credentials
   Authentication: JWT/OAuth as appropriate
   Test Mode: Enabled for development
   Production Mode: For live deployment
-  
+
 Payment Methods:
   - Credit Cards (Visa, MasterCard, Amex)
   - Debit Cards
@@ -361,6 +384,7 @@ Payment Methods:
 ```
 
 ### 9.2 External Service Configuration
+
 ```
 External Services:
 - Email Service: Marketing automation
@@ -378,6 +402,7 @@ API Configurations:
 ## Step 10: Performance Optimization
 
 ### 10.1 Caching Strategy
+
 ```
 Caching Configuration:
 - Static Resources: 1 year cache
@@ -393,13 +418,14 @@ CDN Configuration:
 ```
 
 ### 10.2 Performance Monitoring
+
 ```yaml
 Monitoring Setup:
   Page Load Times: Track critical pages
   API Response Times: Monitor backend calls
   User Experience: Track user journeys
   Error Rates: Monitor and alert on issues
-  
+
 Performance Targets:
   Page Load: < 3 seconds
   API Response: < 1 second
@@ -410,6 +436,7 @@ Performance Targets:
 ## Step 11: Testing & Validation
 
 ### 11.1 Functional Testing
+
 ```
 Test Scenarios:
 ✓ User registration and email verification
@@ -424,6 +451,7 @@ Test Scenarios:
 ```
 
 ### 11.2 Security Testing
+
 ```
 Security Tests:
 ✓ SQL injection prevention
@@ -437,6 +465,7 @@ Security Tests:
 ```
 
 ### 11.3 Performance Testing
+
 ```
 Performance Tests:
 ✓ Load testing (100+ concurrent users)
@@ -451,6 +480,7 @@ Performance Tests:
 ## Step 12: Go-Live Checklist
 
 ### 12.1 Pre-Launch Validation
+
 - [ ] All components deployed and tested
 - [ ] User profiles and permissions configured
 - [ ] Branding and styling complete
@@ -461,6 +491,7 @@ Performance Tests:
 - [ ] User acceptance testing signed off
 
 ### 12.2 Launch Tasks
+
 - [ ] DNS configuration (if custom domain)
 - [ ] SSL certificate installation
 - [ ] Production data migration
@@ -470,6 +501,7 @@ Performance Tests:
 - [ ] Backup procedures verified
 
 ### 12.3 Post-Launch Monitoring
+
 - [ ] User registration rates
 - [ ] Site performance metrics
 - [ ] Error rates and issues
@@ -480,10 +512,11 @@ Performance Tests:
 ## Step 13: Maintenance & Support
 
 ### 13.1 Regular Maintenance
+
 ```
 Weekly Tasks:
 - Performance monitoring review
-- Error log analysis  
+- Error log analysis
 - User feedback review
 - Content updates as needed
 
@@ -501,6 +534,7 @@ Quarterly Tasks:
 ```
 
 ### 13.2 Support Procedures
+
 ```
 Support Channels:
 - Help Center: Self-service articles
@@ -518,6 +552,7 @@ Escalation Matrix:
 ## Documentation and Resources
 
 ### 13.3 User Documentation
+
 - [ ] User Guide: How to navigate and use the platform
 - [ ] FAQ: Common questions and answers
 - [ ] Video Tutorials: Step-by-step guidance
@@ -525,6 +560,7 @@ Escalation Matrix:
 - [ ] Troubleshooting Guide: Common issues and solutions
 
 ### 13.4 Administrator Documentation
+
 - [ ] Configuration Guide: System setup and maintenance
 - [ ] Security Guidelines: Best practices and policies
 - [ ] Performance Tuning: Optimization strategies
@@ -536,6 +572,7 @@ Escalation Matrix:
 ## Success Metrics
 
 ### Key Performance Indicators (KPIs)
+
 - **User Adoption**: Registration and active user rates
 - **Performance**: Page load times and system responsiveness
 - **Business Impact**: Order volume and revenue metrics
@@ -543,11 +580,13 @@ Escalation Matrix:
 - **System Health**: Uptime and error rates
 
 ### Monitoring Dashboard
+
 Track these metrics in real-time using:
+
 - Salesforce Analytics
 - Google Analytics
 - Custom performance monitoring
 - User feedback systems
 - Business intelligence tools
 
-*This configuration ensures a robust, secure, and user-friendly e-commerce experience built on Salesforce Experience Cloud.*
+_This configuration ensures a robust, secure, and user-friendly e-commerce experience built on Salesforce Experience Cloud._

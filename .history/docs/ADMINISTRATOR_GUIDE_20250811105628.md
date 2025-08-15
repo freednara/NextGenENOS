@@ -194,7 +194,7 @@ The permission set includes:
 ### Step 1: Schedule Top Seller Calculation
 
 1. Navigate to **Setup → Apex Classes**
-2. Find **StoreConnectTopSellerBatch**
+2. Find **StoreConnectENOS_TopSellerBatch**
 3. Click **Schedule Apex**
 4. Configure schedule:
    - **Job Name**: Top Seller Calculation

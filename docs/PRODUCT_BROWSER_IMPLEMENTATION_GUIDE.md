@@ -1,6 +1,6 @@
 # Product Browser Implementation Guide
 
-## **Complete Product Display Component for StoreConnect**
+## **Complete Product Display Component for ENOS**
 
 **Purpose**: This guide covers the implementation of the Product Browser component, which displays products in a responsive grid layout with search functionality and user interactions.
 
@@ -30,7 +30,7 @@
 
 ### **Security Implementation**
 
-- **100% FLS/CRUD compliance** using SecurityUtils
+- **100% FLS/CRUD compliance** using ENOS_SecurityUtils
 - **Input sanitization** for search terms
 - **Permission validation** before data access
 - **Error logging** for security monitoring
@@ -48,8 +48,8 @@
 
 ### **Apex Controller**
 
-- **`ProductController.cls`** - Server-side logic with security validation
-- **`ProductController.cls-meta.xml`** - Metadata configuration
+- **`ENOS_ProductController.cls`** - Server-side logic with security validation
+- **`ENOS_ProductController.cls-meta.xml`** - Metadata configuration
 
 ### **Lightning Web Component**
 
@@ -64,14 +64,14 @@
 
 ### **Prerequisites**
 
-- [ ] **SecurityUtils.cls** deployed and active
+- [ ] **ENOS_SecurityUtils.cls** deployed and active
 - [ ] **Custom objects** deployed (Product2 enhancements)
 - **Permission sets** configured for community users
 - **Experience Cloud site** configured
 
 ### **Deployment Steps**
 
-1. **Deploy ProductController.cls** to development sandbox
+1. **Deploy ENOS_ProductController.cls** to development sandbox
 2. **Deploy productBrowser.lwc** component bundle
 3. **Verify compilation** in Setup → Apex Classes
 4. **Test component** in Experience Cloud builder
@@ -163,14 +163,14 @@
 **Symptoms**: Empty product grid, loading spinner continues
 **Possible Causes**:
 
-- SecurityUtils not deployed
+- ENOS_SecurityUtils not deployed
 - Permission set configuration issues
 - Product2 records not accessible
 - Apex compilation errors
 
 **Solutions**:
 
-1. **Verify SecurityUtils deployment**
+1. **Verify ENOS_SecurityUtils deployment**
 2. **Check permission set configuration**
 3. **Review debug logs for errors**
 4. **Test with system admin user**
@@ -240,7 +240,7 @@
 
 ### **Compliance Requirements**
 
-- **AppExchange standards** met with SecurityUtils
+- **AppExchange standards** met with ENOS_SecurityUtils
 - **GDPR compliance** for data handling
 - **Accessibility standards** for inclusive design
 - **Performance benchmarks** for user experience
@@ -269,7 +269,7 @@
 
 **Before Going Live**:
 
-- [ ] **ProductController.cls** deployed and tested
+- [ ] **ENOS_ProductController.cls** deployed and tested
 - [ ] **productBrowser.lwc** deployed and functional
 - [ ] **Security validation** completed successfully
 - [ ] **Performance testing** meets benchmarks
@@ -298,9 +298,9 @@
 
 ---
 
-**This Product Browser component provides the foundation for the StoreConnect shopping experience, implementing security-first development and production-ready quality standards.**
+**This Product Browser component provides the foundation for the ENOS shopping experience, implementing security-first development and production-ready quality standards.**
 
 **Version**: 1.0.0  
 **Last Updated**: December 2024  
 **Next Review**: After Sprint 1 completion  
-**Owner**: StoreConnect Development Team
+**Owner**: ENOS Development Team

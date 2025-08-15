@@ -1,8 +1,8 @@
-# CommunityRegistrationHandler Setup Guide
+# Community Registration Handler Setup Guide
 
 ## **Configuring Automatic Cart Creation for New Community Users**
 
-**Purpose**: This guide walks the admin through configuring the `CommunityRegistrationHandler` class to automatically create shopping carts for new community users upon registration.
+**Purpose**: This guide walks the admin through configuring the `ENOS_CommunityRegistrationHandler` class to automatically create shopping carts for new community users upon registration.
 
 ---
 
@@ -18,7 +18,7 @@
 
 1. **User registers** on the community site
 2. **Salesforce creates** User and Contact records
-3. **CommunityRegistrationHandler** is called automatically
+3. **ENOS_CommunityRegistrationHandler** is called automatically
 4. **Cart\_\_c record** is created in the background
 5. **User can immediately** start adding products to cart
 
@@ -28,7 +28,7 @@
 
 ### **Before Configuration**
 
-- [ ] **CommunityRegistrationHandler.cls** deployed to your org
+- [ ] **ENOS_CommunityRegistrationHandler.cls** deployed to your org
 - [ ] **Experience Cloud site** created and configured
 - **Custom objects** deployed (`Cart__c`, `Cart_Item__c`, etc.)
 - **Permission sets** configured for community users
@@ -46,7 +46,7 @@
 ### **Step 1: Navigate to Experience Cloud Settings**
 
 1. **Go to Setup** → **Experience Cloud** → **All Sites**
-2. **Click on your site** (e.g., "StoreConnect Community")
+2. **Click on your site** (e.g., "ENOS Community")
 3. **Click "Administration"** → **Login & Registration**
 
 ### **Step 2: Configure Registration Handler**
@@ -54,13 +54,13 @@
 1. **Scroll down** to "Registration Handler" section
 2. **Click "Edit"** button
 3. **Select "Apex Class"** from the dropdown
-4. **Enter**: `CommunityRegistrationHandler`
+4. **Enter**: `ENOS_CommunityRegistrationHandler`
 5. **Click "Save"**
 
 ### **Step 3: Verify Configuration**
 
 1. **Refresh the page**
-2. **Confirm** "Registration Handler" shows `CommunityRegistrationHandler`
+2. **Confirm** "Registration Handler" shows `ENOS_CommunityRegistrationHandler`
 3. **Note the timestamp** of when it was last updated
 
 ---
@@ -77,7 +77,7 @@ Setup → Experience Cloud → All Sites → [Your Site] → Administration → 
 
 - **Field Name**: Registration Handler
 - **Type**: Apex Class
-- **Value**: CommunityRegistrationHandler
+- **Value**: ENOS_CommunityRegistrationHandler
 - **Status**: Active
 
 ### **Expected Result**
@@ -179,7 +179,7 @@ WHERE Contact__c IN (
 
 ### **Debug Logs to Monitor**
 
-- **CommunityRegistrationHandler** execution logs
+- **ENOS_CommunityRegistrationHandler** execution logs
 - **Cart creation success/failure** messages
 - **Error stack traces** for troubleshooting
 
@@ -252,7 +252,7 @@ WHERE Contact__c IN (
 
 **Before Going Live**:
 
-- [ ] **CommunityRegistrationHandler.cls** deployed and active
+- [ ] **ENOS_CommunityRegistrationHandler.cls** deployed and active
 - [ ] **Registration handler** configured in site settings
 - [ ] **Test registration** completed successfully
 - [ ] **Cart creation** verified for test user
@@ -262,9 +262,9 @@ WHERE Contact__c IN (
 
 ---
 
-**This configuration ensures that every new StoreConnect community user automatically gets a shopping cart, providing an immediate and seamless shopping experience.**
+**This configuration ensures that every new ENOS community user automatically gets a shopping cart, providing an immediate and seamless shopping experience.**
 
 **Version**: 1.0.0  
 **Last Updated**: December 2024  
 **Next Review**: After Sprint 1 completion  
-**Owner**: StoreConnect Development Team
+**Owner**: ENOS Development Team

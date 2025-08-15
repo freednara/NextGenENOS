@@ -1,0 +1,160 @@
+<template>
+  <lightning-card title="Our Products" icon-name="standard:products">
+    <div class="slds-var-p-around_medium">
+      <!-- Loading State -->
+      <template if:true={isLoading}>
+        <lightning-spinner
+          alternative-text="Loading products..."
+          size="medium"
+        ></lightning-spinner>
+      </template>
+
+      <!-- Error State -->
+      <template if:true={hasError}>
+        <div
+          class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error"
+          role="alert"
+        >
+          <span class="slds-assistive-text">error</span>
+          <lightning-icon
+            icon-name="utility:error"
+            alternative-text="Error"
+            size="small"
+          ></lightning-icon>
+          <h2>Unable to load products</h2>
+          <p>{errorMessage}</p>
+        </div>
+      </template>
+
+      <!-- Products Grid -->
+      <template if:true={hasProducts}>
+        <!-- Search Bar -->
+        <div class="slds-var-m-bottom_medium">
+          <lightning-input
+            type="search"
+            label="Search Products"
+            placeholder="Search by name or description..."
+            onchange={handleSearch}
+            variant="label-hidden"
+          >
+          </lightning-input>
+        </div>
+
+        <!-- Products Display -->
+        <lightning-layout multiple-rows="true" pull-to-boundary="small">
+          <template for:each={enhancedProducts} for:item="product">
+            <lightning-layout-item
+              key={product.Id}
+              size="12"
+              small-device-size="6"
+              medium-device-size="4"
+              large-device-size="3"
+              padding="around-small"
+            >
+              <!-- Product Card - Clickable Link -->
+              <a
+                href="javascript:void(0)"
+                data-product-id={product.Id}
+                class="product-card-link"
+                onclick={handleProductClick}
+              >
+                <div class="slds-box slds-box_border product-card">
+                  <!-- Product Image -->
+                  <div class="product-image-container">
+                    <div
+                      class="slds-var-p-around_medium slds-text-align_center"
+                    >
+                      <lightning-icon
+                        icon-name="standard:products"
+                        size="large"
+                        alternative-text="Product Image"
+                      >
+                      </lightning-icon>
+                    </div>
+                  </div>
+
+                  <!-- Product Information -->
+                  <div class="product-info">
+                    <h2
+                      class="slds-truncate slds-text-heading_medium"
+                      title={product.Name}
+                    >
+                      {product.Name}
+                    </h2>
+
+                    <!-- Product Code -->
+                    <p
+                      class="slds-text-body_small slds-var-p-top_x-small slds-var-p-bottom_small"
+                    >
+                      Code: {product.ProductCode}
+                    </p>
+
+                    <!-- Product Description -->
+                    <template if:true={product.Description}>
+                      <p
+                        class="slds-text-body_small slds-var-p-top_x-small slds-var-p-bottom_small"
+                      >
+                        {product.Description}
+                      </p>
+                    </template>
+
+                    <!-- Product Price -->
+                    <div class="slds-var-p-top_small">
+                      <template if:true={product.hasPrice}>
+                        <span class="slds-text-title_bold"
+                          >{product.displayPrice}</span
+                        >
+                      </template>
+                      <template if:false={product.hasPrice}>
+                        <span class="slds-text-color_weak slds-text-title_caps"
+                          >Price unavailable</span
+                        >
+                      </template>
+                    </div>
+
+                    <!-- Add to Cart Button -->
+                    <div class="slds-var-p-top_medium">
+                      <lightning-button
+                        variant="brand"
+                        label="Add to Cart"
+                        onclick={handleAddToCart}
+                        data-product-id={product.Id}
+                        data-product-name={product.Name}
+                        disabled={isAddingToCart}
+                        class="add-to-cart-button"
+                      >
+                      </lightning-button>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </lightning-layout-item>
+          </template>
+        </lightning-layout>
+
+        <!-- No Products Found -->
+        <template if:false={hasProducts}>
+          <div class="slds-var-p-around_medium slds-text-align_center">
+            <lightning-icon
+              icon-name="utility:search"
+              size="large"
+              alternative-text="No Results"
+            >
+            </lightning-icon>
+            <h3 class="slds-var-p-top_medium">No products found</h3>
+            <p class="slds-text-body_regular">
+              Try adjusting your search terms or browse all products.
+            </p>
+            <lightning-button
+              variant="neutral"
+              label="Show All Products"
+              onclick={handleShowAllProducts}
+              class="slds-var-p-top_small"
+            >
+            </lightning-button>
+          </div>
+        </template>
+      </template>
+    </div>
+  </lightning-card>
+</template>

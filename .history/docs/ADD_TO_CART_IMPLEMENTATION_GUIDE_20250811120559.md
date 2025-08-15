@@ -27,7 +27,7 @@
 ## 🏗️ **Architecture & Security**
 
 ### **Security Implementation**
-- **100% FLS/CRUD compliance** using SecurityUtils pattern
+- **100% FLS/CRUD compliance** using ENOS_SecurityUtils pattern
 - **User isolation** - Contact-based cart ownership
 - **Input validation** for all parameters
 - **Permission checks** before any data operations
@@ -52,7 +52,7 @@
 - **`productDetail.html`** - Streamlined template
 
 ### **Existing Integration**
-- **`SecurityUtils.cls`** - Security validation (already deployed)
+- **`ENOS_SecurityUtils.cls`** - Security validation (already deployed)
 - **`ProductController.cls`** - Product data fetching (already deployed)
 
 ---
@@ -60,7 +60,7 @@
 ## ⚙️ **Setup & Configuration**
 
 ### **Prerequisites**
-- [ ] **SecurityUtils.cls** deployed and active
+- [ ] **ENOS_SecurityUtils.cls** deployed and active
 - [ ] **ProductController.cls** deployed and functional
 - [ ] **Custom objects** deployed (Cart__c, Cart_Item__c)
 - [ ] **Permission sets** configured for community users
@@ -226,12 +226,12 @@
 #### **Cart Not Created**
 **Symptoms**: Users can't add items, "cart not found" errors
 **Possible Causes**:
-- CommunityRegistrationHandler not configured
+- ENOS_CommunityRegistrationHandler not configured
 - Permission set issues for Cart__c creation
 - Contact record not linked to User
 
 **Solutions**:
-1. **Verify CommunityRegistrationHandler** is set as registration handler
+1. **Verify ENOS_CommunityRegistrationHandler** is set as registration handler
 2. **Check permission set** includes Cart__c create permissions
 3. **Verify User-Contact relationship** is properly configured
 4. **Test user registration** process end-to-end
@@ -239,12 +239,12 @@
 #### **Add to Cart Fails**
 **Symptoms**: Error messages when adding products
 **Possible Causes**:
-- SecurityUtils validation failures
+- ENOS_SecurityUtils validation failures
 - Product pricing not available
 - Database constraints or validation rules
 
 **Solutions**:
-1. **Check SecurityUtils deployment** and compilation
+1. **Check ENOS_SecurityUtils deployment** and compilation
 2. **Verify product pricing** in standard price book
 3. **Review validation rules** on Cart_Item__c
 4. **Check debug logs** for specific error details
@@ -289,7 +289,7 @@
 - **Error messages** don't expose system details
 
 ### **Compliance Requirements**
-- **AppExchange standards** met with SecurityUtils integration
+- **AppExchange standards** met with ENOS_SecurityUtils integration
 - **GDPR compliance** for user data handling
 - **Accessibility standards** for inclusive design
 - **Performance benchmarks** for user experience
@@ -336,7 +336,7 @@
 - **Fast response times** for cart operations
 
 ### **Technical Quality**
-- **100% security compliance** with SecurityUtils
+- **100% security compliance** with ENOS_SecurityUtils
 - **Performance benchmarks** met consistently
 - **Error handling** provides clear user feedback
 - **Scalability** ready for future enhancements
@@ -346,9 +346,9 @@
 ## 🔄 **Integration Points**
 
 ### **Current Integration**
-- **SecurityUtils.cls** - Security validation
+- **ENOS_SecurityUtils.cls** - Security validation
 - **ProductController.cls** - Product data fetching
-- **CommunityRegistrationHandler** - Cart creation on registration
+- **ENOS_CommunityRegistrationHandler** - Cart creation on registration
 - **productDetail.lwc** - User interface for cart operations
 
 ### **Future Integration**

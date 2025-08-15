@@ -1,0 +1,31 @@
+{
+  "orgName": "ENOS Demo Environment",
+  "sourceOrg": "3SRSJ000000RfLd4AK",
+  "features": [
+    "EnableSetPasswordInApi",
+    "Communities",
+    "PersonAccounts",
+    "LiveAgent",
+    "Knowledge"
+  ],
+  "settings": {
+    "lightningExperienceSettings": {
+      "enableS1DesktopEnabled": true
+    },
+    "mobileSettings": {
+      "enableS1EncryptedStoragePref2": false
+    },
+    "communitiesSettings": {
+      "enableNetworksEnabled": true
+    },
+    "experienceBundleSettings": {
+      "enableExperienceBundleMetadata": true
+    },
+    "caseSettings": {
+      "enableEmailToCase": true
+    },
+    "knowledgeSettings": {
+      "enableKnowledge": true
+    }
+  }
+}

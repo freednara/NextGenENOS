@@ -2,14 +2,10 @@
   "mcpServers": {
     "salesforce": {
       "command": "npx",
-      "args": [
-        "@salesforce/mcp",
-        "--orgs",
-        "StoreConnect-Dev",
-        "--toolsets",
-        "metadata"
-      ],
-      "env": {}
+      "args": ["-y", "@modelcontextprotocol/server-salesforce"],
+      "env": {
+        "SALESFORCE_ORG_ALIAS": "ENOS-Dev"
+      }
     }
   }
 }

@@ -60,7 +60,7 @@
 
 ### **Updated Components**
 
-- **`CartController.cls`** - Added getCartItemCount() method
+- **`ENOS_CartController.cls`** - Added getCartItemCount() method
 - **`productDetail.js`** - Added LMS message publishing
 
 ---
@@ -69,7 +69,7 @@
 
 ### **Prerequisites**
 
-- [ ] **CartController.cls** deployed with getCartItemCount method
+- [ ] **ENOS_CartController.cls** deployed with getCartItemCount method
 - [ ] **ProductDetail component** updated with LMS publishing
 - [ ] **Custom objects** deployed (Cart**c, Cart_Item**c)
 - [ ] **Permission sets** configured for cart access
@@ -79,7 +79,7 @@
 
 1. **Deploy CartUpdate.messageChannel** metadata
 2. **Deploy miniCart.lwc** component bundle
-3. **Update CartController.cls** with new method
+3. **Update ENOS_CartController.cls** with new method
 4. **Update productDetail.lwc** with LMS integration
 5. **Test real-time updates** end-to-end
 
@@ -252,7 +252,7 @@
 
 1. **Test getCartItemCount** method in Developer Console
 2. **Verify User-Contact relationship** is configured
-3. **Check cart creation** in CommunityRegistrationHandler
+3. **Check cart creation** in ENOS_CommunityRegistrationHandler
 4. **Review permission set** configuration for cart access
 
 ---
@@ -286,7 +286,7 @@
 
 ### **Compliance Requirements**
 
-- **AppExchange standards** met with existing SecurityUtils
+- **AppExchange standards** met with existing ENOS_SecurityUtils
 - **GDPR compliance** for user data handling
 - **Accessibility standards** for inclusive design
 - **Performance benchmarks** for user experience
@@ -317,7 +317,7 @@
 
 - [ ] **CartUpdate.messageChannel** deployed and functional
 - [ ] **miniCart.lwc** deployed and displaying cart count
-- [ ] **CartController.getCartItemCount** method working
+- [ ] **ENOS_CartController.getCartItemCount** method working
 - [ ] **ProductDetail LMS publishing** tested successfully
 - [ ] **Real-time updates** working without page refresh
 - [ ] **Error handling** tested with various scenarios
@@ -348,7 +348,7 @@
 
 ### **Current Integration**
 
-- **CartController.getCartItemCount()** - Data fetching
+- **ENOS_CartController.getCartItemCount()** - Data fetching
 - **CartUpdate.messageChannel** - Communication channel
 - **ProductDetail component** - Message publishing
 - **Experience Cloud header** - Component placement
@@ -367,4 +367,4 @@
 **Version**: 1.0.0  
 **Last Updated**: December 2024  
 **Next Review**: After Sprint 1 completion  
-**Owner**: StoreConnect Development Team
+**Owner**: ENOS Development Team

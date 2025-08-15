@@ -1,4 +1,4 @@
-# 🏗️ **Experience Builder Setup Guide - StoreConnect Product Catalog**
+# 🏗️ **Experience Builder Setup Guide - ENOS Product Catalog**
 
 ## 📋 **Overview**
 
@@ -16,8 +16,8 @@ This guide walks you through setting up the complete product catalog experience 
 
 1. Click **New** to create a new Experience Cloud site
 2. Choose **Customer Account Portal** template
-3. Name it **"StoreConnect"**
-4. Set the URL path (e.g., `/storeconnect`)
+3. Name it **"ENOS"**
+4. Set the URL path (e.g., `/enos`)
 5. Click **Create**
 
 ---
@@ -112,11 +112,11 @@ The pages are now automatically linked! Here's how it works:
 - **HTML Structure:** Each product card is wrapped in a clickable `<a>` tag
 - **JavaScript Navigation:** Uses `NavigationMixin` to navigate to Product2 record pages
 - **Event Handling:** Add to Cart button prevents navigation (uses `stopPropagation`)
-- **URL Structure:** `/storeconnect/s/product-detail/[PRODUCT_ID]`
+- **URL Structure:** `/enos/s/product-detail/[PRODUCT_ID]`
 
 ---
 
-## 🎯 **Step 6: Test the Experience**
+## �� **Step 6: Test the Experience**
 
 ### **Test Product Browsing:**
 
@@ -180,7 +180,7 @@ Products Page → Click Product Card → Product Detail Page
 
 ### **Data Flow:**
 
-1. **Product Browser:** Calls `ProductController.getProducts()` and `ProductController.searchProducts()`
+1. **Product Browser:** Calls `ENOS_ProductController.getProducts()` and `ENOS_ProductController.searchProducts()`
 2. **Product Detail:** Gets product data via `@wire(getRecord)` using page `recordId`
 3. **Mini Cart:** Listens for cart update messages via Lightning Message Service
 
@@ -229,7 +229,7 @@ Products Page → Click Product Card → Product Detail Page
 
 1. **Products not displaying:**
    - Check that Product2 records exist in the org
-   - Verify ProductController Apex class is deployed
+   - Verify ENOS_ProductController Apex class is deployed
    - Check browser console for JavaScript errors
 
 2. **Navigation not working:**
@@ -262,4 +262,4 @@ Once you've completed all steps, you'll have a fully functional product catalog 
 - See real-time cart updates
 - Navigate seamlessly between pages
 
-Your StoreConnect e-commerce platform is now ready for customer use! 🚀
+Your ENOS e-commerce platform is now ready for customer use! 🚀

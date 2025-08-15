@@ -44,19 +44,22 @@ Please include the following information in your report:
 When contributing to NextGenENOS, please follow these security guidelines:
 
 #### Salesforce Security
+
 - Always use `with sharing` classes for data access
-- Implement proper CRUD/FLS checks using SecurityUtils
+- Implement proper CRUD/FLS checks using ENOS_SecurityUtils
 - Use bind variables in SOQL queries
 - Validate all user inputs
 - Never hardcode credentials or sensitive data
 
 #### JavaScript/LWC Security
+
 - Use CSP-compliant code
 - Sanitize user inputs
 - Avoid eval() and similar dynamic code execution
 - Use secure communication patterns
 
 #### Dependencies
+
 - Keep all dependencies up to date
 - Use `npm audit` to check for vulnerabilities
 - Review third-party packages before adding them
@@ -83,5 +86,6 @@ We follow responsible disclosure practices:
 ### Contact
 
 For questions about this security policy, contact:
+
 - Security Team: security@yourorganization.com
 - Project Maintainers: maintainers@yourorganization.com

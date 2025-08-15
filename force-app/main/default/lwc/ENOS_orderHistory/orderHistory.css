@@ -1,0 +1,319 @@
+/**
+ * @description CSS styles for the Order History component.
+ * 
+ * This file provides styling for the order history display interface,
+ * including statistics, data table, and responsive design.
+ * 
+ * @author ENOS Development Team
+ * @version 1.0.0
+ * @since 2024-12-01
+ */
+
+/* Order Summary Statistics */
+.slds-box.slds-theme_shade {
+  background: #f8f9fa;
+  border: 1px solid #dddbda;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.slds-box.slds-theme_shade:hover {
+  background: #ffffff;
+  border-color: #0070d2;
+  box-shadow: 0 2px 8px rgba(0, 112, 210, 0.15);
+  transform: translateY(-2px);
+}
+
+.slds-box.slds-theme_shade h3 {
+  color: #706e6b;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.slds-box.slds-theme_shade p {
+  color: #04844b;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Data Table Styling */
+lightning-datatable {
+  border: 1px solid #dddbda;
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+lightning-datatable .slds-table_header {
+  background: #f3f2f2;
+}
+
+lightning-datatable .slds-table_header th {
+  font-weight: 600;
+  color: #16325c;
+  padding: 0.75rem;
+}
+
+lightning-datatable .slds-table_body td {
+  padding: 0.75rem;
+  vertical-align: middle;
+}
+
+/* Row Hover Effects */
+lightning-datatable .slds-table_body tr:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+/* Action Buttons */
+.slds-text-align_center lightning-button {
+  margin: 0 0.5rem;
+  min-width: 140px;
+}
+
+/* Loading State */
+.slds-var-p-around_large {
+  padding: 2rem;
+}
+
+.slds-text-body_regular {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Error State */
+.slds-notify.slds-notify_alert {
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.slds-notify.slds-notify_alert h2 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.slds-notify__close lightning-button {
+  margin: 0;
+}
+
+/* No Orders State */
+.slds-var-p-around_large lightning-icon {
+  color: #706e6b;
+}
+
+.slds-text-heading_medium {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #16325c;
+}
+
+.slds-text-heading_small {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #16325c;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .slds-grid.slds-wrap {
+    flex-direction: column;
+  }
+
+  .slds-col.slds-size_1-of-3 {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .slds-var-p-around_small {
+    padding: 0.75rem;
+  }
+
+  .slds-text-align_center lightning-button {
+    width: 100%;
+    margin: 0.5rem 0;
+    min-width: auto;
+  }
+
+  .slds-var-p-around_large {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .slds-var-p-around_medium {
+    padding: 0.75rem;
+  }
+
+  .slds-var-p-around_large {
+    padding: 1rem;
+  }
+
+  .slds-text-heading_medium {
+    font-size: 1.125rem;
+  }
+
+  .slds-text-heading_small {
+    font-size: 0.875rem;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .slds-box.slds-theme_shade {
+    border-width: 2px;
+    background: #ffffff;
+  }
+
+  .slds-box.slds-theme_shade:hover {
+    border-width: 3px;
+  }
+
+  lightning-datatable {
+    border-width: 2px;
+  }
+
+  .slds-notify.slds-notify_alert {
+    border-width: 2px;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .slds-box.slds-theme_shade {
+    transition: none;
+  }
+
+  .slds-box.slds-theme_shade:hover {
+    transform: none;
+  }
+}
+
+/* Focus States for Accessibility */
+lightning-button:focus {
+  outline: 2px solid #0070d2;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+lightning-datatable:focus-within {
+  outline: 2px solid #0070d2;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Print Styles */
+@media print {
+  .slds-box.slds-theme_shade {
+    background: #ffffff;
+    border: 1px solid #000000;
+    box-shadow: none;
+  }
+
+  lightning-button {
+    display: none;
+  }
+
+  lightning-spinner {
+    display: none;
+  }
+}
+
+/* Custom Utility Classes */
+.slds-var-p-around_medium {
+  padding: 1rem;
+}
+
+.slds-var-p-around_small {
+  padding: 0.5rem;
+}
+
+.slds-var-p-around_large {
+  padding: 2rem;
+}
+
+.slds-var-m-bottom_large {
+  margin-bottom: 2rem;
+}
+
+.slds-var-m-bottom_medium {
+  margin-bottom: 1rem;
+}
+
+.slds-var-m-bottom_small {
+  margin-bottom: 0.5rem;
+}
+
+.slds-var-m-bottom_x-small {
+  margin-bottom: 0.25rem;
+}
+
+.slds-var-m-top_large {
+  margin-top: 2rem;
+}
+
+.slds-var-m-top_medium {
+  margin-top: 1rem;
+}
+
+.slds-var-m-right_medium {
+  margin-right: 1rem;
+}
+
+.slds-var-m-right_x-small {
+  margin-right: 0.25rem;
+}
+
+.slds-text-align_center {
+  text-align: center;
+}
+
+.slds-text-heading_large {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.slds-text-heading_medium {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.slds-text-heading_small {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.slds-text-body_regular {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.slds-text-color_success {
+  color: #04844b;
+}
+
+.slds-text-color_weak {
+  color: #706e6b;
+}
+
+.slds-theme_shade {
+  background: #f8f9fa;
+}
+
+.slds-theme_error {
+  background: #fef7f7;
+  color: #c23934;
+}
+
+.slds-theme_alert-texture {
+  background-image: linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.1) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.1) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 64px 64px;
+}

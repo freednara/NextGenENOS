@@ -4,7 +4,7 @@
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
     <description
-  >Individual line items within a shopping cart. Each Cart Item represents a specific product with its quantity, unit price, and calculated line total. Links to both the parent Cart and the associated Product2 record. Essential for StoreConnect e-commerce cart management and order processing.</description>
+  >Individual line items within a shopping cart. Each record represents a product added to the cart with quantity, pricing, and calculated totals. Links to the parent Cart__c record and the associated Product2 record. Essential for ENOS e-commerce cart management and order processing.</description>
     <enableActivities>true</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableFeeds>false</enableFeeds>

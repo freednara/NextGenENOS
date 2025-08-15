@@ -2,7 +2,7 @@
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <deploymentStatus>Deployed</deploymentStatus>
     <description
-  >Shopping cart container that holds cart items for community users. Each cart is associated with a Contact and tracks the overall cart status, subtotal, and total number of items. Used in the StoreConnect e-commerce platform to provide persistent shopping cart functionality.</description>
+  >Shopping cart container for community users. Each cart is linked to a Contact record and contains multiple cart items with calculated subtotal and total number of items. Used in the ENOS e-commerce platform to provide persistent shopping cart functionality.</description>
     <label>Cart</label>
     <nameField>
         <displayFormat>CART-{000000}</displayFormat>

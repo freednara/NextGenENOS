@@ -10,7 +10,7 @@
  * @version 1.0.0
  * @since 2024-12-01
  */
-global class CommunityRegistrationHandler implements Auth.RegistrationHandler {
+global class ENOS_CommunityRegistrationHandler implements Auth.RegistrationHandler {
 
     /**
      * @description This method is called when a user registers for the first time.

@@ -1,0 +1,197 @@
+[
+  {
+    "attributes": {
+      "type": "Product2",
+      "referenceId": "PremiumHeadphonesRef"
+    },
+    "Name": "Premium Wireless Headphones Pro",
+    "ProductCode": "AUD-001",
+    "Description": "Professional-grade wireless headphones with active noise cancellation, 30-hour battery life, and premium audio drivers. Perfect for audiophiles and professionals.",
+    "IsActive": true,
+    "Stock_Quantity__c": 75,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/400x400?text=Premium+Headphones+Pro"
+  },
+  {
+    "attributes": {
+      "type": "Product2",
+      "referenceId": "BluetoothSpeakerRef"
+    },
+    "Name": "Portable Bluetooth Speaker Max",
+    "ProductCode": "AUD-002",
+    "Description": "Rugged portable speaker with 40-hour battery, waterproof design, and 360-degree sound. Ideal for outdoor adventures and parties.",
+    "IsActive": true,
+    "Stock_Quantity__c": 120,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/400x400?text=Bluetooth+Speaker+Max"
+  },
+  {
+    "attributes": {
+      "type": "Product2",
+      "referenceId": "BusinessLaptopRef"
+    },
+    "Name": "Business Laptop Pro 15-inch",
+    "ProductCode": "COMP-001",
+    "Description": "High-performance business laptop with Intel i7 processor, 16GB RAM, 512GB SSD, and 15-inch 4K display.",
+    "IsActive": true,
+    "Stock_Quantity__c": 50,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/400x400?text=Business+Laptop+Pro"
+  },
+  {
+    "attributes": {
+      "type": "Product2",
+      "referenceId": "GamingDesktopRef"
+    },
+    "Name": "Gaming Desktop Powerhouse",
+    "ProductCode": "COMP-002",
+    "Description": "Ultimate gaming desktop with RTX 4080, AMD Ryzen 9, 32GB RAM, and RGB lighting.",
+    "IsActive": true,
+    "Stock_Quantity__c": 25,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/400x400?text=Gaming+Desktop"
+  },
+  {
+    "attributes": {
+      "type": "Product2",
+      "referenceId": "SmartphoneRef"
+    },
+    "Name": "Flagship Smartphone 256GB",
+    "ProductCode": "MOB-001",
+    "Description": "Latest flagship smartphone with 256GB storage, triple camera system, and 5G connectivity.",
+    "IsActive": true,
+    "Stock_Quantity__c": 100,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/400x400?text=Flagship+Smartphone"
+  },
+  {
+    "attributes": {
+      "type": "Product2",
+      "referenceId": "FitnessWatchRef"
+    },
+    "Name": "Smart Fitness Watch Pro",
+    "ProductCode": "MOB-002",
+    "Description": "Advanced fitness smartwatch with GPS, heart rate monitoring, and 14-day battery life.",
+    "IsActive": true,
+    "Stock_Quantity__c": 150,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/400x400?text=Smart+Fitness+Watch"
+  },
+  {
+    "attributes": {
+      "type": "Product2",
+      "referenceId": "GamingConsoleRef"
+    },
+    "Name": "Gaming Console Next-Gen",
+    "ProductCode": "GAM-001",
+    "Description": "Latest generation gaming console with 4K gaming and ray tracing capabilities.",
+    "IsActive": true,
+    "Stock_Quantity__c": 30,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/400x400?text=Gaming+Console"
+  },
+  {
+    "attributes": {
+      "type": "Product2",
+      "referenceId": "SmartHomeHubRef"
+    },
+    "Name": "Smart Home Hub Central",
+    "ProductCode": "IOT-001",
+    "Description": "Central smart home hub compatible with Alexa, Google, and Apple HomeKit.",
+    "IsActive": true,
+    "Stock_Quantity__c": 85,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/400x400?text=Smart+Home+Hub"
+  },
+  {
+    "attributes": {
+      "type": "Product2",
+      "referenceId": "MeshWiFiRef"
+    },
+    "Name": "Mesh WiFi System 3-Pack",
+    "ProductCode": "NET-002",
+    "Description": "Whole-home mesh WiFi system with seamless roaming and app control.",
+    "IsActive": true,
+    "Stock_Quantity__c": 75,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/400x400?text=Mesh+WiFi+System"
+  },
+  {
+    "attributes": {
+      "type": "Product2",
+      "referenceId": "PowerBankRef"
+    },
+    "Name": "Portable Power Bank 30000mAh",
+    "ProductCode": "PWR-001",
+    "Description": "High-capacity 30,000mAh power bank with fast charging and multiple ports.",
+    "IsActive": true,
+    "Stock_Quantity__c": 200,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/400x400?text=Power+Bank+30K"
+  },
+  {
+    "attributes": {
+      "type": "Product2",
+      "referenceId": "WirelessChargerRef"
+    },
+    "Name": "Wireless Charging Pad 15W",
+    "ProductCode": "PWR-005",
+    "Description": "Fast 15W wireless charging pad with cooling fan and LED indicators.",
+    "IsActive": true,
+    "Stock_Quantity__c": 250,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/400x400?text=Wireless+Charging+Pad"
+  },
+  {
+    "attributes": {
+      "type": "Product2",
+      "referenceId": "4KActionCameraRef"
+    },
+    "Name": "4K Action Camera",
+    "ProductCode": "AC-005",
+    "Description": "Ultra HD action camera with image stabilization and waterproof case. Perfect for sports, travel, and adventure photography.",
+    "IsActive": true,
+    "Stock_Quantity__c": 25,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/400x400?text=Action+Camera"
+  },
+  {
+    "attributes": {
+      "type": "Product2",
+      "referenceId": "GamingKeyboardRef"
+    },
+    "Name": "Gaming Mechanical Keyboard RGB",
+    "ProductCode": "GAM-002",
+    "Description": "Premium mechanical gaming keyboard with RGB backlighting and programmable keys.",
+    "IsActive": true,
+    "Stock_Quantity__c": 120,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/400x400?text=Gaming+Keyboard"
+  },
+  {
+    "attributes": {
+      "type": "Product2",
+      "referenceId": "VRHeadsetRef"
+    },
+    "Name": "VR Headset Immersive",
+    "ProductCode": "GAM-005",
+    "Description": "Virtual reality headset with 4K display and spatial tracking technology.",
+    "IsActive": true,
+    "Stock_Quantity__c": 40,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/400x400?text=VR+Headset"
+  },
+  {
+    "attributes": {
+      "type": "Product2",
+      "referenceId": "SmartLEDBulbsRef"
+    },
+    "Name": "Smart LED Bulbs Color",
+    "ProductCode": "IOT-002",
+    "Description": "WiFi-enabled smart LED bulbs with 16 million colors and voice control.",
+    "IsActive": true,
+    "Stock_Quantity__c": 300,
+    "Is_Top_Seller__c": true,
+    "Image_URL__c": "https://via.placeholder.com/400x400?text=Smart+LED+Bulbs"
+  }
+]

@@ -1,0 +1,170 @@
+<template>
+    <lightning-card title="Dynamic Apex Integration Tester" icon-name="utility:test">
+        <div class="slds-p-around_medium">
+            <!-- Test Summary -->
+            <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-of-4">
+                    <div class="slds-box slds-text-align_center">
+                        <div class="slds-text-heading_large slds-text-color_success">
+                            {successCount}
+                        </div>
+                        <div class="slds-text-body_small">Passed</div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-4">
+                    <div class="slds-box slds-text-align_center">
+                        <div class="slds-text-heading_large slds-text-color_error">
+                            {errorCount}
+                        </div>
+                        <div class="slds-text-body_small">Failed</div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-4">
+                    <div class="slds-box slds-text-align_center">
+                        <div class="slds-text-heading_large slds-text-color_info">
+                            {totalTests}
+                        </div>
+                        <div class="slds-text-body_small">Total</div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-4">
+                    <div class="slds-box slds-text-align_center">
+                        <div class="slds-text-heading_large slds-text-color_success">
+                            {successRate}%
+                        </div>
+                        <div class="slds-text-body_small">Success Rate</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="slds-m-bottom_medium">
+                <lightning-button-group>
+                    <lightning-button 
+                        label="Run Basic Tests" 
+                        icon-name="utility:play" 
+                        onclick={handleRunBasicTests}
+                        variant="brand">
+                    </lightning-button>
+                    <lightning-button 
+                        label="Run Advanced Tests" 
+                        icon-name="utility:settings" 
+                        onclick={handleRunAdvancedTests}
+                        variant="neutral">
+                    </lightning-button>
+                    <lightning-button 
+                        label="Run Performance Tests" 
+                        icon-name="utility:metrics" 
+                        onclick={handleRunPerformanceTests}
+                        variant="neutral">
+                    </lightning-button>
+                    <lightning-button 
+                        label="Refresh All" 
+                        icon-name="utility:refresh" 
+                        onclick={handleRefreshAll}
+                        variant="base">
+                    </lightning-button>
+                    <lightning-button 
+                        label="Clear Results" 
+                        icon-name="utility:clear" 
+                        onclick={handleClearResults}
+                        variant="base">
+                    </lightning-button>
+                </lightning-button-group>
+            </div>
+
+            <!-- Loading State -->
+            <template if:true={isLoading}>
+                <div class="slds-is-relative slds-p-around_large">
+                    <lightning-spinner alternative-text="Running tests..." size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Test Results -->
+            <template if:true={hasTestResults}>
+                <div class="slds-m-top_large">
+                    <div class="slds-docked-form-footer">
+                        <lightning-button 
+                            label={showDetailsLabel} 
+                            icon-name="utility:chevronright" 
+                            onclick={handleToggleAdvancedTests}
+                            variant="base">
+                        </lightning-button>
+                    </div>
+
+                    <div class="slds-table_header">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="Test Name">Test Name</div>
+                                    </th>
+                                    <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="Status">Status</div>
+                                    </th>
+                                    <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="Message">Message</div>
+                                    </th>
+                                    <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="Timestamp">Timestamp</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={testResults} for:item="result">
+                                    <tr key={result.testName} class="slds-hint-parent">
+                                        <td>
+                                            <div class="slds-truncate" title={result.testName}>
+                                                {result.testName}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate">
+                                                <lightning-badge 
+                                                    label={result.status} 
+                                                    class={result.statusClass}>
+                                                </lightning-badge>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title={result.message}>
+                                                {result.message}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title={result.timestamp}>
+                                                {result.timestamp}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </template>
+
+            <!-- No Results State -->
+            <template if:false={hasTestResults}>
+                <template if:false={isLoading}>
+                    <div class="slds-text-align_center slds-p-around_large">
+                        <lightning-icon icon-name="utility:info" size="medium" class="slds-m-bottom_small"></lightning-icon>
+                        <p class="slds-text-body_regular">No test results available. Click "Run Basic Tests" to start testing.</p>
+                    </div>
+                </template>
+            </template>
+
+            <!-- Performance Metrics -->
+            <template if:true={showAdvancedTests}>
+                <template if:true={hasPerformanceMetrics}>
+                    <div class="slds-m-top_large">
+                        <h3 class="slds-text-heading_medium slds-m-bottom_medium">Performance Metrics</h3>
+                        <div class="slds-box">
+                            <pre class="slds-text-body_small">{performanceMetricsJson}</pre>
+                        </div>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>

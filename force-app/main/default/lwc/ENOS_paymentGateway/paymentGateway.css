@@ -1,0 +1,294 @@
+/**
+ * @description CSS styles for the Payment Gateway component.
+ * 
+ * This file provides styling for the secure payment form interface,
+ * including form layout, validation states, and responsive design.
+ * 
+ * @author ENOS Development Team
+ * @version 1.0.0
+ * @since 2024-12-01
+ */
+
+/* Payment Form Container */
+.payment-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Form Element Styling */
+.slds-form-element {
+  margin-bottom: 1rem;
+}
+
+.slds-form-element .slds-form-element__label {
+  font-weight: 600;
+  color: #16325c;
+  margin-bottom: 0.25rem;
+}
+
+/* Card Number Input Styling */
+.card-number-input {
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.1em;
+}
+
+.card-number-input input {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Expiry Date Input Styling */
+.expiry-input input {
+  font-family: "Courier New", monospace;
+  text-align: center;
+}
+
+/* CVC Input Styling */
+.cvc-input input {
+  font-family: "Courier New", monospace;
+  text-align: center;
+  letter-spacing: 0.2em;
+}
+
+/* Billing Address Section */
+.payment-form h3 {
+  color: #16325c;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #dddbda;
+}
+
+/* Security Notice Box */
+.payment-form .slds-box {
+  background: #f8f9fa;
+  border: 1px solid #dddbda;
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+}
+
+.payment-form .slds-box .slds-icon {
+  color: #04844b;
+}
+
+.payment-form .slds-box span {
+  color: #706e6b;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+/* Action Buttons */
+.payment-form .slds-text-align_center {
+  margin-top: 2rem;
+}
+
+.payment-form lightning-button {
+  margin: 0 0.5rem;
+  min-width: 140px;
+}
+
+/* Loading State */
+.payment-form .slds-spinner_container {
+  margin: 1rem 0;
+}
+
+.payment-form .slds-spinner_container p {
+  margin-top: 0.5rem;
+  color: #706e6b;
+  font-size: 0.875rem;
+}
+
+/* Error State */
+.payment-form .slds-notify_alert {
+  margin: 1rem 0;
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+  background: #fef7f7;
+  border: 1px solid #c23934;
+  color: #c23934;
+}
+
+.payment-form .slds-notify_alert .slds-icon {
+  margin-right: 0.5rem;
+}
+
+/* Form Validation Styling */
+.payment-form lightning-input[data-error="true"] {
+  border-color: #c23934;
+}
+
+.payment-form lightning-input[data-error="true"] .slds-input {
+  border-color: #c23934;
+  box-shadow: 0 0 3px rgba(194, 57, 52, 0.3);
+}
+
+/* Success State Styling */
+.payment-form lightning-input[data-success="true"] .slds-input {
+  border-color: #04844b;
+  box-shadow: 0 0 3px rgba(4, 132, 75, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .payment-form {
+    max-width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  .payment-form .slds-grid {
+    flex-direction: column;
+  }
+
+  .payment-form .slds-col {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .payment-form .slds-var-p-right_x-small,
+  .payment-form .slds-var-p-left_x-small {
+    padding: 0;
+  }
+
+  .payment-form lightning-button {
+    width: 100%;
+    margin: 0.5rem 0;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .payment-form .slds-var-p-around_medium {
+    padding: 0.75rem;
+  }
+
+  .payment-form h3 {
+    font-size: 1.125rem;
+  }
+
+  .payment-form .slds-form-element__label {
+    font-size: 0.875rem;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .payment-form .slds-box {
+    border-width: 2px;
+    background: #ffffff;
+  }
+
+  .payment-form h3 {
+    border-bottom-width: 3px;
+  }
+
+  .payment-form lightning-input[data-error="true"] .slds-input {
+    border-width: 2px;
+  }
+
+  .payment-form lightning-input[data-success="true"] .slds-input {
+    border-width: 2px;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .payment-form lightning-input .slds-input {
+    transition: none;
+  }
+
+  .payment-form .slds-spinner {
+    animation: none;
+  }
+}
+
+/* Focus States for Accessibility */
+.payment-form lightning-input:focus-within .slds-input {
+  outline: 2px solid #0070d2;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+.payment-form lightning-button:focus {
+  outline: 2px solid #0070d2;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Print Styles */
+@media print {
+  .payment-form lightning-button,
+  .payment-form .slds-spinner_container {
+    display: none;
+  }
+
+  .payment-form .slds-box {
+    background: #ffffff;
+    border: 1px solid #000000;
+  }
+}
+
+/* Custom Utility Classes */
+.slds-var-p-around_medium {
+  padding: 1rem;
+}
+
+.slds-var-p-around_small {
+  padding: 0.75rem;
+}
+
+.slds-var-p-right_x-small {
+  padding-right: 0.25rem;
+}
+
+.slds-var-p-left_x-small {
+  padding-left: 0.25rem;
+}
+
+.slds-var-m-bottom_medium {
+  margin-bottom: 1rem;
+}
+
+.slds-var-m-bottom_small {
+  margin-bottom: 0.5rem;
+}
+
+.slds-var-m-top_medium {
+  margin-top: 1rem;
+}
+
+.slds-var-m-top_large {
+  margin-top: 2rem;
+}
+
+.slds-var-m-right_small {
+  margin-right: 0.5rem;
+}
+
+.slds-text-align_center {
+  text-align: center;
+}
+
+.slds-text-heading_small {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.slds-text-body_small {
+  font-size: 0.875rem;
+}
+
+.slds-text-color_weak {
+  color: #706e6b;
+}
+
+.slds-text-color_success {
+  color: #04844b;
+}
+
+.slds-theme_shade {
+  background: #f8f9fa;
+}
+
+.slds-grid_align-center {
+  align-items: center;
+}

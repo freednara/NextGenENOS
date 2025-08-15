@@ -39,8 +39,8 @@
 ## 📁 **Files Created/Modified**
 
 ### **New Apex Class**
-- **`OrderService.cls`** - Transactional order creation and management
-- **`OrderService.cls-meta.xml`** - Class metadata
+- **`ENOS_OrderService.cls`** - Transactional order creation and management
+- **`ENOS_OrderService.cls-meta.xml`** - Class metadata
 
 ### **New LWC Component**
 - **`orderHistory.lwc`** - Complete component bundle for order history display
@@ -59,12 +59,12 @@
 ### **Prerequisites**
 - [ ] **paymentGateway.lwc** component deployed and functional
 - **Checkout.flow** updated with all screens
-- **OrderService.cls** deployed and accessible
+- **ENOS_OrderService.cls** deployed and accessible
 - **orderHistory.lwc** component deployed
-- **SecurityUtils.cls** available for security checks
+- **ENOS_SecurityUtils.cls** available for security checks
 
 ### **Deployment Steps**
-1. **Deploy OrderService.cls** and metadata
+1. **Deploy ENOS_OrderService.cls** and metadata
 2. **Deploy orderHistory.lwc** component bundle
 3. **Update Checkout.flow** with complete flow
 4. **Test complete checkout process** end-to-end
@@ -74,7 +74,7 @@
 
 ## 🔧 **Component Architecture**
 
-### **OrderService Apex Class**
+### **ENOS_OrderService Apex Class**
 
 #### **Core Functionality**
 - **Transactional Order Creation** - Atomic order processing
@@ -91,7 +91,7 @@
 
 #### **Security Implementation**
 - **`with sharing`** - Enforces user record access
-- **SecurityUtils integration** - FLS/CRUD enforcement
+- **ENOS_SecurityUtils integration** - FLS/CRUD enforcement
 - **Ownership validation** - Users can only access their data
 - **Transaction rollback** - Data consistency on failure
 
@@ -139,7 +139,7 @@
 
 ## 🔧 **Configuration Options**
 
-### **OrderService Configuration**
+### **ENOS_OrderService Configuration**
 - **Order Status** - Configurable order status values
 - **Pricebook Selection** - Standard or custom pricebook usage
 - **Payment Processing** - Gateway integration points
@@ -198,13 +198,13 @@
 #### **Order Creation Fails**
 **Symptoms**: Order creation action fails in Flow
 **Possible Causes**:
-- OrderService class not deployed or accessible
+- ENOS_OrderService class not deployed or accessible
 - Security permission issues
 - Cart data validation failures
 - Payment token issues
 
 **Solutions**:
-1. **Verify OrderService deployment** and accessibility
+1. **Verify ENOS_OrderService deployment** and accessibility
 2. **Check security permissions** and sharing rules
 3. **Validate cart data** and item availability
 4. **Test payment token** generation and format
@@ -296,7 +296,7 @@
 ## ✅ **Implementation Checklist**
 
 **Before Going Live**:
-- [ ] **OrderService.cls** deployed and functional
+- [ ] **ENOS_OrderService.cls** deployed and functional
 - [ ] **orderHistory.lwc** component deployed
 - [ ] **Checkout.flow** updated with complete flow
 - [ ] **Complete checkout process** tested end-to-end

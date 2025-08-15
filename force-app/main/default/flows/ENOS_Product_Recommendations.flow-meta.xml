@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <description>Product recommendations flow for ENOS - analyzes user behavior and suggests products</description>
+    <environments>Default</environments>
+    <interviewLabel>ENOS Product Recommendations {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>ENOS Product Recommendations</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    
+    <!-- Start -->
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_User_Behavior</targetReference>
+        </connector>
+    </start>
+    
+    <!-- Get User Behavior Data -->
+    <recordLookups>
+        <name>Get_User_Behavior</name>
+        <label>Get User Behavior Data</label>
+        <locationX>176</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Analyze_Behavior</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Contact__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>contactId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>View_Tracking__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    
+    <!-- Analyze Behavior -->
+    <decisions>
+        <name>Analyze_Behavior</name>
+        <label>Analyze User Behavior</label>
+        <locationX>352</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Get_Recommendations</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default</defaultConnectorLabel>
+        <outcomes>
+            <name>High_Engagement</name>
+            <label>High Engagement</label>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </outcomes>
+        <outcomes>
+            <name>Low_Engagement</name>
+            <label>Low Engagement</label>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </outcomes>
+    </decisions>
+    
+    <!-- Get Recommendations -->
+    <recordLookups>
+        <name>Get_Recommendations</name>
+        <label>Get Product Recommendations</label>
+        <locationX>528</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Send_Recommendations</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Is_Top_Seller__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Product2</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    
+    <!-- Send Recommendations -->
+    <actionCalls>
+        <name>Send_Recommendations</name>
+        <label>Send Product Recommendations</label>
+        <locationX>704</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_User_Preferences</targetReference>
+        </connector>
+        <inputAssignments>
+            <name>toAddress</name>
+            <value>
+                <elementReference>userEmail</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>subject</name>
+            <value>
+                <stringValue>Personalized Product Recommendations</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>body</name>
+            <value>
+                <stringValue>Based on your browsing history, here are some products you might like...</stringValue>
+            </value>
+        </inputAssignments>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    
+    <!-- Update User Preferences -->
+    <recordUpdates>
+        <name>Update_User_Preferences</name>
+        <label>Update User Preferences</label>
+        <locationX>880</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Success_Message</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Last_Recommendation_Date__c</field>
+            <value>
+                <dateTimeValue>{!$Flow.CurrentDateTime}</dateTimeValue>
+            </value>
+        </inputAssignments>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>contactId</elementReference>
+            </value>
+        </filters>
+        <object>Contact</object>
+    </recordUpdates>
+    
+    <!-- Success Message -->
+    <screens>
+        <name>Success_Message</name>
+        <label>Recommendations Sent</label>
+        <locationX>1056</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+        <fields>
+            <name>Recommendations_Sent</name>
+            <fieldText>Product recommendations have been sent successfully!</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+    </screens>
+    
+    <!-- Flow Variables -->
+    <variables>
+        <name>contactId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>userEmail</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

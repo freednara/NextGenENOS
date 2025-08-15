@@ -1,4 +1,4 @@
-# StoreConnect Master Build Plan - Complete End-to-End Blueprint
+# ENOS Master Build Plan - Complete End-to-End Blueprint
 
 ## **Strategic Overview: Production-Ready E-commerce Platform**
 
@@ -13,7 +13,7 @@
 ### **Pillar 1: Security & Compliance**
 
 - **All code must pass Salesforce Code Analyzer scans**
-- **100% implementation of SecurityUtils class for FLS/CRUD checks**
+- **100% implementation of ENOS_SecurityUtils class for FLS/CRUD checks**
 - **No exceptions - security is non-negotiable**
 
 ### **Pillar 2: Performance & Scalability**
@@ -57,7 +57,7 @@
 
 #### **4. Build Security Foundation**
 
-- [x] **SecurityUtils.cls** created with comprehensive FLS/CRUD methods
+- [x] **ENOS_SecurityUtils.cls** created with comprehensive FLS/CRUD methods
 - [x] **Security implementation guide** documented
 - [x] **Security pattern enforcement** established
 
@@ -95,22 +95,22 @@
 
 - [ ] **Experience Cloud site** created with standard template
 - [ ] **Login and Self-Registration** components configured
-- [ ] **CommunityRegistrationHandler** Apex class created
+- [ ] **ENOS_CommunityRegistrationHandler** Apex class created
   - Automatically creates `Cart__c` record for new users
-  - Uses SecurityUtils for permission validation
+  - Uses ENOS_SecurityUtils for permission validation
 
 #### **3. Build User Interface (LWCs)**
 
 **productBrowser.lwc**
 
 - [ ] **Fetches active Product2 records** via cacheable Apex method
-- [ ] **SecurityUtils integration** for field read access validation
+- [ ] **ENOS_SecurityUtils integration** for field read access validation
 - [ ] **Product catalog display** with search and filtering
 
 **productDetail.lwc**
 
 - [ ] **Single product detail view**
-- [ ] **Add to Cart functionality** with SecurityUtils validation
+- [ ] **Add to Cart functionality** with ENOS_SecurityUtils validation
 - [ ] **Product image and description** display
 
 **cart.lwc**
@@ -186,7 +186,7 @@
 
 ### **✅ Completed (Foundation Ready)**
 
-- [x] **SecurityUtils.cls** - Comprehensive security utility class
+- [x] **ENOS_SecurityUtils.cls** - Comprehensive security utility class
 - [x] **Automated CI/CD** - GitHub Actions with Salesforce Code Analyzer
 - [x] **Security implementation guide** - Developer documentation
 - [x] **Field descriptions template** - Admin documentation
@@ -196,7 +196,7 @@
 
 - [ ] **Data model deployment** - All custom objects and fields
 - [ ] **Field descriptions population** - AppExchange standard documentation
-- [ ] **Permission set creation** - StoreConnect Community User
+- [ ] **Permission set creation** - ENOS Community User
 - [ ] **Schema validation** - Complete testing and verification
 
 ### **📋 Sprint 1 Dependencies for Phase 1**
@@ -212,7 +212,7 @@
 ### **Sprint 1: Foundation (Current)**
 
 **Focus**: Data model, security foundation, documentation  
-**Deliverables**: Complete schema, SecurityUtils, automated scanning  
+**Deliverables**: Complete schema, ENOS_SecurityUtils, automated scanning  
 **Definition of Done**: All items in Sprint 1 completion checklist
 
 ### **Sprint 2: Authentication & Basic UI**
@@ -234,7 +234,7 @@
 ### **Security Gates**
 
 - [ ] **Salesforce Code Analyzer** - Zero critical/high security violations
-- [ ] **SecurityUtils integration** - 100% of Apex methods use security checks
+- [ ] **ENOS_SecurityUtils integration** - 100% of Apex methods use security checks
 - [ ] **Permission validation** - All CRUD/FLS operations validated
 
 ### **Performance Gates**
@@ -296,7 +296,7 @@
 ### **Development Team**
 
 - **LWC development** with security-first approach
-- **Apex development** using SecurityUtils pattern
+- **Apex development** using ENOS_SecurityUtils pattern
 - **Flow development** for business process automation
 
 ### **Escalation Path**
@@ -329,9 +329,9 @@
 
 ---
 
-**This Master Build Plan ensures StoreConnect is built with production readiness from day one, meeting AppExchange standards and providing a scalable foundation for future growth.**
+**This Master Build Plan ensures ENOS is built with production readiness from day one, meeting AppExchange standards and providing a scalable foundation for future growth.**
 
 **Version**: 1.0.0  
 **Last Updated**: December 2024  
 **Next Review**: After Sprint 1 completion  
-**Owner**: StoreConnect Development Team
+**Owner**: ENOS Development Team

@@ -1,8 +1,8 @@
 # Ignore Files Configuration Guide
 
-## **Managing Unnecessary Files in Your StoreConnect Repository**
+## **Managing Unnecessary Files in Your ENOS Repository**
 
-**Purpose**: This guide explains how to configure and use the various ignore files in your StoreConnect Salesforce DX project to exclude unnecessary files from version control and deployments.
+**Purpose**: This guide explains how to configure and use the various ignore files in your ENOS Salesforce DX project to exclude unnecessary files from version control and deployments.
 
 ---
 
@@ -434,9 +434,9 @@ git commit -m "Remove filename from tracking"
 - **Scalable architecture** for growing projects
 - **Maintainable codebase** through proper organization
 
-**Your StoreConnect project now has comprehensive ignore file configuration that ensures security, performance, and maintainability while following Salesforce DX best practices.**
+**Your ENOS project now has comprehensive ignore file configuration that ensures security, performance, and maintainability while following Salesforce DX best practices.**
 
 **Version**: 1.0.0  
 **Last Updated**: December 2024  
 **Next Review**: Monthly  
-**Owner**: StoreConnect Development Team
+**Owner**: ENOS Development Team

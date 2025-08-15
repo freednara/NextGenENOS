@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Cart_Item_Quantity_Validation</fullName>
+    <active>true</active>
+    <description>Validates that cart item quantity is positive and within reasonable limits</description>
+    <errorConditionFormula>OR(Quantity__c &lt;= 0, Quantity__c &gt; 999)</errorConditionFormula>
+    <errorDisplayField>Quantity__c</errorDisplayField>
+    <errorMessage>Quantity must be between 1 and 999. Please contact your administrator if you need a higher limit.</errorMessage>
+</ValidationRule>

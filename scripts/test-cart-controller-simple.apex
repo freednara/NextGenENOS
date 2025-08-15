@@ -1,15 +1,15 @@
 // Simple test script to verify CartController read methods
 try {
-    System.debug('=== Testing CartController.getCartItemCount() ===');
+    System.debug('=== Testing ENOS_CartController.getCartItemCount() ===');
     
     // Test getting cart item count
-    Decimal cartCount = CartController.getCartItemCount();
+    Decimal cartCount = ENOS_CartController.getCartItemCount();
     System.debug('getCartItemCount() returned: ' + cartCount);
     
-    System.debug('=== Testing CartController.getCartItems() ===');
+    System.debug('=== Testing ENOS_CartController.getCartItems() ===');
     
     // Test getting cart items
-    List<Cart_Item__c> cartItems = CartController.getCartItems();
+    List<Cart_Item__c> cartItems = ENOS_CartController.getCartItems();
     System.debug('getCartItems() returned ' + cartItems.size() + ' items');
     
     System.debug('=== Test completed successfully! ===');

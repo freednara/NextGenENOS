@@ -26,7 +26,7 @@ public with sharing class SecurityUtils {
      * List<String> fieldsToSecure = new List<String>{
      *     'Id', 'Quantity__c', 'Unit_Price__c', 'Line_Total__c'
      * };
-     * SecurityUtils.checkFieldReadAccess('Cart_Item__c', fieldsToSecure);
+     * ENOS_SecurityUtils.checkFieldReadAccess('Cart_Item__c', fieldsToSecure);
      */
     public static void checkFieldReadAccess(String sObjectName, List<String> fieldsToCheck) {
         // Validate input parameters
@@ -60,7 +60,7 @@ public with sharing class SecurityUtils {
      * @throws AuraHandledException if access is denied
      * 
      * @example
-     * SecurityUtils.checkObjectCreateable('Cart_Item__c');
+     * ENOS_SecurityUtils.checkObjectCreateable('Cart_Item__c');
      */
     public static void checkObjectCreateable(String sObjectName) {
         if (String.isBlank(sObjectName)) {
@@ -82,7 +82,7 @@ public with sharing class SecurityUtils {
      * @throws AuraHandledException if access is denied
      * 
      * @example
-     * SecurityUtils.checkObjectUpdateable('Cart_Item__c');
+     * ENOS_SecurityUtils.checkObjectUpdateable('Cart_Item__c');
      */
     public static void checkObjectUpdateable(String sObjectName) {
         if (String.isBlank(sObjectName)) {
@@ -104,7 +104,7 @@ public with sharing class SecurityUtils {
      * @throws AuraHandledException if access is denied
      * 
      * @example
-     * SecurityUtils.checkObjectDeletable('Cart_Item__c');
+     * ENOS_SecurityUtils.checkObjectDeletable('Cart_Item__c');
      */
     public static void checkObjectDeletable(String sObjectName) {
         if (String.isBlank(sObjectName)) {
@@ -126,7 +126,7 @@ public with sharing class SecurityUtils {
      * @throws AuraHandledException if access is denied
      * 
      * @example
-     * SecurityUtils.checkObjectReadable('Cart_Item__c');
+     * ENOS_SecurityUtils.checkObjectReadable('Cart_Item__c');
      */
     public static void checkObjectReadable(String sObjectName) {
         if (String.isBlank(sObjectName)) {
@@ -149,8 +149,8 @@ public with sharing class SecurityUtils {
      * @throws AuraHandledException if access is denied for any required operation
      * 
      * @example
-     * SecurityUtils.checkCRUDPermissions('Cart_Item__c', 'ALL');
-     * SecurityUtils.checkCRUDPermissions('Cart_Item__c', 'CREATE');
+     * ENOS_SecurityUtils.checkCRUDPermissions('Cart_Item__c', 'ALL');
+     * ENOS_SecurityUtils.checkCRUDPermissions('Cart_Item__c', 'CREATE');
      */
     public static void checkCRUDPermissions(String sObjectName, String operation) {
         if (String.isBlank(sObjectName) || String.isBlank(operation)) {
@@ -196,7 +196,7 @@ public with sharing class SecurityUtils {
      * List<String> fieldsToEdit = new List<String>{
      *     'Quantity__c', 'Unit_Price__c'
      * };
-     * SecurityUtils.checkFieldEditAccess('Cart_Item__c', fieldsToEdit);
+     * ENOS_SecurityUtils.checkFieldEditAccess('Cart_Item__c', fieldsToEdit);
      */
     public static void checkFieldEditAccess(String sObjectName, List<String> fieldsToCheck) {
         // Validate input parameters
@@ -230,7 +230,7 @@ public with sharing class SecurityUtils {
      * @throws AuraHandledException if access is denied
      * 
      * @example
-     * SecurityUtils.validateRecordAccess(cartItemId, 'Cart_Item__c');
+     * ENOS_SecurityUtils.validateRecordAccess(cartItemId, 'Cart_Item__c');
      */
     public static void validateRecordAccess(Id recordId, String sObjectName) {
         if (recordId == null || String.isBlank(sObjectName)) {

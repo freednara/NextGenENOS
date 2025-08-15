@@ -1,4 +1,4 @@
-// Insert Sample Data for StoreConnect (Simplified Version)
+// Insert Sample Data for ENOS (Simplified Version)
 // Run this in Developer Console or via SF CLI
 
 // Insert Accounts

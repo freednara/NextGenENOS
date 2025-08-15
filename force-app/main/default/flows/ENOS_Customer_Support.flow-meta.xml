@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <description>Customer support flow for ENOS - handles support requests and escalations</description>
+    <environments>Default</environments>
+    <interviewLabel>ENOS Customer Support {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>ENOS Customer Support</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    
+    <!-- Start -->
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Support_Request_Screen</targetReference>
+        </connector>
+    </start>
+    
+    <!-- Support Request Screen -->
+    <screens>
+        <name>Support_Request_Screen</name>
+        <label>Support Request</label>
+        <locationX>176</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+        <fields>
+            <name>Support_Header</name>
+            <fieldText>How can we help you today?</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Issue_Type</name>
+            <fieldText>Issue Type</fieldText>
+            <fieldType>InputField</fieldType>
+        </fields>
+        <fields>
+            <name>Description</name>
+            <fieldText>Description</fieldText>
+            <fieldType>InputField</fieldType>
+        </fields>
+        <fields>
+            <name>Priority</name>
+            <fieldText>Priority</fieldText>
+            <fieldType>InputField</fieldType>
+        </fields>
+        <fields>
+            <name>Contact_Info</name>
+            <fieldText>Contact Information</fieldText>
+            <fieldType>InputField</fieldType>
+        </fields>
+    </screens>
+    
+    <!-- Create Support Case -->
+    <recordCreates>
+        <name>Create_Support_Case</name>
+        <label>Create Support Case</label>
+        <locationX>352</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Assign_Case</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <stringValue>ENOS Support: {!issueType}</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Description</field>
+            <value>
+                <elementReference>description</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Priority</field>
+            <value>
+                <elementReference>priority</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Origin</field>
+            <value>
+                <stringValue>Web</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>New</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Case</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    
+    <!-- Assign Case -->
+    <recordUpdates>
+        <name>Assign_Case</name>
+        <label>Assign Case</label>
+        <locationX>528</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Send_Confirmation</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>supportAgentId</elementReference>
+            </value>
+        </inputAssignments>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>createdCaseId</elementReference>
+            </value>
+        </filters>
+        <object>Case</object>
+    </recordUpdates>
+    
+    <!-- Send Confirmation -->
+    <actionCalls>
+        <name>Send_Confirmation</name>
+        <label>Send Confirmation</label>
+        <locationX>704</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Confirmation_Screen</targetReference>
+        </connector>
+        <inputAssignments>
+            <name>toAddress</name>
+            <value>
+                <elementReference>contactInfo</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>subject</name>
+            <value>
+                <stringValue>Support Request Received - Case #{!createdCaseNumber}</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>body</name>
+            <value>
+                <stringValue>Thank you for contacting ENOS support. Your case has been created and assigned to a support agent.</stringValue>
+            </value>
+        </inputAssignments>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    
+    <!-- Confirmation Screen -->
+    <screens>
+        <name>Confirmation_Screen</name>
+        <label>Support Request Submitted</label>
+        <locationX>880</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+        <fields>
+            <name>Confirmation_Message</name>
+            <fieldText>Your support request has been submitted successfully!</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Case_Number</name>
+            <fieldText>Case Number: {!createdCaseNumber}</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Next_Steps</name>
+            <fieldText>A support agent will contact you within 24 hours.</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+    </screens>
+    
+    <!-- Flow Variables -->
+    <variables>
+        <name>issueType</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>description</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>priority</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>contactInfo</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>supportAgentId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>createdCaseId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>createdCaseNumber</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

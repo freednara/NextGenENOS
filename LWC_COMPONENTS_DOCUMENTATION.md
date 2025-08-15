@@ -1,8 +1,8 @@
-# NextGenENOS Salesforce StoreConnect - LWC Components Documentation
+# NextGenENOS Salesforce ENOS - LWC Components Documentation
 
 ## Overview
 
-This document contains all Lightning Web Components (LWC) code from the NextGenENOS Salesforce StoreConnect project. The components are designed for an e-commerce platform with modern Salesforce DX practices.
+This document contains all Lightning Web Components (LWC) code from the NextGenENOS Salesforce ENOS project. The components are designed for an e-commerce platform with modern Salesforce DX practices.
 
 ## Table of Contents
 
@@ -26,8 +26,8 @@ This document contains all Lightning Web Components (LWC) code from the NextGenE
 import { LightningElement, wire, api } from "lwc";
 import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
-import getProducts from "@salesforce/apex/ProductController.getProducts";
-import searchProducts from "@salesforce/apex/ProductController.searchProducts";
+import getProducts from "@salesforce/apex/ENOS_ProductController.getProducts";
+import searchProducts from "@salesforce/apex/ENOS_ProductController.searchProducts";
 
 export default class ProductBrowser extends NavigationMixin(LightningElement) {
   @api recordId;
@@ -643,7 +643,7 @@ export default class OrderHistory extends LightningElement {
 
   // Computed properties
   get orders() {
-    // TODO: Implement OrderService integration
+    // TODO: Implement ENOS_OrderService integration
     return [];
   }
 
@@ -656,7 +656,7 @@ export default class OrderHistory extends LightningElement {
   }
 
   get hasError() {
-    return true; // OrderService is not available
+    return true; // ENOS_OrderService is not available
   }
 
   get totalOrders() {
@@ -735,7 +735,7 @@ import {
   MessageContext
 } from "lightning/messageService";
 import { refreshApex } from "@salesforce/apex";
-import getCartItemCount from "@salesforce/apex/CartController.getCartItemCount";
+import getCartItemCount from "@salesforce/apex/ENOS_CartController.getCartItemCount";
 
 // Message channel for cart updates
 const CART_UPDATE_CHANNEL = "CartUpdate";
@@ -940,7 +940,7 @@ export default class PaymentGateway extends NavigationMixin(LightningElement) {
 import { LightningElement, wire, api } from "lwc";
 import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
-import getProducts from "@salesforce/apex/ProductController.getProducts";
+import getProducts from "@salesforce/apex/ENOS_ProductController.getProducts";
 
 export default class ProductCatalog extends NavigationMixin(LightningElement) {
   @api recordId;
@@ -1234,7 +1234,7 @@ export default class ProductDetail extends LightningElement {
 import { LightningElement, api } from "lwc";
 
 /**
- * @description My Quotes component - Simplified version for StoreConnect
+ * @description My Quotes component - Simplified version for ENOS
  * Note: Quote functionality requires Enterprise Edition features
  */
 export default class MyQuotes extends LightningElement {
@@ -1264,7 +1264,7 @@ export default class MyQuotes extends LightningElement {
 
 ```javascript
 import { LightningElement, api, track } from "lwc";
-import getRecentlyViewed from "@salesforce/apex/StoreConnectController.getRecentlyViewed";
+import getRecentlyViewed from "@salesforce/apex/ENOSController.getRecentlyViewed";
 import { NavigationMixin } from "lightning/navigation";
 
 export default class RecentlyViewed extends NavigationMixin(LightningElement) {

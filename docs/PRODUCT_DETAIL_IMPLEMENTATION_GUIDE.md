@@ -1,8 +1,8 @@
 # Product Detail Implementation Guide
 
-## **Complete Product Detail View for StoreConnect**
+## **Complete Product Detail View for ENOS**
 
-**Purpose**: This guide covers the implementation of the Product Detail component, which displays comprehensive product information when users select a product from the browser.
+**Purpose**: This guide covers the implementation of the Product Detail component that provides comprehensive product information display, quantity selection, and Add to Cart functionality.
 
 ---
 
@@ -30,7 +30,7 @@
 
 ### **Security Implementation**
 
-- **100% FLS/CRUD compliance** using existing SecurityUtils in ProductController
+- **100% FLS/CRUD compliance** using existing ENOS_SecurityUtils in ENOS_ProductController
 - **Input validation** for quantity and user interactions
 - **Permission validation** before data access
 - **Error logging** for security monitoring
@@ -55,7 +55,7 @@
 
 ### **Apex Controller Integration**
 
-- **Uses existing `ProductController.getProductById()`** method
+- **Uses existing `ENOS_ProductController.getProductById()`** method
 - **No additional Apex code required** - leverages existing secure implementation
 
 ---
@@ -64,7 +64,7 @@
 
 ### **Prerequisites**
 
-- [ ] **ProductController.cls** deployed and active
+- [ ] **ENOS_ProductController.cls** deployed and active
 - [ ] **productBrowser.lwc** deployed and functional
 - **Custom objects** deployed (Product2 enhancements)
 - **Permission sets** configured for community users
@@ -184,14 +184,14 @@
 **Possible Causes**:
 
 - recordId not passed to component
-- ProductController method not accessible
+- ENOS_ProductController method not accessible
 - Permission set configuration issues
 - Product2 record not found
 
 **Solutions**:
 
 1. **Verify recordId parameter** is passed correctly
-2. **Check ProductController deployment** and compilation
+2. **Check ENOS_ProductController deployment** and compilation
 3. **Review permission set configuration**
 4. **Test with valid product ID** in Developer Console
 
@@ -259,7 +259,7 @@
 
 ### **Compliance Requirements**
 
-- **AppExchange standards** met with existing SecurityUtils
+- **AppExchange standards** met with existing ENOS_SecurityUtils
 - **GDPR compliance** for data handling
 - **Accessibility standards** for inclusive design
 - **Performance benchmarks** for user experience
@@ -289,7 +289,7 @@
 **Before Going Live**:
 
 - [ ] **productDetail.lwc** deployed and functional
-- [ ] **ProductController integration** tested successfully
+- [ ] **ENOS_ProductController integration** tested successfully
 - [ ] **Navigation flow** configured and tested
 - [ ] **Responsive design** verified on all devices
 - [ ] **Error handling** tested with various scenarios
@@ -310,7 +310,7 @@
 
 ### **Technical Quality**
 
-- **100% security compliance** with existing SecurityUtils
+- **100% security compliance** with existing ENOS_SecurityUtils
 - **Performance benchmarks** met consistently
 - **Code quality** maintained with proper documentation
 - **Scalability** ready for future enhancements
@@ -321,7 +321,7 @@
 
 ### **Current Integration**
 
-- **ProductController.getProductById()** - Data fetching
+- **ENOS_ProductController.getProductById()** - Data fetching
 - **@wire service** - Reactive data binding
 - **NavigationMixin** - Back navigation functionality
 
@@ -334,9 +334,9 @@
 
 ---
 
-**This Product Detail component provides the comprehensive product view experience for StoreConnect, implementing security-first development and production-ready quality standards while maintaining seamless integration with the existing product browser.**
+**This Product Detail component provides the comprehensive product view experience for ENOS, implementing security-first development and production-ready quality standards while maintaining seamless integration with the existing product browser.**
 
 **Version**: 1.0.0  
 **Last Updated**: December 2024  
 **Next Review**: After Sprint 1 completion  
-**Owner**: StoreConnect Development Team
+**Owner**: ENOS Development Team
