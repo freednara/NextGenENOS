@@ -1,6 +1,10 @@
 import { createElement } from 'lwc';
 import OrderHistory from 'c/orderHistory';
 
+jest.mock('@salesforce/label/c.OrderHistoryEnabled', () => ({ default: 'true' }), {
+    virtual: true
+});
+
 describe('c-order-history', () => {
     afterEach(() => {
         while (document.body.firstChild) {
@@ -42,6 +46,21 @@ describe('c-order-history', () => {
             });
             document.body.appendChild(element);
         }).not.toThrow();
+    });
+
+    it('throws error when feature flag disabled', () => {
+        jest.isolateModules(() => {
+            jest.doMock('@salesforce/label/c.OrderHistoryEnabled', () => ({ default: 'false' }), {
+                virtual: true
+            });
+            const DisabledOrderHistory = require('c/orderHistory').default;
+            expect(() => {
+                const element = createElement('c-order-history', {
+                    is: DisabledOrderHistory
+                });
+                document.body.appendChild(element);
+            }).toThrow();
+        });
     });
 
     it('has expected template structure', () => {
