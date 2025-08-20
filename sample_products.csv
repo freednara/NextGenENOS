@@ -1,0 +1,11 @@
+Name,ProductCode,Description,IsActive,Family,Stock_Quantity__c,Image_URL__c,Is_Top_Seller__c
+Laptop Pro,LP-001,High-performance laptop for professionals,true,Electronics,50,https://example.com/laptop-pro.jpg,true
+Wireless Mouse,WM-001,Ergonomic wireless mouse with precision tracking,true,Electronics,100,https://example.com/wireless-mouse.jpg,false
+Mechanical Keyboard,MK-001,RGB mechanical keyboard with customizable switches,true,Electronics,75,https://example.com/mechanical-keyboard.jpg,true
+4K Monitor,4K-001,27-inch 4K Ultra HD monitor with HDR,true,Electronics,30,https://example.com/4k-monitor.jpg,false
+Gaming Headset,GH-001,7.1 surround sound gaming headset with microphone,true,Electronics,60,https://example.com/gaming-headset.jpg,true
+USB-C Hub,UC-001,Multi-port USB-C hub with HDMI and SD card reader,true,Electronics,120,https://example.com/usb-c-hub.jpg,false
+Bluetooth Speaker,BS-001,Portable Bluetooth speaker with 20-hour battery,true,Electronics,80,https://example.com/bluetooth-speaker.jpg,false
+Webcam,WC-001,1080p HD webcam with built-in microphone,true,Electronics,90,https://example.com/webcam.jpg,true
+External SSD,ESSD-001,1TB external SSD with USB 3.2 Gen 2,true,Electronics,40,https://example.com/external-ssd.jpg,false
+Wireless Charger,WC-002,15W fast wireless charging pad,true,Electronics,70,https://example.com/wireless-charger.jpg,false

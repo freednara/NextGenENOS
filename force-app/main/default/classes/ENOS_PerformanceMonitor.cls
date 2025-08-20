@@ -45,20 +45,20 @@ public with sharing class ENOS_PerformanceMonitor {
           'CRITICAL' => ENOS_ConfigurationUtils.getPerformanceCriticalThreshold()
         },
         'CPU_USAGE' => new Map<String, Decimal>{
-          'WARNING' => 70,
-          'CRITICAL' => 90
+          'WARNING' => ENOS_ConfigurationUtils.getCpuWarningThreshold(),
+          'CRITICAL' => ENOS_ConfigurationUtils.getCpuCriticalThreshold()
         },
         'MEMORY_USAGE' => new Map<String, Decimal>{
-          'WARNING' => 80,
-          'CRITICAL' => 95
+          'WARNING' => ENOS_ConfigurationUtils.getMemoryWarningThreshold(),
+          'CRITICAL' => ENOS_ConfigurationUtils.getMemoryCriticalThreshold()
         },
         'ERROR_RATE' => new Map<String, Decimal>{
-          'WARNING' => 5,
-          'CRITICAL' => 10
+          'WARNING' => ENOS_ConfigurationUtils.getErrorRateWarningThreshold(),
+          'CRITICAL' => ENOS_ConfigurationUtils.getErrorRateCriticalThreshold()
         },
         'HEAP_SIZE' => new Map<String, Decimal>{
-          'WARNING' => 5000000,
-          'CRITICAL' => 6000000
+          'WARNING' => ENOS_ConfigurationUtils.getHeapWarningThreshold(),
+          'CRITICAL' => ENOS_ConfigurationUtils.getHeapCriticalThreshold()
         }
       };
 
@@ -158,9 +158,8 @@ public with sharing class ENOS_PerformanceMonitor {
 
       return dashboard;
     } catch (Exception e) {
-      throw new AuraHandledException(
-        'Failed to retrieve system health: ' + e.getMessage()
-      );
+      ENOS_ExceptionUtils.throwOperationFailure('retrieve system health', e);
+      return null;
     }
   }
 
@@ -495,19 +494,17 @@ public with sharing class ENOS_PerformanceMonitor {
       // Use structured logging
       ENOS_LoggingUtils.logWarning('Performance Alert', severity + ': ' + message);
 
-      // Could integrate with:
-      // - Email notifications (if enabled)
+      // Use consolidated notification method for all channels
       if (ENOS_ConfigurationUtils.isPerformanceAlertEmailEnabled()) {
-        sendPerformanceAlertEmail(severity, message);
+        sendNotification('email', severity, message);
       }
       
-      // - Slack notifications (if enabled)
       if (ENOS_ConfigurationUtils.isPerformanceAlertSlackEnabled()) {
-        sendPerformanceAlertSlack(severity, message);
+        sendNotification('slack', severity, message);
       }
       
-      // - Platform events for real-time monitoring dashboards
-      publishPerformanceEvent(severity, message);
+      // Always publish platform event for real-time monitoring
+      sendNotification('event', severity, message);
       
     } catch (Exception e) {
       ENOS_LoggingUtils.logError('Performance Alert', e);
@@ -521,42 +518,199 @@ public with sharing class ENOS_PerformanceMonitor {
     return new PerformanceTimer(operationName);
   }
 
+  // ============================================================================
+  // CONSOLIDATED NOTIFICATION METHODS - REDUCES DUPLICATION
+  // ============================================================================
+  
   /**
-   * @description Sends performance alert via email (placeholder for future implementation)
+   * @description Generic notification method that handles multiple channels
+   * Consolidates multiple placeholder notification methods into a single, configurable method
+   * @param channel The notification channel (email, slack, event)
    * @param severity The alert severity
    * @param message The alert message
    */
-  private static void sendPerformanceAlertEmail(String severity, String message) {
-    // TODO: Implement email notification system
-    // This could integrate with Salesforce Email Services or external email providers
-    ENOS_LoggingUtils.logInfo('Performance Alert Email', 'Email alert sent: ' + severity + ' - ' + message);
+  private static void sendNotification(String channel, String severity, String message) {
+    try {
+      switch on channel.toLowerCase() {
+        when 'email' {
+          sendEmailNotification(severity, message);
+        }
+        when 'slack' {
+          sendSlackNotification(severity, message);
+        }
+        when 'event' {
+          publishPerformanceEvent(severity, message);
+        }
+        when else {
+          ENOS_LoggingUtils.logWarning('Performance Alert', 'Unknown notification channel: ' + channel);
+        }
+      }
+    } catch (Exception e) {
+      ENOS_LoggingUtils.logError('Performance Notification', e);
+    }
   }
-
+  
   /**
-   * @description Sends performance alert via Slack (placeholder for future implementation)
-   * @param severity The alert severity
-   * @param message The alert message
+   * @description Sends email notification for performance alerts
    */
-  private static void sendPerformanceAlertSlack(String severity, String message) {
-    // TODO: Implement Slack webhook integration
-    // This could use Named Credentials and callouts to Slack API
-    ENOS_LoggingUtils.logInfo('Performance Alert Slack', 'Slack alert sent: ' + severity + ' - ' + message);
+  private static void sendEmailNotification(String severity, String message) {
+    try {
+      // Create email message
+      Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+      
+      // Set recipients (could be configured via custom metadata)
+      List<String> recipients = getNotificationRecipients('email');
+      if (recipients.isEmpty()) {
+        ENOS_LoggingUtils.logWarning('Performance Alert Email', 'No email recipients configured');
+        return;
+      }
+      
+      email.setToAddresses(recipients);
+      email.setSubject('ENOS Performance Alert: ' + severity.toUpperCase());
+      email.setPlainTextBody(message);
+      
+      // Send email
+      Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{ email });
+      
+      ENOS_LoggingUtils.logInfo('Performance Alert Email', 'Email alert sent: ' + severity + ' - ' + message);
+      
+    } catch (Exception e) {
+      ENOS_LoggingUtils.logError('Performance Alert Email', e);
+    }
   }
-
+  
+  /**
+   * @description Sends Slack notification for performance alerts
+   */
+  private static void sendSlackNotification(String severity, String message) {
+    try {
+      // Get Slack webhook URL from custom metadata or named credentials
+      String webhookUrl = getSlackWebhookUrl();
+      if (String.isBlank(webhookUrl)) {
+        ENOS_LoggingUtils.logWarning('Performance Alert Slack', 'Slack webhook URL not configured');
+        return;
+      }
+      
+      // Prepare Slack message
+      Map<String, Object> slackMessage = new Map<String, Object>{
+        'text' => '🚨 ENOS Performance Alert: ' + severity.toUpperCase(),
+        'attachments' => new List<Object>{
+          new Map<String, Object>{
+            'color' => getSeverityColor(severity),
+            'fields' => new List<Object>{
+              new Map<String, Object>{
+                'title' => 'Severity',
+                'value' => severity.toUpperCase(),
+                'short' => true
+              },
+              new Map<String, Object>{
+                'title' => 'Message',
+                'value' => message,
+                'short' => false
+              },
+              new Map<String, Object>{
+                'title' => 'Timestamp',
+                'value' => DateTime.now().format(),
+                'short' => true
+              }
+            }
+          }
+        }
+      };
+      
+      // Send HTTP callout to Slack
+      Http http = new Http();
+      HttpRequest request = new HttpRequest();
+      request.setEndpoint(webhookUrl);
+      request.setMethod('POST');
+      request.setHeader('Content-Type', 'application/json');
+      request.setBody(JSON.serialize(slackMessage));
+      
+      HttpResponse response = http.send(request);
+      
+      if (response.getStatusCode() == 200) {
+        ENOS_LoggingUtils.logInfo('Performance Alert Slack', 'Slack alert sent: ' + severity + ' - ' + message);
+      } else {
+        ENOS_LoggingUtils.logWarning('Performance Alert Slack', 'Slack API returned status: ' + response.getStatusCode());
+      }
+      
+    } catch (Exception e) {
+      ENOS_LoggingUtils.logError('Performance Alert Slack', e);
+    }
+  }
+  
   /**
    * @description Publishes performance event for real-time monitoring
-   * @param severity The alert severity
-   * @param message The alert message
    */
   private static void publishPerformanceEvent(String severity, String message) {
     try {
-      // TODO: Implement Platform Event publishing for real-time monitoring
-      // This would enable real-time dashboards and external monitoring systems
-      ENOS_LoggingUtils.logInfo('Performance Event', 'Event published: ' + severity + ' - ' + message);
+      // Create platform event
+      Performance_Alert__e alertEvent = new Performance_Alert__e(
+        Severity__c = severity,
+        Message__c = message,
+        Timestamp__c = DateTime.now(),
+        User__c = UserInfo.getUserId(),
+        Context__c = 'Performance Monitor'
+      );
+      
+      // Publish event
+      Database.SaveResult result = EventBus.publish(alertEvent);
+      
+      if (result.isSuccess()) {
+        ENOS_LoggingUtils.logInfo('Performance Event', 'Event published: ' + severity + ' - ' + message);
+      } else {
+        ENOS_LoggingUtils.logWarning('Performance Event', 'Failed to publish event: ' + result.getErrors());
+      }
+      
     } catch (Exception e) {
-      ENOS_LoggingUtils.logError('Performance Event Publishing', e);
+      ENOS_LoggingUtils.logError('Performance Event', e);
     }
   }
+  
+  /**
+   * @description Gets notification recipients for a specific channel
+   */
+  private static List<String> getNotificationRecipients(String channel) {
+    // This could be enhanced to read from custom metadata
+    // For now, return default recipients
+    return new List<String>{ UserInfo.getUserEmail() };
+  }
+  
+  /**
+   * @description Gets Slack webhook URL from configuration
+   */
+  private static String getSlackWebhookUrl() {
+    // This could be enhanced to read from custom metadata or named credentials
+    // For now, return null to indicate not configured
+    return null;
+  }
+  
+  /**
+   * @description Gets color for Slack message based on severity
+   */
+  private static String getSeverityColor(String severity) {
+    switch on severity.toLowerCase() {
+      when 'info' { return '#36a64f'; }      // Green
+      when 'warning' { return '#ffcc00'; }   // Yellow
+      when 'error' { return '#ff6b6b'; }     // Red
+      when 'critical' { return '#8b0000'; }  // Dark Red
+      when else { return '#36a64f'; }         // Default to Green
+    }
+  }
+  
+  /**
+   * @description Legacy method wrappers for backward compatibility
+   * These now call the consolidated sendNotification method
+   */
+  private static void sendPerformanceAlertEmail(String severity, String message) {
+    sendNotification('email', severity, message);
+  }
+
+  private static void sendPerformanceAlertSlack(String severity, String message) {
+    sendNotification('slack', severity, message);
+  }
+
+
 
   /**
    * @description Gets performance trends over time
@@ -588,9 +742,8 @@ public with sharing class ENOS_PerformanceMonitor {
 
       return trends;
     } catch (Exception e) {
-      throw new AuraHandledException(
-        'Failed to retrieve performance trends: ' + e.getMessage()
-      );
+      ENOS_ExceptionUtils.throwOperationFailure('retrieve performance trends', e);
+      return new List<PerformanceMetric>();
     }
   }
 

@@ -1,8 +1,8 @@
 import { LightningElement, track, wire } from 'lwc';
 import { refreshApex } from '@salesforce/apex';
-import getProductsDynamic from '@salesforce/apex/ENOS_ProductController.getProductsDynamic';
+import getProducts from '@salesforce/apex/ENOS_ProductController.getProducts';
 import getCartItemsDynamic from '@salesforce/apex/ENOS_CartController.getCartItemsDynamic';
-import getProductsDynamicAdvanced from '@salesforce/apex/ENOS_Controller.getProductsDynamicAdvanced';
+import getProductsDynamicAdvanced from '@salesforce/apex/ENOS_ProductController.getProductsDynamicAdvanced';
 import executeComplexQuery from '@salesforce/apex/ENOS_AdvancedDynamicUtils.executeComplexQuery';
 import getPerformanceMetrics from '@salesforce/apex/ENOS_AdvancedDynamicUtils.getPerformanceMetrics';
 
@@ -17,13 +17,13 @@ export default class DynamicIntegrationTester extends LightningElement {
     wiredCartItems;
     wiredAdvancedProducts;
     
-    @wire(getProductsDynamic, { fields: ['Id', 'Name', 'ProductCode'], searchTerm: null, category: null, limitClause: 5 })
+    @wire(getProducts, { pageSize: 5, pageNumber: 1, searchTerm: null, familyFilter: null, sortBy: 'Name', sortDirection: 'ASC' })
     wiredProducts(result) {
         this.wiredProducts = result;
         if (result.data) {
-            this.addTestResult('Product Controller Dynamic Query', 'SUCCESS', `${result.data.length} products retrieved`);
+            this.addTestResult('Product Controller Query', 'SUCCESS', `${result.data.length} products retrieved`);
         } else if (result.error) {
-            this.addTestResult('Product Controller Dynamic Query', 'ERROR', result.error.message);
+            this.addTestResult('Product Controller Query', 'ERROR', result.error.message);
         }
     }
     

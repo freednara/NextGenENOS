@@ -18,14 +18,15 @@ public with sharing class ENOS_UserModeSecurityUtils {
         try {
             // Validate query for security
             if (!ENOS_SecurityUtils.validateSOQLInjection(query)) {
-                throw new AuraHandledException('Security Error: Query contains dangerous patterns.');
+                ENOS_ExceptionUtils.throwSecurityViolation('Query validation', 'Query contains dangerous patterns');
             }
             
             // Execute query with USER_MODE for complete security enforcement
             return Database.query(query + ' WITH USER_MODE');
             
         } catch (Exception e) {
-            throw new AuraHandledException('Secure query execution failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('execute secure query', e);
+            return new List<SObject>();
         }
     }
     
@@ -52,7 +53,8 @@ public with sharing class ENOS_UserModeSecurityUtils {
             return Database.query(query);
             
         } catch (Exception e) {
-            throw new AuraHandledException('Secure query execution failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('execute secure query', e);
+            return new List<SObject>();
         }
     }
     
@@ -70,7 +72,8 @@ public with sharing class ENOS_UserModeSecurityUtils {
             return results.isEmpty() ? null : results[0];
             
         } catch (Exception e) {
-            throw new AuraHandledException('Secure single query execution failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('execute secure single query', e);
+            return null;
         }
     }
     
@@ -95,7 +98,8 @@ public with sharing class ENOS_UserModeSecurityUtils {
             return Database.countQuery(query);
             
         } catch (Exception e) {
-            throw new AuraHandledException('Secure count query execution failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('execute secure count query', e);
+            return 0;
         }
     }
     
@@ -128,7 +132,8 @@ public with sharing class ENOS_UserModeSecurityUtils {
             return Database.query(query);
             
         } catch (Exception e) {
-            throw new AuraHandledException('Secure aggregate query execution failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('execute secure aggregate query', e);
+            return new List<AggregateResult>();
         }
     }
     
@@ -167,7 +172,8 @@ public with sharing class ENOS_UserModeSecurityUtils {
             return Database.query(query);
             
         } catch (Exception e) {
-            throw new AuraHandledException('Secure subquery execution failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('execute secure subquery', e);
+            return new List<SObject>();
         }
     }
     
@@ -195,7 +201,8 @@ public with sharing class ENOS_UserModeSecurityUtils {
             return executeSecureQuery(objectName, allFields, whereClause, null, null);
             
         } catch (Exception e) {
-            throw new AuraHandledException('Secure relationship query execution failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('execute secure relationship query', e);
+            return new List<SObject>();
         }
     }
     
@@ -231,7 +238,8 @@ public with sharing class ENOS_UserModeSecurityUtils {
             return Database.query(query);
             
         } catch (Exception e) {
-            throw new AuraHandledException('Secure search query execution failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('execute secure search query', e);
+            return new List<SObject>();
         }
     }
     
@@ -262,7 +270,8 @@ public with sharing class ENOS_UserModeSecurityUtils {
             return Search.query(query);
             
         } catch (Exception e) {
-            throw new AuraHandledException('Secure SOSL execution failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('execute secure SOSL', e);
+            return new List<List<SObject>>();
         }
     }
     

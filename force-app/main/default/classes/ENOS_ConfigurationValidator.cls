@@ -115,6 +115,165 @@ public with sharing class ENOS_ConfigurationValidator {
             'max' => null,
             'type' => 'Boolean',
             'description' => 'Enable performance alert Slack notifications'
+        },
+        // Performance monitoring thresholds
+        'CPU_WARNING_THRESHOLD' => new Map<String, Object>{
+            'min' => 50,
+            'max' => 90,
+            'type' => 'Decimal',
+            'description' => 'CPU usage warning threshold'
+        },
+        'CPU_CRITICAL_THRESHOLD' => new Map<String, Object>{
+            'min' => 70,
+            'max' => 100,
+            'type' => 'Decimal',
+            'description' => 'CPU usage critical threshold'
+        },
+        'MEMORY_WARNING_THRESHOLD' => new Map<String, Object>{
+            'min' => 60,
+            'max' => 95,
+            'type' => 'Decimal',
+            'description' => 'Memory usage warning threshold'
+        },
+        'MEMORY_CRITICAL_THRESHOLD' => new Map<String, Object>{
+            'min' => 80,
+            'max' => 100,
+            'type' => 'Decimal',
+            'description' => 'Memory usage critical threshold'
+        },
+        'HEAP_WARNING_THRESHOLD' => new Map<String, Object>{
+            'min' => 3000000,
+            'max' => 8000000,
+            'type' => 'Decimal',
+            'description' => 'Heap size warning threshold'
+        },
+        'HEAP_CRITICAL_THRESHOLD' => new Map<String, Object>{
+            'min' => 5000000,
+            'max' => 10000000,
+            'type' => 'Decimal',
+            'description' => 'Heap size critical threshold'
+        },
+        'ERROR_RATE_WARNING_THRESHOLD' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 20,
+            'type' => 'Decimal',
+            'description' => 'Error rate warning threshold'
+        },
+        'ERROR_RATE_CRITICAL_THRESHOLD' => new Map<String, Object>{
+            'min' => 5,
+            'max' => 50,
+            'type' => 'Decimal',
+            'description' => 'Error rate critical threshold'
+        },
+        // Stock quantity configuration
+        'STOCK_DEFAULT_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Default stock quantity for products'
+        },
+        'STOCK_AUDIO_001_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Stock quantity for AUD-001 product'
+        },
+        'STOCK_AUDIO_002_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Stock quantity for AUD-002 product'
+        },
+        'STOCK_COMP_001_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Stock quantity for COMP-001 product'
+        },
+        'STOCK_COMP_002_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Stock quantity for COMP-002 product'
+        },
+        'STOCK_MOB_001_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Stock quantity for MOB-001 product'
+        },
+        'STOCK_MOB_002_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Stock quantity for MOB-002 product'
+        },
+        'STOCK_GAM_001_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Stock quantity for GAM-001 product'
+        },
+        'STOCK_GAM_002_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Stock quantity for GAM-002 product'
+        },
+        'STOCK_NET_001_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Stock quantity for NET-001 product'
+        },
+        'STOCK_NET_002_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Stock quantity for NET-002 product'
+        },
+        'STOCK_PWR_001_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Stock quantity for PWR-001 product'
+        },
+        'STOCK_PWR_002_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Stock quantity for PWR-002 product'
+        },
+        'STOCK_STO_001_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Stock quantity for STO-001 product'
+        },
+        'STOCK_IOT_001_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Stock quantity for IOT-001 product'
+        },
+        'STOCK_IOT_002_QUANTITY' => new Map<String, Object>{
+            'min' => 1,
+            'max' => 1000,
+            'type' => 'Integer',
+            'description' => 'Stock quantity for IOT-002 product'
+        },
+        // Environment configuration
+        'IS_DEVELOPMENT_ENVIRONMENT' => new Map<String, Object>{
+            'min' => null,
+            'max' => null,
+            'type' => 'Boolean',
+            'description' => 'Development environment flag'
+        },
+        'SECURITY_LOG_ENABLED' => new Map<String, Object>{
+            'min' => null,
+            'max' => null,
+            'type' => 'Boolean',
+            'description' => 'Enable security logging'
         }
     };
 

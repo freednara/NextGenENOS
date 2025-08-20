@@ -11,8 +11,46 @@ private class ENOS_PayGovServiceTest {
    */
   @TestSetup
   static void setupTestData() {
-    // Create test data using utility class (includes test user)
-    ENOSTestUtils.TestDataContainer testData = ENOSTestUtils.createENOSTestData();
+    // Create basic test data without user creation to avoid profile issues
+    // Create test products
+    List<Product2> products = new List<Product2>{
+      new Product2(
+        Name = 'Test Product 1',
+        ProductCode = 'TEST001',
+        Description = 'Test Product Description 1',
+        IsActive = true,
+        Stock_Quantity__c = 100
+      )
+    };
+    insert products;
+
+    // Create standard pricebook entries
+    List<PricebookEntry> pricebookEntries = new List<PricebookEntry>();
+    Id standardPricebookId = Test.getStandardPricebookId();
+
+    for (Product2 product : products) {
+      pricebookEntries.add(
+        new PricebookEntry(
+          Pricebook2Id = standardPricebookId,
+          Product2Id = product.Id,
+          UnitPrice = 25.00,
+          IsActive = product.IsActive
+        )
+      );
+    }
+    insert pricebookEntries;
+
+    // Create test account and contact
+    Account testAccount = new Account(Name = 'Test Account');
+    insert testAccount;
+
+    Contact testContact = new Contact(
+      FirstName = 'Test',
+      LastName = 'User',
+      AccountId = testAccount.Id,
+      Email = 'test@example.com'
+    );
+    insert testContact;
   }
 
   /**

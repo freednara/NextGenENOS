@@ -1,16 +1,13 @@
 import { LightningElement, track, wire, api } from 'lwc';
 import { refreshApex } from '@salesforce/apex';
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import { subscribe, unsubscribe, MessageContext } from 'lightning/messageService';
-import ENOS_PERFORMANCE_CHANNEL from '@salesforce/messageChannel/ENOS_Performance_Channel__c';
-
 import getSystemHealth from '@salesforce/apex/ENOS_PerformanceMonitor.getSystemHealth';
 import getPerformanceMetrics from '@salesforce/apex/ENOS_AdvancedDynamicUtils.getPerformanceMetrics';
 import getSalesAnalytics from '@salesforce/apex/ENOS_AdvancedAnalyticsService.getSalesAnalytics';
 import getProductPerformanceAnalytics from '@salesforce/apex/ENOS_AdvancedAnalyticsService.getProductPerformanceAnalytics';
 import getInventoryAnalytics from '@salesforce/apex/ENOS_AdvancedAnalyticsService.getInventoryAnalytics';
+import EnosBaseComponent from 'c/enosBaseComponent';
 
-export default class PerformanceDashboard extends LightningElement {
+export default class PerformanceDashboard extends EnosBaseComponent {
     @api refreshInterval = 30000; // 30 seconds default
     @track systemHealth;
     @track performanceMetrics;
@@ -24,7 +21,6 @@ export default class PerformanceDashboard extends LightningElement {
     
     // Performance monitoring
     refreshIntervalId;
-    subscription = null;
     
     // Wire configurations
     wiredSystemHealth;
@@ -107,7 +103,10 @@ export default class PerformanceDashboard extends LightningElement {
         }
     }
     
-    @wire(getInventoryAnalytics)
+    @wire(getInventoryAnalytics, { 
+        timeRange: '$selectedTimeRange', 
+        categoryFilter: '$selectedCategory' 
+    })
     wiredInventoryAnalyticsMethod(result) {
         this.wiredInventoryAnalytics = result;
         if (result.data) {
@@ -119,120 +118,13 @@ export default class PerformanceDashboard extends LightningElement {
         }
     }
     
-    // Computed properties
-    get startDate() {
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - 30);
-        return startDate.toISOString();
-    }
-    
-    get endDate() {
-        return new Date().toISOString();
-    }
-    
-    get groupByFields() {
-        return ['AccountId', 'Status'];
-    }
-    
-    get systemStatusClass() {
-        if (!this.systemHealth) return 'slds-text-color_default';
-        
-        switch (this.systemHealth.overallStatus) {
-            case 'OK':
-                return 'slds-text-color_success';
-            case 'WARNING':
-                return 'slds-text-color_warning';
-            case 'CRITICAL':
-                return 'slds-text-color_error';
-            default:
-                return 'slds-text-color_default';
-        }
-    }
-    
-    get systemStatusIcon() {
-        if (!this.systemHealth) return 'utility:info';
-        
-        switch (this.systemHealth.overallStatus) {
-            case 'OK':
-                return 'utility:success';
-            case 'WARNING':
-                return 'utility:warning';
-            case 'CRITICAL':
-                return 'utility:error';
-            default:
-                return 'utility:info';
-        }
-    }
-    
-    get performanceMetricsList() {
-        if (!this.performanceMetrics) return [];
-        
-        return Object.keys(this.performanceMetrics).map(key => ({
-            name: key,
-            ...this.performanceMetrics[key]
-        }));
-    }
-    
-    get salesMetrics() {
-        if (!this.salesAnalytics || !this.salesAnalytics.summary) return {};
-        
-        return {
-            totalOrders: this.salesAnalytics.summary.totalOrders || 0,
-            totalRevenue: this.salesAnalytics.summary.totalRevenue || 0,
-            averageOrderValue: this.salesAnalytics.summary.averageOrderValue || 0,
-            uniqueCustomers: this.salesAnalytics.summary.uniqueCustomers || 0
-        };
-    }
-    
-    get topProducts() {
-        if (!this.productAnalytics || !this.productAnalytics.topPerformers) return [];
-        return this.productAnalytics.topPerformers.slice(0, 5);
-    }
-    
-    get inventoryAlerts() {
-        if (!this.inventoryAnalytics || !this.inventoryAnalytics.stockAlerts) return [];
-        return this.inventoryAnalytics.stockAlerts.slice(0, 3);
-    }
-    
-    // Lifecycle hooks
+    // Lifecycle methods
     connectedCallback() {
-        this.subscribeToPerformanceChannel();
         this.startAutoRefresh();
     }
     
     disconnectedCallback() {
-        this.unsubscribeFromPerformanceChannel();
         this.stopAutoRefresh();
-    }
-    
-    // Message Service subscription
-    @wire(MessageContext)
-    messageContext;
-    
-    subscribeToPerformanceChannel() {
-        if (this.messageContext) {
-            this.subscription = subscribe(
-                this.messageContext,
-                ENOS_PERFORMANCE_CHANNEL,
-                (message) => this.handlePerformanceMessage(message)
-            );
-        }
-    }
-    
-    unsubscribeFromPerformanceChannel() {
-        if (this.subscription) {
-            unsubscribe(this.subscription);
-            this.subscription = null;
-        }
-    }
-    
-    handlePerformanceMessage(message) {
-        // Handle real-time performance updates
-        if (message.type === 'PERFORMANCE_ALERT') {
-            this.showToast('Performance Alert', message.message, 'warning');
-            this.refreshData();
-        }
     }
     
     // Auto-refresh functionality
@@ -287,15 +179,7 @@ export default class PerformanceDashboard extends LightningElement {
         }
     }
     
-    // Utility methods
-    showToast(title, message, variant) {
-        const evt = new ShowToastEvent({
-            title: title,
-            message: message,
-            variant: variant
-        });
-        this.dispatchEvent(evt);
-    }
+
     
     formatCurrency(amount) {
         return new Intl.NumberFormat('en-US', {
@@ -308,8 +192,34 @@ export default class PerformanceDashboard extends LightningElement {
         return new Intl.NumberFormat('en-US').format(number || 0);
     }
     
-    formatPercentage(value) {
-        return `${((value || 0) * 100).toFixed(1)}%`;
+    // Getters for computed properties
+    get startDate() {
+        const now = new Date();
+        const days = this.selectedTimeRange === '7D' ? 7 : 
+                    this.selectedTimeRange === '30D' ? 30 : 
+                    this.selectedTimeRange === '90D' ? 90 : 365;
+        const startDate = new Date(now.getTime() - (days * 24 * 60 * 60 * 1000));
+        return startDate.toISOString().split('T')[0];
+    }
+    
+    get endDate() {
+        return new Date().toISOString().split('T')[0];
+    }
+    
+    get groupByFields() {
+        return ['Category__c', 'CreatedDate'];
+    }
+    
+    get hasData() {
+        return this.systemHealth || this.performanceMetrics || this.salesAnalytics || this.productAnalytics || this.inventoryAnalytics;
+    }
+    
+    get hasErrors() {
+        return this.error;
+    }
+    
+    get errorMessage() {
+        return this.error ? this.error.message : '';
     }
 }
 

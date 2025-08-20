@@ -36,13 +36,13 @@ public with sharing class ENOS_OrderConfirmationService {
       // Get order with related data
       Order orderRecord = getOrderWithDetails(orderId);
       if (orderRecord == null) {
-        throw new AuraHandledException('Order not found or access denied');
+        ENOS_ExceptionUtils.throwDataNotFound('Order', 'with specified ID');
       }
 
       // Get contact information for email
       Contact customerContact = getCustomerContact(orderRecord.AccountId);
       if (customerContact == null) {
-        throw new AuraHandledException('Customer contact not found');
+        ENOS_ExceptionUtils.throwDataNotFound('Customer Contact', 'for the specified account');
       }
 
       // Send confirmation email
@@ -63,9 +63,8 @@ public with sharing class ENOS_OrderConfirmationService {
         LoggingLevel.ERROR,
         'Error sending order confirmation: ' + e.getMessage()
       );
-      throw new AuraHandledException(
-        'Unable to send order confirmation: ' + e.getMessage()
-      );
+      ENOS_ExceptionUtils.throwOperationFailure('send order confirmation', e);
+      return false;
     }
   }
 
@@ -85,7 +84,7 @@ public with sharing class ENOS_OrderConfirmationService {
       // Get current user's account to verify order access
       Id userAccountId = getCurrentUserAccountId();
       if (userAccountId == null) {
-        throw new AuraHandledException('User account not found');
+        ENOS_ExceptionUtils.throwDataNotFound('User Account', 'for the current user');
       }
 
       // Query order with line items
@@ -113,7 +112,7 @@ public with sharing class ENOS_OrderConfirmationService {
       ];
 
       if (orders.isEmpty()) {
-        throw new AuraHandledException('Order not found or access denied');
+        ENOS_ExceptionUtils.throwDataNotFound('Order', 'with specified ID and account access');
       }
 
       Order orderRecord = orders[0];
@@ -155,9 +154,8 @@ public with sharing class ENOS_OrderConfirmationService {
         LoggingLevel.ERROR,
         'Error retrieving order confirmation data: ' + e.getMessage()
       );
-      throw new AuraHandledException(
-        'Unable to retrieve order details: ' + e.getMessage()
-      );
+      ENOS_ExceptionUtils.throwOperationFailure('retrieve order details', e);
+      return null;
     }
   }
 

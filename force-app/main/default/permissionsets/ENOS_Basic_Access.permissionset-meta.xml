@@ -43,12 +43,7 @@
     </classAccesses>
     
     <classAccesses>
-        <apexClass>ENOS_LoggingUtils</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    
-    <classAccesses>
-        <apexClass>ENOS_PerformanceConfig</apexClass>
+        <apexClass>ENOS_DynamicUtils</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     

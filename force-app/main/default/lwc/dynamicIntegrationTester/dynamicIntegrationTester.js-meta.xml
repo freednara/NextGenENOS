@@ -10,9 +10,4 @@
         <target>lightningCommunity__Page</target>
         <target>lightningCommunity__Default</target>
     </targets>
-    <targetConfigs>
-        <targetConfig targets="lightning__AppPage,lightning__HomePage,lightning__RecordPage">
-            <property name="height" type="String" default="600" description="Component height in pixels"/>
-        </targetConfig>
-    </targetConfigs>
 </LightningComponentBundle>

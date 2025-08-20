@@ -21,7 +21,7 @@ public with sharing class ENOS_OrderProcessor {
             ENOS_SecurityUtils.validateENOSAccess(false, true);
 
             if (cartId == null || shippingAddressId == null || String.isBlank(paymentMethod)) {
-                throw new AuraHandledException('Missing required checkout information.');
+                ENOS_ExceptionUtils.throwMissingData('checkout information');
             }
 
             // CRUD checks for objects accessed - using batch validation
@@ -52,7 +52,7 @@ public with sharing class ENOS_OrderProcessor {
             ];
 
             if (cart.Cart_Items__r.isEmpty()) {
-                throw new AuraHandledException('Cart is empty.');
+                ENOS_ExceptionUtils.throwBusinessRuleViolation('Cart Validation', 'Cart must contain items to process checkout');
             }
 
             validateInventory(cart.Cart_Items__r);
@@ -85,7 +85,8 @@ public with sharing class ENOS_OrderProcessor {
         } catch (AuraHandledException e) {
             throw e;
         } catch (Exception e) {
-            throw new AuraHandledException('Error processing checkout: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('process checkout', e);
+            return null;
         }
     }
 
@@ -93,7 +94,7 @@ public with sharing class ENOS_OrderProcessor {
     private static void validateInventory(List<Cart_Item__c> cartItems) {
         for (Cart_Item__c item : cartItems) {
             if (item.Product__r.Stock_Quantity__c < item.Quantity__c) {
-                throw new AuraHandledException('Insufficient stock for ' + item.Product__r.Name);
+                ENOS_ExceptionUtils.throwBusinessRuleViolation('Inventory Check', 'Insufficient stock for ' + item.Product__r.Name);
             }
         }
     }
@@ -201,7 +202,8 @@ public with sharing class ENOS_OrderProcessor {
         } catch (AuraHandledException e) {
             throw e;
         } catch (Exception e) {
-            throw new AuraHandledException('Error retrieving order details: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('retrieve order details', e);
+            return null;
         }
     }
 
@@ -227,7 +229,8 @@ public with sharing class ENOS_OrderProcessor {
         } catch (AuraHandledException e) {
             throw e;
         } catch (Exception e) {
-            throw new AuraHandledException('Error retrieving order history: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('retrieve order history', e);
+            return new List<Order>();
         }
     }
 
@@ -248,12 +251,12 @@ public with sharing class ENOS_OrderProcessor {
                 ord.Status = 'Cancelled';
                 update ord;
             } else {
-                throw new AuraHandledException('Order cannot be cancelled in its current status');
+                ENOS_ExceptionUtils.throwBusinessRuleViolation('Order Cancellation', 'Order cannot be cancelled in its current status');
             }
         } catch (AuraHandledException e) {
             throw e;
         } catch (Exception e) {
-            throw new AuraHandledException('Error cancelling order: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('cancel order', e);
         }
     }
 

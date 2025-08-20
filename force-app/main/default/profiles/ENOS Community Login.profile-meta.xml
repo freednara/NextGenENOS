@@ -12,7 +12,6 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>ENOSController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>

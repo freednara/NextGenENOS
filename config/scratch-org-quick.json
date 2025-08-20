@@ -1,6 +1,6 @@
 {
   "orgName": "ENOS Quick",
-  "sourceOrg": "3SRSJ000000RfLd4AK",
+  "edition": "Developer",
   "features": ["EnableSetPasswordInApi", "Communities"],
   "settings": {
     "lightningExperienceSettings": {

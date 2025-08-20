@@ -47,9 +47,8 @@ public class ENOS_TopSellerBatch implements Database.Batchable<AggregateResult>,
         LoggingLevel.ERROR,
         'Stack trace: ' + e.getStackTraceString()
       );
-      throw new AuraHandledException(
-        'Failed to start top seller calculation: ' + e.getMessage()
-      );
+      ENOS_ExceptionUtils.throwOperationFailure('start top seller calculation', e);
+      return new List<AggregateResult>();
     }
   }
 

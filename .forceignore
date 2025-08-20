@@ -79,6 +79,9 @@ coverage/
 coverage/
 *.lcov
 
+# LWC Test directories
+**/lwc/*/__tests__/
+
 # ========================================
 # LOGS AND DEBUGGING
 # ========================================
@@ -200,6 +203,9 @@ docs/build/
 *key*
 *token*
 *private*
+
+# Exceptions for ENOS configuration fields
+!force-app/main/default/objects/ENOS_Configuration__c/fields/Configuration_Key__c.field-meta.xml
 
 # ========================================
 # PROJECT SPECIFIC IGNORES

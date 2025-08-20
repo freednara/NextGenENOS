@@ -75,7 +75,8 @@ public with sharing class ENOS_AdvancedDynamicUtils {
             return query;
             
         } catch (Exception e) {
-            throw new AuraHandledException('Complex query construction failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('build complex query', e);
+            return null;
         }
     }
     
@@ -284,6 +285,7 @@ public with sharing class ENOS_AdvancedDynamicUtils {
      * @return List of SObject results
      * @throws AuraHandledException if query execution fails
      */
+    @AuraEnabled(cacheable=true)
     public static List<SObject> executeComplexQuery(String objectName, List<String> fields, 
                                                    Map<String, Object> filters, List<String> aggregations,
                                                    List<String> groupBy, String havingClause,
@@ -308,7 +310,8 @@ public with sharing class ENOS_AdvancedDynamicUtils {
             // Record failed query performance
             recordQueryPerformance(queryKey, System.currentTimeMillis() - startTime);
             
-            throw new AuraHandledException('Complex query execution failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('execute complex query', e);
+            return new List<SObject>();
         }
     }
     
@@ -376,7 +379,8 @@ public with sharing class ENOS_AdvancedDynamicUtils {
     public static String buildTemplateQuery(String templateName, List<String> fields, 
                                           String whereConditions, String orderByClause) {
         if (!QUERY_TEMPLATES.containsKey(templateName)) {
-            throw new AuraHandledException('Unknown query template: ' + templateName);
+            ENOS_ExceptionUtils.throwDataNotFound('Query template', templateName);
+            return null;
         }
         
         String template = QUERY_TEMPLATES.get(templateName);
@@ -457,7 +461,8 @@ public with sharing class ENOS_AdvancedDynamicUtils {
         }
         
         // All retries exhausted
-        throw new AuraHandledException('Operation failed after ' + maxRetries + ' retries: ' + lastException.getMessage());
+                    ENOS_ExceptionUtils.throwRetryExhausted('execute operation', maxRetries, lastException);
+                    return null;
     }
     
     /**
@@ -535,7 +540,8 @@ public with sharing class ENOS_AdvancedDynamicUtils {
             
         } catch (Exception e) {
             ENOS_LoggingUtils.logError('Advanced Analytics Query Building', e);
-            throw new AuraHandledException('Failed to build analytics query: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('build analytics query', e);
+            return null;
         }
     }
 
@@ -574,7 +580,8 @@ public with sharing class ENOS_AdvancedDynamicUtils {
             // Record failed query performance
             recordQueryPerformance(queryKey, System.currentTimeMillis() - startTime);
             
-            throw new AuraHandledException('Analytics query execution failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('execute analytics query', e);
+            return new List<SObject>();
         }
     }
 
@@ -612,7 +619,8 @@ public with sharing class ENOS_AdvancedDynamicUtils {
             
         } catch (Exception e) {
             ENOS_LoggingUtils.logError('Subquery Building', e);
-            throw new AuraHandledException('Failed to build subquery: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('build subquery', e);
+            return null;
         }
     }
 
@@ -769,16 +777,16 @@ public with sharing class ENOS_AdvancedDynamicUtils {
     private static void validateQuery(String query) {
         // Basic security validation
         if (query.toLowerCase().contains('from all')) {
-            throw new AuraHandledException('Invalid query: FROM ALL is not allowed');
+            ENOS_ExceptionUtils.throwInvalidQueryPattern('FROM ALL is not allowed');
         }
         
         if (query.toLowerCase().contains('limit 0')) {
-            throw new AuraHandledException('Invalid query: LIMIT 0 is not allowed');
+            ENOS_ExceptionUtils.throwInvalidQueryPattern('LIMIT 0 is not allowed');
         }
         
         // Check for potential injection patterns
         if (query.contains(';') || query.contains('--')) {
-            throw new AuraHandledException('Invalid query: Potential SQL injection detected');
+            ENOS_ExceptionUtils.throwInjectionAttempt('SQL');
         }
     }
 }

@@ -1,14 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Is_Top_Seller__c</fullName>
     <defaultValue>false</defaultValue>
-    <description
-  >Indicates whether this product is currently flagged as a top seller based on recent sales performance. Updated automatically by the TopSellerBatch job.</description>
+    <description>Indicates if this product is a top seller</description>
     <externalId>false</externalId>
-    <inlineHelpText
-  >Top selling products are highlighted in the product catalog and given priority placement in search results.</inlineHelpText>
     <label>Is Top Seller</label>
-    <trackFeedHistory>false</trackFeedHistory>
     <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
     <type>Checkbox</type>
 </CustomField>

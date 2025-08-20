@@ -5,7 +5,7 @@
  * @version 1.0.0
  * @since 2024-12-01
  */
-public class ENOSTestUtils {
+public class ENOS_TestUtils {
   /**
    * @description Test data container for comprehensive testing
    */
@@ -14,7 +14,6 @@ public class ENOSTestUtils {
     public Contact testContact;
     public User testUser;
     public Product2 testProduct;
-    public Category__c testCategory;
     public Cart__c testCart;
     public Cart_Item__c testCartItem;
     public Shipping_Address__c testAddress;
@@ -63,19 +62,13 @@ public class ENOSTestUtils {
     );
     insert container.testUser;
 
-    // Create test category
-    container.testCategory = new Category__c(
-      Name__c = 'Test Category',
-      Description__c = 'Test category for ENOS testing'
-    );
-    insert container.testCategory;
+
 
     // Create test product
     container.testProduct = new Product2(
       Name = 'Test Product',
       ProductCode = 'TEST-001',
       Description = 'Test product for ENOS testing',
-      Category__c = container.testCategory.Id,
       IsActive = true,
       Stock_Quantity__c = 100,
       Image_URL__c = 'https://example.com/test-image.jpg'

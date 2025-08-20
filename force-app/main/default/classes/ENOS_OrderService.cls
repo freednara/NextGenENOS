@@ -77,7 +77,7 @@ public with sharing class ENOS_OrderService {
     List<CreateOrderRequest> requests
   ) {
     if (requests == null || requests.isEmpty()) {
-      throw new AuraHandledException('No order requests supplied.');
+      ENOS_ExceptionUtils.throwMissingData('order requests');
     }
 
     List<CreateOrderResponse> responses = new List<CreateOrderResponse>();
@@ -205,7 +205,7 @@ public with sharing class ENOS_OrderService {
 
       // Phase 3: Bulk DML Operations
       if (!ordersToInsert.isEmpty()) {
-        ENOS_SecurityUtils.checkObjectCreateAccess('Order');
+        ENOS_SecurityUtils.checkObjectCreateable('Order');
         insert ordersToInsert;
 
         // Create order items for all successful orders
@@ -242,7 +242,7 @@ public with sharing class ENOS_OrderService {
 
         // Bulk insert order items
         if (!orderItemsToInsert.isEmpty()) {
-          ENOS_SecurityUtils.checkObjectCreateAccess('OrderItem');
+          ENOS_SecurityUtils.checkObjectCreateable('OrderItem');
           insert orderItemsToInsert;
         }
 
@@ -266,6 +266,7 @@ public with sharing class ENOS_OrderService {
         LoggingLevel.ERROR,
         'Bulk order creation failed: ' + e.getMessage()
       );
+      return responses;
     }
 
     return responses;
@@ -301,7 +302,7 @@ public with sharing class ENOS_OrderService {
     }
 
     // Query for cart with ownership validation
-    ENOS_SecurityUtils.checkObjectReadAccess('Cart__c');
+    ENOS_SecurityUtils.checkObjectReadable('Cart__c');
     List<Cart__c> carts = [
       SELECT Id, Contact__c, Contact__r.AccountId, Status__c
       FROM Cart__c
@@ -343,7 +344,7 @@ public with sharing class ENOS_OrderService {
     );
 
     // Query for cart items
-    ENOS_SecurityUtils.checkObjectReadAccess('Cart_Item__c');
+    ENOS_SecurityUtils.checkObjectReadable('Cart_Item__c');
     List<Cart_Item__c> cartItems = [
       SELECT Id, Product__c, Quantity__c, Unit_Price__c, Line_Total__c
       FROM Cart_Item__c
@@ -454,7 +455,7 @@ public with sharing class ENOS_OrderService {
       );
 
       // 3. Only create order records AFTER successful payment
-      ENOS_SecurityUtils.checkObjectCreateAccess('Order');
+      ENOS_SecurityUtils.checkObjectCreateable('Order');
       Order newOrder = createOrderRecord(
         cart,
         shippingAddress,
@@ -463,15 +464,13 @@ public with sharing class ENOS_OrderService {
       insert newOrder;
 
       // 4. Create OrderItem records from Cart_Item records
-      ENOS_SecurityUtils.checkObjectCreateAccess('OrderItem');
+      ENOS_SecurityUtils.checkObjectCreateable('OrderItem');
       List<OrderItem> orderItems = createOrderItems(newOrder.Id, cartItems);
       insert orderItems;
 
       // 5. Validate order creation succeeded before cart cleanup
       if (newOrder.Id == null || orderItems.isEmpty()) {
-        throw new AuraHandledException(
-          'Order creation failed - missing order ID or items'
-        );
+        ENOS_ExceptionUtils.throwDataIntegrityIssue('Order creation failed - missing order ID or items');
       }
 
       // 6. Clean up: Delete the cart only after successful order creation
@@ -867,9 +866,8 @@ public with sharing class ENOS_OrderService {
         LoggingLevel.ERROR,
         'Error retrieving orders: ' + e.getMessage()
       );
-      throw new AuraHandledException(
-        'Unable to retrieve orders at this time. Please try again later.'
-      );
+      ENOS_ExceptionUtils.throwServiceUnavailable('Order retrieval');
+      return new List<Order>();
     }
   }
 }

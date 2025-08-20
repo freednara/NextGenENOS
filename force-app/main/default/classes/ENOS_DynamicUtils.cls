@@ -62,7 +62,8 @@ public with sharing class ENOS_DynamicUtils {
             return query;
             
         } catch (Exception e) {
-            throw new AuraHandledException('Dynamic query construction failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('build dynamic query', e);
+            return null;
         }
     }
     
@@ -96,7 +97,7 @@ public with sharing class ENOS_DynamicUtils {
         
         // Check for dangerous patterns
         if (!ENOS_SecurityUtils.validateSOQLInjection(sanitized)) {
-            throw new AuraHandledException('Security Error: ORDER BY clause contains dangerous patterns.');
+            ENOS_ExceptionUtils.throwSecurityViolation('ORDER BY clause validation', 'clause contains dangerous patterns');
         }
         
         // Escape single quotes
@@ -125,7 +126,8 @@ public with sharing class ENOS_DynamicUtils {
             return Database.query(query);
             
         } catch (Exception e) {
-            throw new AuraHandledException('Dynamic query execution failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('execute dynamic query', e);
+            return new List<SObject>();
         }
     }
     
@@ -144,7 +146,7 @@ public with sharing class ENOS_DynamicUtils {
             if (!DESCRIBE_CACHE.containsKey(objectName)) {
                 Schema.SObjectType objType = GLOBAL_DESCRIBE.get(objectName);
                 if (objType == null) {
-                    throw new AuraHandledException('Object not found: ' + objectName);
+                    ENOS_ExceptionUtils.throwDataNotFound('Object', objectName);
                 }
                 DESCRIBE_CACHE.put(objectName, objType.getDescribe());
             }
@@ -152,7 +154,8 @@ public with sharing class ENOS_DynamicUtils {
             return DESCRIBE_CACHE.get(objectName);
             
         } catch (Exception e) {
-            throw new AuraHandledException('Failed to get object metadata: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('get object metadata', e);
+            return null;
         }
     }
     
@@ -173,13 +176,14 @@ public with sharing class ENOS_DynamicUtils {
             Map<String, Schema.SObjectField> fieldMap = objectDesc.fields.getMap();
             
             if (!fieldMap.containsKey(fieldName)) {
-                throw new AuraHandledException('Field not found: ' + fieldName + ' on ' + objectName);
+                ENOS_ExceptionUtils.throwDataNotFound('Field', fieldName + ' on ' + objectName);
             }
             
             return fieldMap.get(fieldName).getDescribe();
             
         } catch (Exception e) {
-            throw new AuraHandledException('Failed to get field metadata: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('get field metadata', e);
+            return null;
         }
     }
     
@@ -214,7 +218,8 @@ public with sharing class ENOS_DynamicUtils {
             return newRecord;
             
         } catch (Exception e) {
-            throw new AuraHandledException('Dynamic record creation failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('create dynamic record', e);
+            return null;
         }
     }
     
@@ -238,7 +243,7 @@ public with sharing class ENOS_DynamicUtils {
             List<SObject> records = Database.query(query);
             
             if (records.isEmpty()) {
-                throw new AuraHandledException('Record not found: ' + recordId);
+                ENOS_ExceptionUtils.throwDataNotFound('Record', recordId);
             }
             
             SObject recordToUpdate = records[0];
@@ -254,7 +259,7 @@ public with sharing class ENOS_DynamicUtils {
             update recordToUpdate;
             
         } catch (Exception e) {
-            throw new AuraHandledException('Dynamic record update failed: ' + e.getMessage());
+            ENOS_ExceptionUtils.throwOperationFailure('update dynamic record', e);
         }
     }
     

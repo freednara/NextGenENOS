@@ -68,11 +68,9 @@
     </classAccesses>
     
     <classAccesses>
-        <apexClass>ENOSController</apexClass>
+        <apexClass>ENOS_InvoiceController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
-    
-
     
     <classAccesses>
         <apexClass>ENOS_SecurityUtils</apexClass>
@@ -85,28 +83,73 @@
     </classAccesses>
     
     <classAccesses>
-        <apexClass>ENOS_AdvancedDynamicUtils</apexClass>
+        <apexClass>ENOS_CartService</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     
     <classAccesses>
-        <apexClass>ENOS_UserModeSecurityUtils</apexClass>
+        <apexClass>ENOS_InvoiceService</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     
-    <classAccesses>
-        <apexClass>ENOS_ConfigurationUtils</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
+    <!-- Field Permissions for Product2 -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.Stock_Quantity__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     
-    <classAccesses>
-        <apexClass>ENOS_LoggingUtils</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.Is_Top_Seller__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     
-    <classAccesses>
-        <apexClass>ENOS_PerformanceConfig</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Product2.Image_URL__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <!-- Field Permissions for Cart__c (only non-required fields) -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Cart__c.Contact__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Cart__c.Subtotal__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Cart__c.Total_Items__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <!-- Field Permissions for Cart_Item__c (only non-required fields) -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Cart_Item__c.Product__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Cart_Item__c.Line_Total__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <!-- Field Permissions for Category__c (only non-required fields) -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Category__c.Description__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+
     
 </PermissionSet>

@@ -57,19 +57,19 @@ public with sharing class ENOS_SecurityUtils {
     Boolean requirePayment
   ) {
     if (!hasENOSUserAccess()) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Access denied: ENOS User permission required'
       );
     }
 
     if (requireAdmin && !hasENOSAdminAccess()) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Access denied: ENOS Admin permission required'
       );
     }
 
     if (requirePayment && !hasENOSPaymentProcessorAccess()) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Access denied: ENOS Payment Processor permission required'
       );
     }
@@ -107,7 +107,7 @@ public with sharing class ENOS_SecurityUtils {
   ) {
     Schema.DescribeSObjectResult describeResult = getDescribe(sObjectName);
     if (describeResult == null) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: Unknown SObject ' + sObjectName
       );
     }
@@ -118,7 +118,7 @@ public with sharing class ENOS_SecurityUtils {
     for (Integer i = 0; i < parts.size(); i++) {
       String part = parts[i];
       if (!fieldMap.containsKey(part)) {
-        throw new AuraHandledException(
+        throw new CalloutException(
           'Security Error: Unknown field ' +
             part +
             ' on ' +
@@ -130,14 +130,14 @@ public with sharing class ENOS_SecurityUtils {
       // final segment check
       if (i == parts.size() - 1) {
         if (editMode && !fieldDesc.isUpdateable()) {
-          throw new AuraHandledException(
+          throw new CalloutException(
             'Security Error: You do not have permission to edit the ' +
               fieldPath +
               ' field.'
           );
         }
         if (!editMode && !fieldDesc.isAccessible()) {
-          throw new AuraHandledException(
+          throw new CalloutException(
             'Security Error: You do not have permission to view the ' +
               fieldPath +
               ' field.'
@@ -149,7 +149,7 @@ public with sharing class ENOS_SecurityUtils {
           describeResult = fieldDesc.getReferenceTo()[0].getDescribe();
           fieldMap = describeResult.fields.getMap();
         } else {
-          throw new AuraHandledException(
+          throw new CalloutException(
             'Security Error: Cannot traverse relationship on field ' +
               part +
               ' of ' +
@@ -184,7 +184,7 @@ public with sharing class ENOS_SecurityUtils {
       fieldsToCheck == null ||
       fieldsToCheck.isEmpty()
     ) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: Invalid parameters provided for field access check.'
       );
     }
@@ -207,20 +207,20 @@ public with sharing class ENOS_SecurityUtils {
    */
   public static void checkObjectCreateable(String sObjectName) {
     if (String.isBlank(sObjectName)) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: Invalid SObject name provided for create access check.'
       );
     }
 
     Schema.DescribeSObjectResult sObjectDescribe = getDescribe(sObjectName);
     if (sObjectDescribe == null) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: Unknown SObject ' + sObjectName
       );
     }
 
     if (!sObjectDescribe.isCreateable()) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: You do not have permission to create ' +
           sObjectDescribe.getLabel() +
           ' records.'
@@ -240,20 +240,20 @@ public with sharing class ENOS_SecurityUtils {
    */
   public static void checkObjectUpdateable(String sObjectName) {
     if (String.isBlank(sObjectName)) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: Invalid SObject name provided for update access check.'
       );
     }
 
     Schema.DescribeSObjectResult sObjectDescribe = getDescribe(sObjectName);
     if (sObjectDescribe == null) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: Unknown SObject ' + sObjectName
       );
     }
 
     if (!sObjectDescribe.isUpdateable()) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: You do not have permission to update ' +
           sObjectDescribe.getLabel() +
           ' records.'
@@ -273,20 +273,20 @@ public with sharing class ENOS_SecurityUtils {
    */
   public static void checkObjectDeletable(String sObjectName) {
     if (String.isBlank(sObjectName)) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: Invalid SObject name provided for delete access check.'
       );
     }
 
     Schema.DescribeSObjectResult sObjectDescribe = getDescribe(sObjectName);
     if (sObjectDescribe == null) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: Unknown SObject ' + sObjectName
       );
     }
 
     if (!sObjectDescribe.isDeletable()) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: You do not have permission to delete ' +
           sObjectDescribe.getLabel() +
           ' records.'
@@ -306,20 +306,20 @@ public with sharing class ENOS_SecurityUtils {
    */
   public static void checkObjectReadable(String sObjectName) {
     if (String.isBlank(sObjectName)) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: Invalid SObject name provided for read access check.'
       );
     }
 
     Schema.DescribeSObjectResult sObjectDescribe = getDescribe(sObjectName);
     if (sObjectDescribe == null) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: Unknown SObject ' + sObjectName
       );
     }
 
     if (!sObjectDescribe.isAccessible()) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: You do not have permission to read ' +
           sObjectDescribe.getLabel() +
           ' records.'
@@ -344,7 +344,7 @@ public with sharing class ENOS_SecurityUtils {
     String operation
   ) {
     if (String.isBlank(sObjectName) || String.isBlank(operation)) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: Invalid parameters provided for CRUD permission check.'
       );
     }
@@ -371,7 +371,7 @@ public with sharing class ENOS_SecurityUtils {
         checkObjectDeletable(sObjectName);
       }
       when else {
-        throw new AuraHandledException(
+        throw new CalloutException(
           'Security Error: Invalid operation specified. Use CREATE, READ, UPDATE, DELETE, or ALL.'
         );
       }
@@ -402,7 +402,7 @@ public with sharing class ENOS_SecurityUtils {
       fieldsToCheck == null ||
       fieldsToCheck.isEmpty()
     ) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: Invalid parameters provided for field edit access check.'
       );
     }
@@ -426,20 +426,20 @@ public with sharing class ENOS_SecurityUtils {
    */
   public static void validateRecordAccess(Id recordId, String sObjectName) {
     if (recordId == null || String.isBlank(sObjectName)) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: Invalid record ID or SObject name provided for record access validation.'
       );
     }
 
     Schema.DescribeSObjectResult describeResult = getDescribe(sObjectName);
     if (describeResult == null) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: Unknown SObject ' + sObjectName
       );
     }
 
     if (!describeResult.isAccessible()) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: You do not have permission to access ' +
           describeResult.getLabel() +
           ' records.'
@@ -453,7 +453,7 @@ public with sharing class ENOS_SecurityUtils {
               ' WHERE Id = :recordId WITH USER_MODE LIMIT 1';
     List<SObject> records = Database.query(query);
     if (records.isEmpty()) {
-      throw new AuraHandledException(
+      throw new CalloutException(
         'Security Error: Record not found or insufficient access.'
       );
     }
@@ -483,32 +483,141 @@ public with sharing class ENOS_SecurityUtils {
     checkFieldEditAccess(sObjectName, fieldsToCheck);
   }
 
+  // ============================================================================
+  // BATCH SECURITY CHECK METHODS - REDUCES MULTIPLE SECURITY CHECK CALLS
+  // ============================================================================
+  
   /**
-   * @description Object read access check - wrapper for checkObjectReadable
+   * @description Batch check multiple object permissions for a single operation
+   * @param objectsAndOperations Map of object names to operations (read, create, edit, delete)
+   * @throws AuraHandledException if any access is denied
    */
-  public static void checkObjectReadAccess(String sObjectName) {
-    checkObjectReadable(sObjectName);
+  public static void checkBatchObjectAccess(Map<String, String> objectsAndOperations) {
+    for (String objectName : objectsAndOperations.keySet()) {
+      String operation = objectsAndOperations.get(objectName);
+      checkDynamicObjectAccess(objectName, operation);
+    }
   }
-
+  
   /**
-   * @description Object create access check - wrapper for checkObjectCreateable
+   * @description Batch check multiple objects for read access
+   * @param objectNames List of object names to check for read access
+   * @throws AuraHandledException if any read access is denied
    */
-  public static void checkObjectCreateAccess(String sObjectName) {
-    checkObjectCreateable(sObjectName);
+  public static void checkBatchObjectReadAccess(List<String> objectNames) {
+    for (String objectName : objectNames) {
+      checkObjectReadable(objectName);
+    }
   }
-
+  
   /**
-   * @description Object update access check - wrapper for checkObjectUpdateable
+   * @description Batch check multiple objects for create access
+   * @param objectNames List of object names to check for create access
+   * @throws AuraHandledException if any create access is denied
    */
-  public static void checkObjectUpdateAccess(String sObjectName) {
-    checkObjectUpdateable(sObjectName);
+  public static void checkBatchObjectCreateAccess(List<String> objectNames) {
+    for (String objectName : objectNames) {
+      checkObjectCreateable(objectName);
+    }
   }
-
+  
   /**
-   * @description Object delete access check - wrapper for checkObjectDeletable
+   * @description Batch check multiple objects for update access
+   * @param objectNames List of object names to check for update access
+   * @throws AuraHandledException if any update access is denied
    */
-  public static void checkObjectDeleteAccess(String sObjectName) {
-    checkObjectDeletable(sObjectName);
+  public static void checkBatchObjectUpdateAccess(List<String> objectNames) {
+    for (String objectName : objectNames) {
+      checkObjectUpdateable(objectName);
+    }
+  }
+  
+  /**
+   * @description Batch check multiple objects for delete access
+   * @param objectNames List of object names to check for delete access
+   * @throws AuraHandledException if any delete access is denied
+   */
+  public static void checkBatchObjectDeleteAccess(List<String> objectNames) {
+    for (String objectName : objectNames) {
+      checkObjectDeletable(objectName);
+    }
+  }
+  
+  /**
+   * @description Batch check common ENOS objects for read access
+   * @throws AuraHandledException if any read access is denied
+   */
+  public static void checkCommonENOSObjectReadAccess() {
+    List<String> commonObjects = new List<String>{
+      'Cart__c', 'Cart_Item__c', 'Product2', 'PricebookEntry', 'Order', 'OrderItem'
+    };
+    checkBatchObjectReadAccess(commonObjects);
+  }
+  
+  /**
+   * @description Batch check common ENOS objects for create access
+   * @throws AuraHandledException if any create access is denied
+   */
+  public static void checkCommonENOSObjectCreateAccess() {
+    List<String> commonObjects = new List<String>{
+      'Cart__c', 'Cart_Item__c', 'Order', 'OrderItem'
+    };
+    checkBatchObjectCreateAccess(commonObjects);
+  }
+  
+  // ============================================================================
+  // ENHANCED SECURITY CHECK PATTERNS FOR COMMON OPERATIONS
+  // ============================================================================
+  
+  /**
+   * @description Check all permissions needed for cart operations
+   * @throws AuraHandledException if any access is denied
+   */
+  public static void checkCartOperationPermissions() {
+    checkBatchObjectAccess(new Map<String, String>{
+      'Cart__c' => 'read,create,update',
+      'Cart_Item__c' => 'read,create,update,delete',
+      'Product2' => 'read',
+      'PricebookEntry' => 'read'
+    });
+  }
+  
+  /**
+   * @description Check all permissions needed for order operations
+   * @throws AuraHandledException if any access is denied
+   */
+  public static void checkOrderOperationPermissions() {
+    checkBatchObjectAccess(new Map<String, String>{
+      'Order' => 'read,create,update',
+      'OrderItem' => 'read,create,update',
+      'Cart__c' => 'read,delete',
+      'Cart_Item__c' => 'read,delete',
+      'Shipping_Address__c' => 'read'
+    });
+  }
+  
+  /**
+   * @description Check all permissions needed for product operations
+   * @throws AuraHandledException if any access is denied
+   */
+  public static void checkProductOperationPermissions() {
+    checkBatchObjectAccess(new Map<String, String>{
+      'Product2' => 'read',
+      'PricebookEntry' => 'read',
+      'Pricebook2' => 'read'
+    });
+  }
+  
+  /**
+   * @description Check all permissions needed for user profile operations
+   * @throws AuraHandledException if any access is denied
+   */
+  public static void checkUserProfilePermissions() {
+    checkBatchObjectAccess(new Map<String, String>{
+      'User' => 'read',
+      'Account' => 'read',
+      'Contact' => 'read'
+    });
   }
 
   /**
@@ -802,7 +911,7 @@ public with sharing class ENOS_SecurityUtils {
    */
   public static void checkDynamicObjectAccess(String objectName, String operation) {
     if (String.isBlank(objectName)) {
-      throw new AuraHandledException('Security Error: Object name cannot be blank.');
+      throw new CalloutException('Security Error: Object name cannot be blank.');
     }
     
     if (operation.toLowerCase() == 'read') {
@@ -814,7 +923,7 @@ public with sharing class ENOS_SecurityUtils {
     } else if (operation.toLowerCase() == 'delete') {
       checkObjectDeletable(objectName);
     } else {
-      throw new AuraHandledException('Security Error: Invalid operation specified: ' + operation);
+      throw new CalloutException('Security Error: Invalid operation specified: ' + operation);
     }
   }
   
@@ -894,7 +1003,7 @@ public with sharing class ENOS_SecurityUtils {
     
     // Check for dangerous patterns
     if (!validateSOQLInjection(sanitized)) {
-      throw new AuraHandledException('Security Error: WHERE clause contains dangerous patterns.');
+      throw new CalloutException('Security Error: WHERE clause contains dangerous patterns.');
     }
     
     // Escape single quotes
@@ -956,7 +1065,7 @@ public with sharing class ENOS_SecurityUtils {
    */
   public static void validateRequiredId(Id recordId, String fieldName) {
     if (recordId == null) {
-      throw new AuraHandledException(fieldName + ' is required.');
+      throw new CalloutException(fieldName + ' is required.');
     }
   }
 
@@ -969,7 +1078,7 @@ public with sharing class ENOS_SecurityUtils {
    */
   public static void validatePositiveInteger(Integer quantity, String fieldName, Integer minValue) {
     if (quantity == null || quantity < minValue) {
-      throw new AuraHandledException(fieldName + ' must be at least ' + minValue + '.');
+      throw new CalloutException(fieldName + ' must be at least ' + minValue + '.');
     }
   }
 
@@ -981,7 +1090,7 @@ public with sharing class ENOS_SecurityUtils {
    */
   public static void validateRequiredString(String value, String fieldName) {
     if (String.isBlank(value)) {
-      throw new AuraHandledException(fieldName + ' is required.');
+      throw new CalloutException(fieldName + ' is required.');
     }
   }
 
@@ -997,7 +1106,7 @@ public with sharing class ENOS_SecurityUtils {
    */
   public static void handleSecurityException(String methodName, Exception e) {
     System.debug(LoggingLevel.ERROR, 'Security violation in ' + methodName + '(): ' + e.getMessage());
-    throw new AuraHandledException('You do not have permission to perform this action. Please contact your administrator.');
+    throw new CalloutException('You do not have permission to perform this action. Please contact your administrator.');
   }
 
   /**
@@ -1009,7 +1118,7 @@ public with sharing class ENOS_SecurityUtils {
   public static void handleUnexpectedException(String methodName, Exception e) {
     System.debug(LoggingLevel.ERROR, 'Unexpected error in ' + methodName + '(): ' + e.getMessage());
     System.debug(LoggingLevel.ERROR, 'Stack trace: ' + e.getStackTraceString());
-    throw new AuraHandledException('Unable to complete this action at this time. Please try again later.');
+    throw new CalloutException('Unable to complete this action at this time. Please try again later.');
   }
 
   /**
@@ -1020,6 +1129,6 @@ public with sharing class ENOS_SecurityUtils {
    */
   public static void handleValidationException(String methodName, Exception e) {
     System.debug(LoggingLevel.ERROR, 'Validation error in ' + methodName + '(): ' + e.getMessage());
-    throw new AuraHandledException('Invalid data provided: ' + e.getMessage());
+    throw new CalloutException('Invalid data provided: ' + e.getMessage());
   }
 }

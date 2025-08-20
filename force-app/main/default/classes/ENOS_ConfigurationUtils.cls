@@ -33,7 +33,36 @@ public with sharing class ENOS_ConfigurationUtils {
         'SYSTEM_HEALTH_CHECK_INTERVAL_MINUTES' => '5',
         'MAX_PERFORMANCE_METRICS_PER_QUERY' => '1000',
         'PERFORMANCE_ALERT_EMAIL_ENABLED' => 'false',
-        'PERFORMANCE_ALERT_SLACK_ENABLED' => 'false'
+        'PERFORMANCE_ALERT_SLACK_ENABLED' => 'false',
+        // Performance monitoring thresholds
+        'CPU_WARNING_THRESHOLD' => '70',
+        'CPU_CRITICAL_THRESHOLD' => '90',
+        'MEMORY_WARNING_THRESHOLD' => '80',
+        'MEMORY_CRITICAL_THRESHOLD' => '95',
+        'HEAP_WARNING_THRESHOLD' => '5000000',
+        'HEAP_CRITICAL_THRESHOLD' => '6000000',
+        'ERROR_RATE_WARNING_THRESHOLD' => '5',
+        'ERROR_RATE_CRITICAL_THRESHOLD' => '10',
+        // Stock quantity configuration
+        'STOCK_DEFAULT_QUANTITY' => '20',
+        'STOCK_AUDIO_001_QUANTITY' => '25',
+        'STOCK_AUDIO_002_QUANTITY' => '30',
+        'STOCK_COMP_001_QUANTITY' => '15',
+        'STOCK_COMP_002_QUANTITY' => '12',
+        'STOCK_MOB_001_QUANTITY' => '40',
+        'STOCK_MOB_002_QUANTITY' => '35',
+        'STOCK_GAM_001_QUANTITY' => '20',
+        'STOCK_GAM_002_QUANTITY' => '28',
+        'STOCK_NET_001_QUANTITY' => '18',
+        'STOCK_NET_002_QUANTITY' => '22',
+        'STOCK_PWR_001_QUANTITY' => '45',
+        'STOCK_PWR_002_QUANTITY' => '38',
+        'STOCK_STO_001_QUANTITY' => '32',
+        'STOCK_IOT_001_QUANTITY' => '26',
+        'STOCK_IOT_002_QUANTITY' => '50',
+        // Environment configuration
+        'IS_DEVELOPMENT_ENVIRONMENT' => 'false',
+        'SECURITY_LOG_ENABLED' => 'true'
     };
     
     /**
@@ -267,9 +296,6 @@ public with sharing class ENOS_ConfigurationUtils {
             // Clear existing cache
             CONFIG_CACHE.clear();
             
-            // For now, use default values since custom fields are not yet deployed
-            // TODO: Uncomment when ENOS_Configuration__c custom fields are deployed
-            /*
             // Load configurations from database
             List<ENOS_Configuration__c> configs = [
                 SELECT Configuration_Key__c, Configuration_Value__c
@@ -283,7 +309,6 @@ public with sharing class ENOS_ConfigurationUtils {
                     CONFIG_CACHE.put(config.Configuration_Key__c, config.Configuration_Value__c);
                 }
             }
-            */
             
             // Add default values for missing configurations
             for (String key : DEFAULT_CONFIG.keySet()) {
@@ -295,7 +320,7 @@ public with sharing class ENOS_ConfigurationUtils {
         } catch (Exception e) {
             // If database access fails, use default values
             CONFIG_CACHE.putAll(DEFAULT_CONFIG);
-            System.debug(LoggingLevel.ERROR, 'Error refreshing configuration cache: ' + e.getMessage());
+            ENOS_LoggingUtils.error('Error refreshing configuration cache', e);
         }
     }
     
@@ -309,11 +334,6 @@ public with sharing class ENOS_ConfigurationUtils {
             throw new IllegalArgumentException('Configuration key cannot be blank');
         }
         
-        // TODO: Implement when ENOS_Configuration__c custom fields are deployed
-        // For now, just update the cache
-        CONFIG_CACHE.put(configKey, configValue);
-        
-        /*
         try {
             // Check if configuration exists
             List<ENOS_Configuration__c> existingConfigs = [
@@ -341,21 +361,14 @@ public with sharing class ENOS_ConfigurationUtils {
             CONFIG_CACHE.put(configKey, configValue);
             
         } catch (Exception e) {
-            throw new AuraHandledException('Error setting configuration value: ' + e.getMessage());
+            throw new CalloutException('Error setting configuration value: ' + e.getMessage());
         }
-        */
     }
     
     /**
      * @description Resets configuration to default values
      */
     public static void resetToDefaults() {
-        // TODO: Implement when ENOS_Configuration__c custom fields are deployed
-        // For now, just reset the cache to defaults
-        CONFIG_CACHE.clear();
-        CONFIG_CACHE.putAll(DEFAULT_CONFIG);
-        
-        /*
         try {
             // Clear all custom configurations
             List<ENOS_Configuration__c> customConfigs = [
@@ -373,8 +386,114 @@ public with sharing class ENOS_ConfigurationUtils {
             CONFIG_CACHE.putAll(DEFAULT_CONFIG);
             
         } catch (Exception e) {
-            throw new AuraHandledException('Error resetting configurations: ' + e.getMessage());
+            throw new CalloutException('Error resetting configurations: ' + e.getMessage());
         }
-        */
+    }
+    
+    // ============================================================================
+    // PERFORMANCE MONITORING CONFIGURATION METHODS
+    // ============================================================================
+    
+    /**
+     * @description Gets the CPU warning threshold
+     * @return Decimal The CPU warning threshold
+     */
+    public static Decimal getCpuWarningThreshold() {
+        return getConfigValueAsDecimal('CPU_WARNING_THRESHOLD');
+    }
+    
+    /**
+     * @description Gets the CPU critical threshold
+     * @return Decimal The CPU critical threshold
+     */
+    public static Decimal getCpuCriticalThreshold() {
+        return getConfigValueAsDecimal('CPU_CRITICAL_THRESHOLD');
+    }
+    
+    /**
+     * @description Gets the memory warning threshold
+     * @return Decimal The memory warning threshold
+     */
+    public static Decimal getMemoryWarningThreshold() {
+        return getConfigValueAsDecimal('MEMORY_WARNING_THRESHOLD');
+    }
+    
+    /**
+     * @description Gets the memory critical threshold
+     * @return Decimal The memory critical threshold
+     */
+    public static Decimal getMemoryCriticalThreshold() {
+        return getConfigValueAsDecimal('MEMORY_CRITICAL_THRESHOLD');
+    }
+    
+    /**
+     * @description Gets the heap warning threshold
+     * @return Decimal The heap warning threshold
+     */
+    public static Decimal getHeapWarningThreshold() {
+        return getConfigValueAsDecimal('HEAP_WARNING_THRESHOLD');
+    }
+    
+    /**
+     * @description Gets the heap critical threshold
+     * @return Decimal The heap critical threshold
+     */
+    public static Decimal getHeapCriticalThreshold() {
+        return getConfigValueAsDecimal('HEAP_CRITICAL_THRESHOLD');
+    }
+    
+    /**
+     * @description Gets the error rate warning threshold
+     * @return Decimal The error rate warning threshold
+     */
+    public static Decimal getErrorRateWarningThreshold() {
+        return getConfigValueAsDecimal('ERROR_RATE_WARNING_THRESHOLD');
+    }
+    
+    /**
+     * @description Gets the error rate critical threshold
+     * @return Decimal The error rate critical threshold
+     */
+    public static Decimal getErrorRateCriticalThreshold() {
+        return getConfigValueAsDecimal('ERROR_RATE_CRITICAL_THRESHOLD');
+    }
+    
+    // ============================================================================
+    // STOCK QUANTITY CONFIGURATION METHODS
+    // ============================================================================
+    
+    /**
+     * @description Gets the stock quantity for a specific product code
+     * @param productCode The product code
+     * @return Integer The stock quantity for the product
+     */
+    public static Integer getStockQuantity(String productCode) {
+        if (String.isBlank(productCode)) {
+            return getConfigValueAsInteger('STOCK_DEFAULT_QUANTITY');
+        }
+        
+        String configKey = 'STOCK_' + productCode.replace('-', '_') + '_QUANTITY';
+        String value = getConfigValue(configKey);
+        return value != null ? Integer.valueOf(value) : getConfigValueAsInteger('STOCK_DEFAULT_QUANTITY');
+    }
+    
+    /**
+     * @description Gets the default stock quantity
+     * @return Integer The default stock quantity
+     */
+    public static Integer getDefaultStockQuantity() {
+        return getConfigValueAsInteger('STOCK_DEFAULT_QUANTITY');
+    }
+    
+    // ============================================================================
+    // ENVIRONMENT CONFIGURATION METHODS
+    // ============================================================================
+    
+    /**
+     * @description Checks if the current environment is development
+     * @return Boolean True if in development environment
+     */
+    public static Boolean isDevelopmentEnvironment() {
+        return getConfigValueAsBoolean('IS_DEVELOPMENT_ENVIRONMENT');
     }
 }
