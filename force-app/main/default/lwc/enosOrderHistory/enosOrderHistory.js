@@ -40,10 +40,14 @@ export default class OrderHistory extends EnosBaseComponent {
   // Default sorting configuration
   defaultSortBy = "EffectiveDate";
   defaultSortDirection = "desc";
+  sortBy = this.defaultSortBy;
+  sortDirection = this.defaultSortDirection;
 
-  // Since ENOS_OrderService is not available, we'll show a message
+  // Since ENOS_OrderService is not available, show informational message
   connectedCallback() {
-    // TODO: Implement order history functionality when ENOS_OrderService is available
+    this.hasError = true;
+    this.errorMessage = "Order history is currently unavailable.";
+    this.showInfoToast("Notice", this.errorMessage);
   }
 
   /**
@@ -117,8 +121,10 @@ export default class OrderHistory extends EnosBaseComponent {
    * @param {Event} event - The row selection event
    */
   handleRowSelection() {
-    // TODO: Implement order detail view or actions
-    // This could open a modal, navigate to order detail page, etc.
+    this.showInfoToast(
+      "Order Selection",
+      "Order detail view is not available in this version."
+    );
   }
 
   /**
@@ -127,9 +133,10 @@ export default class OrderHistory extends EnosBaseComponent {
    *
    * @param {Event} event - The sorting event
    */
-  handleSort() {
-    // TODO: Implement custom sorting logic if needed
-    // The lightning-datatable handles basic sorting automatically
+  handleSort(event) {
+    const { fieldName, sortDirection } = event.detail;
+    this.sortBy = fieldName;
+    this.sortDirection = sortDirection;
   }
 
   /**
@@ -158,10 +165,6 @@ export default class OrderHistory extends EnosBaseComponent {
    * Navigates back to the product catalog.
    */
   handleContinueShopping() {
-    // TODO: Implement navigation to product catalog
-    this.showSuccessToast(
-      "Navigation",
-      "Continue shopping functionality will be implemented."
-    );
+    this.dispatchEvent(new CustomEvent("continueshopping"));
   }
 }

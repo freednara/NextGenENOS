@@ -1,7 +1,7 @@
 import { createElement } from "lwc";
-import ProductBrowser from "c/productBrowser";
+import ProductBrowser from "c/enosProductBrowser";
 
-describe("c-product-browser", () => {
+describe("c-enos-product-browser", () => {
   afterEach(() => {
     while (document.body.firstChild) {
       document.body.removeChild(document.body.firstChild);
@@ -9,7 +9,7 @@ describe("c-product-browser", () => {
   });
 
   it("renders component successfully", () => {
-    const element = createElement("c-product-browser", {
+    const element = createElement("c-enos-product-browser", {
       is: ProductBrowser
     });
 
@@ -20,7 +20,7 @@ describe("c-product-browser", () => {
   });
 
   it("renders basic structure", () => {
-    const element = createElement("c-product-browser", {
+    const element = createElement("c-enos-product-browser", {
       is: ProductBrowser
     });
 
@@ -42,17 +42,17 @@ describe("c-product-browser", () => {
   });
 
   it("has component tag name", () => {
-    const element = createElement("c-product-browser", {
+    const element = createElement("c-enos-product-browser", {
       is: ProductBrowser
     });
 
     document.body.appendChild(element);
 
-    expect(element.tagName.toLowerCase()).toBe("c-product-browser");
+    expect(element.tagName.toLowerCase()).toBe("c-enos-product-browser");
   });
 
   it("can be created and destroyed without errors", () => {
-    const element = createElement("c-product-browser", {
+    const element = createElement("c-enos-product-browser", {
       is: ProductBrowser
     });
 

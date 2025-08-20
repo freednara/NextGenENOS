@@ -1,7 +1,7 @@
 import { createElement } from "lwc";
-import MiniCart from "c/miniCart";
+import MiniCart from "c/enosMiniCart";
 
-describe("c-mini-cart", () => {
+describe("c-enos-mini-cart", () => {
   afterEach(() => {
     while (document.body.firstChild) {
       document.body.removeChild(document.body.firstChild);
@@ -9,7 +9,7 @@ describe("c-mini-cart", () => {
   });
 
   it("renders component successfully", () => {
-    const element = createElement("c-mini-cart", {
+    const element = createElement("c-enos-mini-cart", {
       is: MiniCart
     });
 
@@ -20,7 +20,7 @@ describe("c-mini-cart", () => {
   });
 
   it("renders cart icon structure", () => {
-    const element = createElement("c-mini-cart", {
+    const element = createElement("c-enos-mini-cart", {
       is: MiniCart
     });
 
@@ -42,17 +42,17 @@ describe("c-mini-cart", () => {
   });
 
   it("has component tag name", () => {
-    const element = createElement("c-mini-cart", {
+    const element = createElement("c-enos-mini-cart", {
       is: MiniCart
     });
 
     document.body.appendChild(element);
 
-    expect(element.tagName.toLowerCase()).toBe("c-mini-cart");
+    expect(element.tagName.toLowerCase()).toBe("c-enos-mini-cart");
   });
 
   it("can be created and destroyed without errors", () => {
-    const element = createElement("c-mini-cart", {
+    const element = createElement("c-enos-mini-cart", {
       is: MiniCart
     });
 
@@ -64,7 +64,7 @@ describe("c-mini-cart", () => {
   });
 
   it("instantiates correctly", () => {
-    const element = createElement("c-mini-cart", {
+    const element = createElement("c-enos-mini-cart", {
       is: MiniCart
     });
 
@@ -72,7 +72,7 @@ describe("c-mini-cart", () => {
   });
 
   it("has expected template structure", () => {
-    const element = createElement("c-mini-cart", {
+    const element = createElement("c-enos-mini-cart", {
       is: MiniCart
     });
 

@@ -1,7 +1,7 @@
 import { createElement } from "lwc";
-import PaymentGateway from "c/paymentGateway";
+import PaymentGateway from "c/enosPaymentGateway";
 
-describe("c-payment-gateway", () => {
+describe("c-enos-payment-gateway", () => {
   afterEach(() => {
     // The jsdom instance is shared across test cases in a single file so reset the DOM
     while (document.body.firstChild) {
@@ -10,7 +10,7 @@ describe("c-payment-gateway", () => {
   });
 
   it("creates component successfully", () => {
-    const element = createElement("c-payment-gateway", {
+    const element = createElement("c-enos-payment-gateway", {
       is: PaymentGateway
     });
 
@@ -20,7 +20,7 @@ describe("c-payment-gateway", () => {
   });
 
   it("instantiates with expected constructor", () => {
-    const element = createElement("c-payment-gateway", {
+    const element = createElement("c-enos-payment-gateway", {
       is: PaymentGateway
     });
 
@@ -28,7 +28,7 @@ describe("c-payment-gateway", () => {
   });
 
   it("renders payment form elements", () => {
-    const element = createElement("c-payment-gateway", {
+    const element = createElement("c-enos-payment-gateway", {
       is: PaymentGateway
     });
     document.body.appendChild(element);
@@ -36,12 +36,12 @@ describe("c-payment-gateway", () => {
     // Test that the component renders without throwing errors
     return Promise.resolve().then(() => {
       // Basic DOM assertions
-      expect(element.tagName.toLowerCase()).toBe("c-payment-gateway");
+      expect(element.tagName.toLowerCase()).toBe("c-enos-payment-gateway");
     });
   });
 
   it("handles component lifecycle", () => {
-    const element = createElement("c-payment-gateway", {
+    const element = createElement("c-enos-payment-gateway", {
       is: PaymentGateway
     });
 
@@ -54,13 +54,13 @@ describe("c-payment-gateway", () => {
   });
 
   it("maintains component integrity", () => {
-    const element = createElement("c-payment-gateway", {
+    const element = createElement("c-enos-payment-gateway", {
       is: PaymentGateway
     });
     document.body.appendChild(element);
 
     // Test component properties exist and are accessible
     expect(typeof element.tagName).toBe("string");
-    expect(element.tagName.toLowerCase()).toBe("c-payment-gateway");
+    expect(element.tagName.toLowerCase()).toBe("c-enos-payment-gateway");
   });
 });

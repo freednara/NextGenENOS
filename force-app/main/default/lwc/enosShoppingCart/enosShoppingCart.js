@@ -1,6 +1,7 @@
 import { LightningElement, api, wire, track } from "lwc";
 import { NavigationMixin } from "lightning/navigation";
 import { subscribe, MessageContext } from "lightning/messageService";
+import { getRecord } from "lightning/uiRecordApi";
 import CART_UPDATE_CHANNEL from "@salesforce/messageChannel/CartUpdate__c";
 import getCurrentUserCart from "@salesforce/apex/ENOS_CartController.getCurrentUserCart";
 import updateCartItemQuantity from "@salesforce/apex/ENOS_CartController.updateCartItemQuantity";
@@ -8,12 +9,37 @@ import removeCartItem from "@salesforce/apex/ENOS_CartController.removeCartItem"
 // Guest cart functionality removed - using current user approach
 import EnosBaseComponent from "c/enosBaseComponent";
 
+import FIRST_NAME from "@salesforce/schema/Contact.FirstName";
+import LAST_NAME from "@salesforce/schema/Contact.LastName";
+import EMAIL from "@salesforce/schema/Contact.Email";
+import PHONE from "@salesforce/schema/Contact.Phone";
+import MAILING_STREET from "@salesforce/schema/Contact.MailingStreet";
+import MAILING_CITY from "@salesforce/schema/Contact.MailingCity";
+import MAILING_STATE from "@salesforce/schema/Contact.MailingState";
+import MAILING_POSTAL from "@salesforce/schema/Contact.MailingPostalCode";
+import MAILING_COUNTRY from "@salesforce/schema/Contact.MailingCountry";
+
 export default class enosShoppingCart extends NavigationMixin(EnosBaseComponent) {
   @api recordId; // Contact ID from the community user
 
   // Wire message context for Lightning Message Service
   @wire(MessageContext)
   messageContext;
+
+  static CONTACT_FIELDS = [
+    FIRST_NAME,
+    LAST_NAME,
+    EMAIL,
+    PHONE,
+    MAILING_STREET,
+    MAILING_CITY,
+    MAILING_STATE,
+    MAILING_POSTAL,
+    MAILING_COUNTRY
+  ];
+
+  @wire(getRecord, { recordId: "$recordId", fields: enosShoppingCart.CONTACT_FIELDS })
+  contact;
 
   // Cart data
   @track cart = null;
@@ -36,7 +62,7 @@ export default class enosShoppingCart extends NavigationMixin(EnosBaseComponent)
     city: '',
     state: '',
     postalCode: '',
-    country: 'United States'
+    country: ''
   };
 
   // Subscription for cart updates
@@ -73,6 +99,7 @@ export default class enosShoppingCart extends NavigationMixin(EnosBaseComponent)
   connectedCallback() {
     this.loadCart();
     this.subscribeToCartUpdates();
+    this.prefillForms();
   }
 
   disconnectedCallback() {
@@ -212,22 +239,21 @@ export default class enosShoppingCart extends NavigationMixin(EnosBaseComponent)
 
   // Pre-fill forms with existing data if available
   prefillForms() {
-    // This could be enhanced to pre-fill with existing contact/shipping data
-    // For now, we'll start with empty forms
+    const fields = this.contact.data?.fields || {};
     this.contactForm = {
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
+      firstName: fields.FirstName?.value || '',
+      lastName: fields.LastName?.value || '',
+      email: fields.Email?.value || '',
+      phone: fields.Phone?.value || '',
       company: ''
     };
-    
+
     this.shippingForm = {
-      street: '',
-      city: '',
-      state: '',
-      postalCode: '',
-      country: 'United States'
+      street: fields.MailingStreet?.value || '',
+      city: fields.MailingCity?.value || '',
+      state: fields.MailingState?.value || '',
+      postalCode: fields.MailingPostalCode?.value || '',
+      country: fields.MailingCountry?.value || ''
     };
   }
 
@@ -247,8 +273,7 @@ export default class enosShoppingCart extends NavigationMixin(EnosBaseComponent)
 
     this.checkoutLoading = true;
     try {
-      // Simple checkout - create order from current cart
-      // TODO: Implement proper checkout logic for current user
+      // Simple checkout - create order from current cart (placeholder logic)
       const result = {
         success: true,
         orderNumber: 'ORD-' + Date.now()

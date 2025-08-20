@@ -1,7 +1,7 @@
 import { createElement } from "lwc";
-import MyQuotes from "c/myQuotes";
+import MyQuotes from "c/enosMyQuotes";
 
-describe("c-my-quotes", () => {
+describe("c-enos-my-quotes", () => {
   afterEach(() => {
     // The jsdom instance is shared across test cases in a single file so reset the DOM
     while (document.body.firstChild) {
@@ -10,7 +10,7 @@ describe("c-my-quotes", () => {
   });
 
   it("creates component successfully", () => {
-    const element = createElement("c-my-quotes", {
+    const element = createElement("c-enos-my-quotes", {
       is: MyQuotes
     });
 
@@ -20,7 +20,7 @@ describe("c-my-quotes", () => {
   });
 
   it("instantiates with expected constructor", () => {
-    const element = createElement("c-my-quotes", {
+    const element = createElement("c-enos-my-quotes", {
       is: MyQuotes
     });
 
@@ -28,18 +28,18 @@ describe("c-my-quotes", () => {
   });
 
   it("renders without errors", () => {
-    const element = createElement("c-my-quotes", {
+    const element = createElement("c-enos-my-quotes", {
       is: MyQuotes
     });
     document.body.appendChild(element);
 
     return Promise.resolve().then(() => {
-      expect(element.tagName.toLowerCase()).toBe("c-my-quotes");
+      expect(element.tagName.toLowerCase()).toBe("c-enos-my-quotes");
     });
   });
 
   it("handles component lifecycle", () => {
-    const element = createElement("c-my-quotes", {
+    const element = createElement("c-enos-my-quotes", {
       is: MyQuotes
     });
 
@@ -51,12 +51,12 @@ describe("c-my-quotes", () => {
   });
 
   it("maintains component integrity", () => {
-    const element = createElement("c-my-quotes", {
+    const element = createElement("c-enos-my-quotes", {
       is: MyQuotes
     });
     document.body.appendChild(element);
 
     expect(typeof element.tagName).toBe("string");
-    expect(element.tagName.toLowerCase()).toBe("c-my-quotes");
+    expect(element.tagName.toLowerCase()).toBe("c-enos-my-quotes");
   });
 });

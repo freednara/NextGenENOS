@@ -1,5 +1,5 @@
 import { createElement } from "lwc";
-import ProductDetail from "c/productDetail";
+import ProductDetail from "c/enosProductDetail";
 
 describe("c-product-detail", () => {
   afterEach(() => {
@@ -9,7 +9,7 @@ describe("c-product-detail", () => {
   });
 
   it("renders component successfully", () => {
-    const element = createElement("c-product-detail", {
+    const element = createElement("c-enos-product-detail", {
       is: ProductDetail
     });
 
@@ -20,15 +20,15 @@ describe("c-product-detail", () => {
   });
 
   it("has component tag name", () => {
-    const element = createElement("c-product-detail", {
+    const element = createElement("c-enos-product-detail", {
       is: ProductDetail
     });
 
-    expect(element.tagName.toLowerCase()).toBe("c-product-detail");
+    expect(element.tagName.toLowerCase()).toBe("c-enos-product-detail");
   });
 
   it("instantiates correctly", () => {
-    const element = createElement("c-product-detail", {
+    const element = createElement("c-enos-product-detail", {
       is: ProductDetail
     });
 
@@ -37,7 +37,7 @@ describe("c-product-detail", () => {
 
   it("renders without throwing errors", () => {
     expect(() => {
-      const element = createElement("c-product-detail", {
+      const element = createElement("c-enos-product-detail", {
         is: ProductDetail
       });
       document.body.appendChild(element);

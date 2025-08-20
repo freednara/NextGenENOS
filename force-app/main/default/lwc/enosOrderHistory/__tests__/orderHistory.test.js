@@ -1,7 +1,7 @@
 import { createElement } from "lwc";
-import OrderHistory from "c/orderHistory";
+import OrderHistory from "c/enosOrderHistory";
 
-describe("c-order-history", () => {
+describe("c-enos-order-history", () => {
   afterEach(() => {
     while (document.body.firstChild) {
       document.body.removeChild(document.body.firstChild);
@@ -9,7 +9,7 @@ describe("c-order-history", () => {
   });
 
   it("renders component successfully", () => {
-    const element = createElement("c-order-history", {
+    const element = createElement("c-enos-order-history", {
       is: OrderHistory
     });
 
@@ -20,15 +20,15 @@ describe("c-order-history", () => {
   });
 
   it("has component tag name", () => {
-    const element = createElement("c-order-history", {
+    const element = createElement("c-enos-order-history", {
       is: OrderHistory
     });
 
-    expect(element.tagName.toLowerCase()).toBe("c-order-history");
+    expect(element.tagName.toLowerCase()).toBe("c-enos-order-history");
   });
 
   it("instantiates correctly", () => {
-    const element = createElement("c-order-history", {
+    const element = createElement("c-enos-order-history", {
       is: OrderHistory
     });
 
@@ -37,7 +37,7 @@ describe("c-order-history", () => {
 
   it("renders without throwing errors", () => {
     expect(() => {
-      const element = createElement("c-order-history", {
+      const element = createElement("c-enos-order-history", {
         is: OrderHistory
       });
       document.body.appendChild(element);
@@ -45,7 +45,7 @@ describe("c-order-history", () => {
   });
 
   it("has expected template structure", () => {
-    const element = createElement("c-order-history", {
+    const element = createElement("c-enos-order-history", {
       is: OrderHistory
     });
 
@@ -58,7 +58,7 @@ describe("c-order-history", () => {
   });
 
   it("can be created and destroyed without errors", () => {
-    const element = createElement("c-order-history", {
+    const element = createElement("c-enos-order-history", {
       is: OrderHistory
     });
 
@@ -70,7 +70,7 @@ describe("c-order-history", () => {
   });
 
   it("maintains shadow DOM isolation", () => {
-    const element = createElement("c-order-history", {
+    const element = createElement("c-enos-order-history", {
       is: OrderHistory
     });
 
@@ -82,10 +82,10 @@ describe("c-order-history", () => {
   });
 
   it("handles multiple instances", () => {
-    const element1 = createElement("c-order-history", {
+    const element1 = createElement("c-enos-order-history", {
       is: OrderHistory
     });
-    const element2 = createElement("c-order-history", {
+    const element2 = createElement("c-enos-order-history", {
       is: OrderHistory
     });
 
@@ -98,7 +98,7 @@ describe("c-order-history", () => {
   });
 
   it("has correct custom element lifecycle", () => {
-    const element = createElement("c-order-history", {
+    const element = createElement("c-enos-order-history", {
       is: OrderHistory
     });
 
@@ -109,7 +109,7 @@ describe("c-order-history", () => {
   });
 
   it("can handle recordId property", () => {
-    const element = createElement("c-order-history", {
+    const element = createElement("c-enos-order-history", {
       is: OrderHistory
     });
 
