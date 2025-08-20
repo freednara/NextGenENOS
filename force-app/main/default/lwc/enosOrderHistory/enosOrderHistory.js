@@ -43,9 +43,7 @@ export default class OrderHistory extends EnosBaseComponent {
 
   // Since ENOS_OrderService is not available, we'll show a message
   connectedCallback() {
-    this.hasError = true;
-    this.errorMessage =
-      "Order functionality requires Enterprise Edition features. Please contact your administrator.";
+    // TODO: Implement order history functionality when ENOS_OrderService is available
   }
 
   /**
