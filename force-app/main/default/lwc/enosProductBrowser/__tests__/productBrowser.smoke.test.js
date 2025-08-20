@@ -1,28 +1,28 @@
 import { createElement } from "lwc";
-import ProductBrowser from "c/productBrowser";
+import ProductBrowser from "c/enosProductBrowser";
 
 describe("ProductBrowser Smoke Test", () => {
   it("should be able to instantiate the component class", () => {
     // Just test that the class can be instantiated without errors
     expect(() => {
-      createElement("c-product-browser", {
+      createElement("c-enos-product-browser", {
         is: ProductBrowser
       });
     }).not.toThrow();
   });
 
   it("should create component without errors", () => {
-    const element = createElement("c-product-browser", {
+    const element = createElement("c-enos-product-browser", {
       is: ProductBrowser
     });
 
     // Check if the component is created without errors
     expect(element).toBeDefined();
-    expect(element.tagName.toLowerCase()).toBe("c-product-browser");
+    expect(element.tagName.toLowerCase()).toBe("c-enos-product-browser");
   });
 
   it("should have basic DOM functionality", () => {
-    const element = createElement("c-product-browser", {
+    const element = createElement("c-enos-product-browser", {
       is: ProductBrowser
     });
 
@@ -33,7 +33,7 @@ describe("ProductBrowser Smoke Test", () => {
   });
 
   it("should be an instance of the class", () => {
-    const element = createElement("c-product-browser", {
+    const element = createElement("c-enos-product-browser", {
       is: ProductBrowser
     });
 

@@ -1,7 +1,7 @@
 import { createElement } from "lwc";
-import ProductCatalog from "c/productCatalog";
+import ProductCatalog from "c/enosProductCatalog";
 
-describe("c-product-catalog", () => {
+describe("c-enos-product-catalog", () => {
   afterEach(() => {
     while (document.body.firstChild) {
       document.body.removeChild(document.body.firstChild);
@@ -9,7 +9,7 @@ describe("c-product-catalog", () => {
   });
 
   it("renders component successfully", () => {
-    const element = createElement("c-product-catalog", {
+    const element = createElement("c-enos-product-catalog", {
       is: ProductCatalog
     });
 
@@ -20,15 +20,15 @@ describe("c-product-catalog", () => {
   });
 
   it("has component tag name", () => {
-    const element = createElement("c-product-catalog", {
+    const element = createElement("c-enos-product-catalog", {
       is: ProductCatalog
     });
 
-    expect(element.tagName.toLowerCase()).toBe("c-product-catalog");
+    expect(element.tagName.toLowerCase()).toBe("c-enos-product-catalog");
   });
 
   it("instantiates correctly", () => {
-    const element = createElement("c-product-catalog", {
+    const element = createElement("c-enos-product-catalog", {
       is: ProductCatalog
     });
 
@@ -37,7 +37,7 @@ describe("c-product-catalog", () => {
 
   it("renders without throwing errors", () => {
     expect(() => {
-      const element = createElement("c-product-catalog", {
+      const element = createElement("c-enos-product-catalog", {
         is: ProductCatalog
       });
       document.body.appendChild(element);
@@ -45,7 +45,7 @@ describe("c-product-catalog", () => {
   });
 
   it("has expected template structure", () => {
-    const element = createElement("c-product-catalog", {
+    const element = createElement("c-enos-product-catalog", {
       is: ProductCatalog
     });
 
@@ -58,7 +58,7 @@ describe("c-product-catalog", () => {
   });
 
   it("can be created and destroyed without errors", () => {
-    const element = createElement("c-product-catalog", {
+    const element = createElement("c-enos-product-catalog", {
       is: ProductCatalog
     });
 

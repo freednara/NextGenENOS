@@ -1,28 +1,28 @@
 import { createElement } from "lwc";
-import ShoppingCart from "c/shoppingCart";
+import ShoppingCart from "c/enosShoppingCart";
 
 describe("ShoppingCart Smoke Test", () => {
   it("should be able to instantiate the component class", () => {
     // Just test that the class can be instantiated without errors
     expect(() => {
-      createElement("c-shopping-cart", {
+      createElement("c-enos-shopping-cart", {
         is: ShoppingCart
       });
     }).not.toThrow();
   });
 
   it("should create component without errors", () => {
-    const element = createElement("c-shopping-cart", {
+    const element = createElement("c-enos-shopping-cart", {
       is: ShoppingCart
     });
 
     // Check if the component is created without errors
     expect(element).toBeDefined();
-    expect(element.tagName.toLowerCase()).toBe("c-shopping-cart");
+    expect(element.tagName.toLowerCase()).toBe("c-enos-shopping-cart");
   });
 
   it("should have basic DOM functionality", () => {
-    const element = createElement("c-shopping-cart", {
+    const element = createElement("c-enos-shopping-cart", {
       is: ShoppingCart
     });
 
@@ -33,7 +33,7 @@ describe("ShoppingCart Smoke Test", () => {
   });
 
   it("should be an instance of the class", () => {
-    const element = createElement("c-shopping-cart", {
+    const element = createElement("c-enos-shopping-cart", {
       is: ShoppingCart
     });
 

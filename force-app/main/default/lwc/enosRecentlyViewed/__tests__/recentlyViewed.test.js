@@ -1,5 +1,5 @@
 import { createElement } from "lwc";
-import RecentlyViewed from "c/recentlyViewed";
+import RecentlyViewed from "c/enosRecentlyViewed";
 
 // Mock the Apex method to prevent actual callouts
 jest.mock(
@@ -10,7 +10,7 @@ jest.mock(
   { virtual: true }
 );
 
-describe("c-recently-viewed", () => {
+describe("c-enos-recently-viewed", () => {
   afterEach(() => {
     // The jsdom instance is shared across test cases in a single file so reset the DOM
     while (document.body.firstChild) {
@@ -19,7 +19,7 @@ describe("c-recently-viewed", () => {
   });
 
   it("creates component successfully", () => {
-    const element = createElement("c-recently-viewed", {
+    const element = createElement("c-enos-recently-viewed", {
       is: RecentlyViewed
     });
 
@@ -27,7 +27,7 @@ describe("c-recently-viewed", () => {
   });
 
   it("instantiates with expected constructor", () => {
-    const element = createElement("c-recently-viewed", {
+    const element = createElement("c-enos-recently-viewed", {
       is: RecentlyViewed
     });
 
@@ -35,7 +35,7 @@ describe("c-recently-viewed", () => {
   });
 
   it("handles initialization without errors", () => {
-    const element = createElement("c-recently-viewed", {
+    const element = createElement("c-enos-recently-viewed", {
       is: RecentlyViewed
     });
 
@@ -43,16 +43,16 @@ describe("c-recently-viewed", () => {
     element.recordId = "test-contact-id";
 
     // Don't append to DOM immediately to avoid triggering connectedCallback
-    expect(element.tagName.toLowerCase()).toBe("c-recently-viewed");
+    expect(element.tagName.toLowerCase()).toBe("c-enos-recently-viewed");
   });
 
   it("maintains component properties", () => {
-    const element = createElement("c-recently-viewed", {
+    const element = createElement("c-enos-recently-viewed", {
       is: RecentlyViewed
     });
 
     // Test basic properties without triggering lifecycle
     expect(typeof element.tagName).toBe("string");
-    expect(element.tagName.toLowerCase()).toBe("c-recently-viewed");
+    expect(element.tagName.toLowerCase()).toBe("c-enos-recently-viewed");
   });
 });

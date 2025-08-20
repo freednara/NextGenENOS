@@ -100,6 +100,7 @@ public with sharing class ENOS_OrderService {
     List<Order> ordersToInsert = new List<Order>();
     List<OrderItem> orderItemsToInsert = new List<OrderItem>();
     List<Cart__c> cartsToDelete = new List<Cart__c>();
+    List<Integer> orderRequestIndexes = new List<Integer>();
 
     Map<Integer, Cart__c> requestIndexToCart = new Map<Integer, Cart__c>();
     Map<Integer, List<Cart_Item__c>> requestIndexToCartItems = new Map<Integer, List<Cart_Item__c>>();
@@ -186,6 +187,7 @@ public with sharing class ENOS_OrderService {
             paymentResponse.transactionId
           );
           ordersToInsert.add(newOrder);
+          orderRequestIndexes.add(i);
 
           // Store success data
           responses[i]
@@ -210,34 +212,22 @@ public with sharing class ENOS_OrderService {
 
         // Create order items for all successful orders
         for (Integer i = 0; i < ordersToInsert.size(); i++) {
-          Integer requestIndex = -1;
-          // Find corresponding request index
-          for (Integer j = 0; j < requests.size(); j++) {
-            if (responses[j].isSuccess && requestIndexToCart.containsKey(j)) {
-              if (requestIndex == -1) {
-                requestIndex = j;
-                break;
-              }
-            }
-          }
+          Integer requestIndex = orderRequestIndexes[i];
+          List<Cart_Item__c> cartItems = requestIndexToCartItems.get(
+            requestIndex
+          );
+          List<OrderItem> orderItems = createOrderItems(
+            ordersToInsert[i].Id,
+            cartItems
+          );
+          orderItemsToInsert.addAll(orderItems);
 
-          if (requestIndex >= 0) {
-            List<Cart_Item__c> cartItems = requestIndexToCartItems.get(
-              requestIndex
-            );
-            List<OrderItem> orderItems = createOrderItems(
-              ordersToInsert[i].Id,
-              cartItems
-            );
-            orderItemsToInsert.addAll(orderItems);
-
-            // Update response with order details
-            responses[requestIndex].orderId = ordersToInsert[i].Id;
-            responses[requestIndex].orderNumber = ordersToInsert[i].OrderNumber;
-            responses[requestIndex].message =
-              'Order created successfully. Order Number: ' +
-              ordersToInsert[i].OrderNumber;
-          }
+          // Update response with order details
+          responses[requestIndex].orderId = ordersToInsert[i].Id;
+          responses[requestIndex].orderNumber = ordersToInsert[i].OrderNumber;
+          responses[requestIndex].message =
+            'Order created successfully. Order Number: ' +
+            ordersToInsert[i].OrderNumber;
         }
 
         // Bulk insert order items

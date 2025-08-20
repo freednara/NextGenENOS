@@ -6,6 +6,8 @@ import CartUpdate from "@salesforce/messageChannel/CartUpdate__c";
 // Import fields - only use standard fields that exist
 import PRODUCT_NAME from "@salesforce/schema/Product2.Name";
 import PRODUCT_DESCRIPTION from "@salesforce/schema/Product2.Description";
+import PRODUCT_STOCK from "@salesforce/schema/Product2.Stock_Quantity__c";
+import PRODUCT_IMAGE from "@salesforce/schema/Product2.Image_URL__c";
 
 export default class ProductDetail extends LightningElement {
   @api recordId;
@@ -15,7 +17,7 @@ export default class ProductDetail extends LightningElement {
 
   @wire(getRecord, {
     recordId: "$recordId",
-    fields: [PRODUCT_NAME, PRODUCT_DESCRIPTION]
+    fields: [PRODUCT_NAME, PRODUCT_DESCRIPTION, PRODUCT_STOCK, PRODUCT_IMAGE]
   })
   product;
 
@@ -30,13 +32,15 @@ export default class ProductDetail extends LightningElement {
   }
 
   get productImage() {
-    // Use a placeholder image since Image_URL__c field doesn't exist
-    return "https://via.placeholder.com/400x300?text=Product+Image";
+    return this.product.data
+      ? this.product.data.fields.Image_URL__c.value || ""
+      : "";
   }
 
   get productStock() {
-    // Default to in-stock since Stock_Quantity__c field doesn't exist
-    return 100;
+    return this.product.data
+      ? this.product.data.fields.Stock_Quantity__c.value || 0
+      : 0;
   }
 
   get isInStock() {

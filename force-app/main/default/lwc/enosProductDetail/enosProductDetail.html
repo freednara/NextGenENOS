@@ -32,7 +32,7 @@
           <template if:true={isInStock}>
             <lightning-badge
               label="In Stock"
-              variant="success"
+              class="slds-theme_success"
             ></lightning-badge>
             <span class="slds-m-left_small"
               >Available: {productStock} units</span
@@ -41,7 +41,7 @@
           <template if:false={isInStock}>
             <lightning-badge
               label="Out of Stock"
-              variant="error"
+              class="slds-theme_error"
             ></lightning-badge>
           </template>
         </div>
