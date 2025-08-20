@@ -241,18 +241,10 @@ public with sharing class PerformanceMonitor {
     private static List<PerformanceMetric> getErrorMetrics() {
         List<PerformanceMetric> metrics = new List<PerformanceMetric>();
         
-        // Error rate monitoring from actual system logs
+        // Error rate monitoring from asynchronous job failures
         Decimal errorRate = calculateActualErrorRate();
         metrics.add(new PerformanceMetric('ERROR_RATE', errorRate, '%', 'ERROR'));
-        
-        // Failed payments from actual data
-        Integer failedPayments = getActualFailedPayments();
-        metrics.add(new PerformanceMetric('FAILED_PAYMENTS_HOUR', failedPayments, 'count', 'ERROR'));
-        
-        // API timeouts from actual monitoring
-        Integer apiTimeouts = getActualApiTimeouts();
-        metrics.add(new PerformanceMetric('API_TIMEOUTS_HOUR', apiTimeouts, 'count', 'ERROR'));
-        
+
         return metrics;
     }
     
@@ -549,28 +541,30 @@ public with sharing class PerformanceMonitor {
      * @return Error rate as percentage
      */
     private static Decimal calculateActualErrorRate() {
-        // In a real implementation, this would query application logs
-        // For now, return a safe default value
-        return 0.1; // 0.1% error rate
-    }
-    
-    /**
-     * @description Get actual failed payment count
-     * @return Number of failed payments in the last hour
-     */
-    private static Integer getActualFailedPayments() {
-        // In a real implementation, this would query payment failure logs
-        // For now, return a safe default value
-        return 0;
-    }
-    
-    /**
-     * @description Get actual API timeout count
-     * @return Number of API timeouts in the last hour
-     */
-    private static Integer getActualApiTimeouts() {
-        // In a real implementation, this would query API monitoring logs
-        // For now, return a safe default value
+        try {
+            List<AggregateResult> totalJobs = [
+                SELECT COUNT(Id) totalCount
+                FROM AsyncApexJob
+                WHERE CreatedDate >= :DateTime.now().addHours(-1)
+            ];
+
+            List<AggregateResult> failedJobs = [
+                SELECT COUNT(Id) failCount
+                FROM AsyncApexJob
+                WHERE CreatedDate >= :DateTime.now().addHours(-1)
+                AND (Status = 'Failed' OR Status = 'Aborted')
+            ];
+
+            Decimal totalCount = (Decimal) (totalJobs.isEmpty() ? 0 : totalJobs[0].get('totalCount'));
+            Decimal failCount = (Decimal) (failedJobs.isEmpty() ? 0 : failedJobs[0].get('failCount'));
+
+            if (totalCount > 0) {
+                return (failCount / totalCount * 100).setScale(2);
+            }
+        } catch (Exception e) {
+            System.debug(LoggingLevel.WARN, 'Unable to calculate actual error rate: ' + e.getMessage());
+        }
+
         return 0;
     }
 }

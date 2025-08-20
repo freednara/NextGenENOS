@@ -594,8 +594,46 @@ public with sharing class SecurityUtils {
    * @description Filters records based on access
    */
   public static List<SObject> filterAccessibleRecords(List<SObject> records, String accessType) {
-    // For now, return all records as we rely on WITH SECURITY_ENFORCED
-    return records;
+    if (records == null || records.isEmpty()) {
+      return new List<SObject>();
+    }
+
+    Set<Id> recordIds = new Set<Id>();
+    Map<Id, SObject> recordMap = new Map<Id, SObject>();
+    for (SObject record : records) {
+      if (record.Id != null) {
+        recordIds.add(record.Id);
+        recordMap.put(record.Id, record);
+      }
+    }
+
+    Map<Id, UserRecordAccess> accessMap = new Map<Id, UserRecordAccess>();
+    if (!recordIds.isEmpty()) {
+      accessMap = new Map<Id, UserRecordAccess>([
+        SELECT RecordId, HasReadAccess, HasEditAccess
+        FROM UserRecordAccess
+        WHERE UserId = :UserInfo.getUserId() AND RecordId IN :recordIds
+      ]);
+    }
+
+    List<SObject> accessible = new List<SObject>();
+    for (SObject record : records) {
+      if (record.Id == null) continue;
+      UserRecordAccess ura = accessMap.get(record.Id);
+      if (ura == null) continue;
+      Schema.DescribeSObjectResult describeResult = record.getSObjectType().getDescribe();
+      Boolean hasAccess = false;
+      if (accessType.equalsIgnoreCase('edit')) {
+        hasAccess = ura.HasEditAccess && describeResult.isUpdateable();
+      } else {
+        hasAccess = ura.HasReadAccess && describeResult.isAccessible();
+      }
+      if (hasAccess) {
+        accessible.add(record);
+      }
+    }
+
+    return accessible;
   }
 
   /**

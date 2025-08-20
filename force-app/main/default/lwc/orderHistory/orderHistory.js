@@ -1,5 +1,6 @@
 import { LightningElement } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import ORDER_HISTORY_ENABLED from "@salesforce/label/c.OrderHistoryEnabled";
 
 /**
  * @description Order History component for displaying user's past orders.
@@ -45,11 +46,13 @@ export default class OrderHistory extends LightningElement {
   defaultSortBy = "EffectiveDate";
   defaultSortDirection = "desc";
 
-  // Since OrderService is not available, we'll show a message
+  // Fail fast when order history is disabled or missing dependencies
   connectedCallback() {
-    this.hasError = true;
-    this.errorMessage =
-      "Order functionality requires Enterprise Edition features. Please contact your administrator.";
+    if (ORDER_HISTORY_ENABLED !== "true") {
+      throw new Error(
+        "Order functionality requires Enterprise Edition features."
+      );
+    }
   }
 
   /**
